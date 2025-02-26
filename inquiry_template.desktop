@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Inquiry Template
+Comment=Run the Inquiry Template script
+Exec=konsole --hold -e /bin/bash -c '/home/adam/.scripts/inquiry_template.sh; exec bash'
+Icon=utilities-terminal
+Terminal=false
+Type=Application
+Categories=Utility;Application;
