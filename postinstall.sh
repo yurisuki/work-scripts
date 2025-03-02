@@ -78,13 +78,17 @@ fi
 
 # Clone git repository
 show_progress "Cloning scripts repository..."
-git clone https://github.com/yurisuki/work-scripts.git ~/scripts-temp
+git clone https://github.com/yurisuki/work-scripts.git ~/Git/work-scripts
+
+# Make all scripts executable
+show_progress "Making scripts executable..."
+chmod +x ~/Git/work-scripts/*/*.sh
 
 # Move scripts to ~/.scripts
 show_progress "Setting up scripts..."
 mkdir -p ~/.scripts
-mv ~/scripts-temp/*.sh ~/.scripts/
-rm -rf ~/scripts-temp
+mv ~/Git/work-scripts/*/*.sh ~/.scripts/
+rm -rf ~/Git/work-scripts
 
 # Create Ralakde directories
 show_progress "Creating Ralakde directories..."
@@ -114,3 +118,4 @@ echo "5. Git repository cloned and scripts moved to ~/.scripts."
 echo "6. Ralakde directories created under ~/Dokumenty/Ralakde."
 echo "7. XLSX file copied to 'Our inquires' folder."
 echo "8. .desktop files moved to ~/.local/share/applications."
+
