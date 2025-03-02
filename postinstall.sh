@@ -71,7 +71,7 @@ if [ ! -d "$HOME/.zohoworkdrive" ]; then
 
     # Run the Zoho WorkDrive installer
     show_progress "Running Zoho WorkDrive setup..."
-    cd /tmp/ZohoWorkDrive && ./ .setup
+    cd /tmp/ZohoWorkDrive && ./.setup
 else
     show_progress "Zoho WorkDrive is already installed, skipping installation."
 fi
