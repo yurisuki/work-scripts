@@ -78,7 +78,7 @@ fi
 
 # Clone git repository
 show_progress "Cloning scripts repository..."
-git clone https://github.com/yurisuki/scripts.git ~/scripts-temp
+git clone https://github.com/yurisuki/work-scripts.git ~/scripts-temp
 
 # Move scripts to ~/.scripts
 show_progress "Setting up scripts..."
