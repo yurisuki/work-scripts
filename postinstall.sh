@@ -27,11 +27,20 @@ install_package() {
     fi
 }
 
+# Ensure yay is installed
+if ! command -v yay &> /dev/null; then
+    show_progress "Installing yay (AUR helper)..."
+    sudo pacman -S --needed --noconfirm base-devel git
+    git clone https://aur.archlinux.org/yay.git /tmp/yay
+    cd /tmp/yay && makepkg -si --noconfirm
+    cd ~ && rm -rf /tmp/yay
+fi
+
 # Function to install AUR package if not installed
 install_aur_package() {
-    if ! pamac search --installed $1 &> /dev/null; then
+    if ! yay -Q $1 &> /dev/null; then
         show_progress "Installing $1 from AUR..."
-        sudo pamac install --no-confirm $1 || dialog --title "Error" --msgbox "Failed to install $1." 8 50
+        yay -S --noconfirm $1 || dialog --title "Error" --msgbox "Failed to install $1." 8 50
     else
         show_progress "$1 is already installed, skipping."
     fi
@@ -46,35 +55,26 @@ dialog --title "Arch/Manjaro Linux - Ralakde Installation" --msgbox "Press OK to
 # Update system and AUR packages
 show_progress "Updating system and AUR packages..."
 sudo pacman -Syu --noconfirm
-sudo pamac update --no-confirm
+yay -Syu --noconfirm
 
 # Install packages individually
 install_package firefox
 install_package thunderbird
 install_package onlyoffice-desktopeditors
 install_package xournalpp
+install_package libimobiledevice
 
 # Install AUR packages individually
 install_aur_package zoho-cliq
 install_aur_package zapzap
 
-# Check if Zoho WorkDrive is already installed by checking if the folder exists
-if [ ! -d "$HOME/.zohoworkdrive" ]; then
-    # Download and install Zoho WorkDrive
-    show_progress "Downloading Zoho WorkDrive..."
-    wget -O /tmp/ZohoWorkDrive.tar.gz "https://files-accl.zohopublic.com/public/wdbin/download/2014030a29db316e9cedd501f32270e8"
-    mkdir -p /tmp/ZohoWorkDrive
-    tar -xzf /tmp/ZohoWorkDrive.tar.gz -C /tmp/ZohoWorkDrive
+# Show instructions for Zoho WorkDrive
+dialog --title "Zoho WorkDrive Installation" --msgbox "To install Zoho WorkDrive manually, follow these steps:\n\n1. Download the WorkDrive .tar.gz file from the website.\n2. Extract it using: tar -xzf ZohoWorkDrive.tar.gz -C ~/ZohoWorkDrive\n3. Navigate to the extracted folder: cd ~/ZohoWorkDrive\n4. Make the setup file executable: chmod +x .setup\n5. Run the setup: ./setup\n\nPress OK to open the download page." 15 60
 
-    # Ensure the .setup script has execute permissions
-    chmod +x /tmp/ZohoWorkDrive/.setup
-
-    # Run the Zoho WorkDrive installer
-    show_progress "Running Zoho WorkDrive setup..."
-    cd /tmp/ZohoWorkDrive && ./.setup
-else
-    show_progress "Zoho WorkDrive is already installed, skipping installation."
-fi
+# Open Zoho WorkDrive download page and wait for user confirmation
+show_progress "Opening Zoho WorkDrive download page. Please install it manually."
+xdg-open "https://www.zoho.com/workdrive/desktop-sync.html"
+dialog --title "Zoho WorkDrive" --msgbox "Please install Zoho WorkDrive manually. Once done, press OK to continue." 8 50
 
 # Clone git repository
 show_progress "Cloning scripts repository..."
@@ -88,6 +88,7 @@ chmod +x ~/Git/work-scripts/*/*.sh
 show_progress "Setting up scripts..."
 mkdir -p ~/.scripts
 mv ~/Git/work-scripts/*/*.sh ~/.scripts/
+mv ~/Git/work-scripts/*.sh ~/.scripts/
 rm -rf ~/Git/work-scripts
 
 # Create Ralakde directories
@@ -103,6 +104,11 @@ show_progress "Moving .desktop file to applications directory..."
 mkdir -p ~/.local/share/applications
 cp ~/.scripts/*.desktop ~/.local/share/applications/
 
+# Enable usbmuxd service
+show_progress "Enabling usbmuxd service..."
+sudo systemctl enable usbmuxd.service
+sudo systemctl start usbmuxd.service
+
 # Show completion message
 dialog --title "Arch/Manjaro Linux - Ralakde Installation" --msgbox "Ralakde Linux setup has been successfully completed!\n\nPress OK to exit." 8 50
 
@@ -111,11 +117,12 @@ clear
 echo -e "\033[1;37;44mRALAKDE INSTALLATION COMPLETED!\033[0m"
 echo "The following tasks have been completed:"
 echo "1. System updated."
-echo "2. Packages installed: firefox, thunderbird, onlyoffice-desktopeditors, xournalpp."
+echo "2. Packages installed: firefox, thunderbird, onlyoffice-desktopeditors, xournalpp, libimobiledevice."
 echo "3. AUR packages installed: zoho-cliq, zapzap."
-echo "4. Zoho WorkDrive installed (if not already installed)."
-echo "5. Git repository cloned and scripts moved to ~/.scripts."
-echo "6. Ralakde directories created under ~/Dokumenty/Ralakde."
-echo "7. XLSX file copied to 'Our inquires' folder."
-echo "8. .desktop files moved to ~/.local/share/applications."
-
+echo "4. Yay AUR helper installed (if missing)."
+echo "5. Zoho WorkDrive download page opened for manual installation."
+echo "6. Git repository cloned and scripts moved to ~/.scripts."
+echo "7. Ralakde directories created under ~/Dokumenty/Ralakde."
+echo "8. XLSX file copied to 'Our inquires' folder."
+echo "9. .desktop files moved to ~/.local/share/applications."
+echo "10. usbmuxd service enabled and started."
