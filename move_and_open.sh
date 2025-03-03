@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Path to the target directory
-TARGET_DIR="$HOME/Dokumenty/Ralakde/3!QUOTES"
+TARGET_DIR="$HOME/Dokumenty/Ralakde/1!QUOTES"
 
 # Ensure the target directory exists
 mkdir -p "$TARGET_DIR"
