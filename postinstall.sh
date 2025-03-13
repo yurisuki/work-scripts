@@ -102,7 +102,8 @@ cp ~/.scripts/*.xlsx ~/Dokumenty/Ralakde/"Our inquires"/
 # Move .desktop file to applications directory
 show_progress "Moving .desktop file to applications directory..."
 mkdir -p ~/.local/share/applications
-cp ~/.scripts/*.desktop ~/.local/share/applications/
+chmod +x ~/.scripts/*/*.desktop
+cp ~/.scripts/*/*.desktop ~/.local/share/applications/
 
 # Enable usbmuxd service
 show_progress "Enabling usbmuxd service..."
