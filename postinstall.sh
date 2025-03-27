@@ -63,6 +63,7 @@ install_package thunderbird
 install_package onlyoffice-desktopeditors
 install_package xournalpp
 install_package libimobiledevice
+install_package rofi-wayland
 
 # Install AUR packages individually
 install_aur_package zoho-cliq
