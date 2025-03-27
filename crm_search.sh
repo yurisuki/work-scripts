@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This tool will search on ZOHO CRM.
+# This tool will search on ZOHO ZIA.
 # Requirements: rofi
 
 # Use Rofi to get user input for the search query
@@ -15,8 +15,8 @@ fi
 # Replace spaces with URL encoding for spaces (%20)
 encoded_query=$(echo "$query" | sed 's/ /%20/g')
 
-# Build the Zoho CRM search URL
-url="https://crm.zoho.eu/crm/search?searchword=$encoded_query&isRelevance=false"
+# Build the Zoho Zia search URL
+url="https://search.zoho.eu/searchhome?q=$encoded_query&s=all%20apps"
 
 # Open the URL in the default web browser
 xdg-open "$url"
