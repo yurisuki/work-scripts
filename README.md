@@ -1,17 +1,23 @@
-# Work Scripts
+# Ralakde Installation Script for Arch/Manjaro Linux
 
-A collection of useful scripts for automation and workflow improvement.
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Platform](https://img.shields.io/badge/platform-Arch%20%7C%20Manjaro-green)
 
-## Scripts Overview
+A comprehensive setup script to configure an Arch/Manjaro Linux environment for Ralakde workflow.
 
-### 1. `inquiry_template.sh`
-- Automates the creation of inquiry templates with relevant information.
+**Last Updated:** 2025-03-30 12:28:17  
+**Author:** yurisuki
 
-### 2. `move_and_open.sh`
-- Moves files to a designated folder and opens them automatically.
+## Overview
 
-### 3. `postinstall.sh`
-- Automates post-installation tasks, including package installation, configuration, and setup for a customized environment.
+This script automates the installation and configuration of a custom Arch/Manjaro Linux environment optimized for Ralakde operations. It installs required packages, configures essential services, and sets up the necessary directory structure and scripts.
 
-### 4. `inquiry_template.desktop`
-- Creates a shortcut for easy access to inquiry template generation.
+## Features
+
+- 🚀 System update and package installation
+- 📦 AUR package integration via yay
+- 🐍 Python environment configuration
+- 🔧 Automatic service configuration
+- 📂 Ralakde directory structure setup
+- 📑 Desktop entries for common tasks
+- 🔄 Zoho WorkDrive integration
