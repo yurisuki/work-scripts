@@ -1,9 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Name=Print Label
-Comment=Prints a PDF label using the GK420d printer
-Exec=~/.scripts/print_label.sh
-Icon=application-pdf
-Terminal=false
-Type=Application
-Categories=Utility;Application;

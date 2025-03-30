@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Search Stock Pro V1
+Comment=Stock search tool for Ralakde
+Exec=python "$HOME/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/Search stock tool/search_stock_V1_PRO.py"
+Icon=gtk-find
+Terminal=false
+Categories=Office;Finance;
+StartupNotify=true
+StartupWMClass=search_stock
+Keywords=stock;search;inventory;ralakde;

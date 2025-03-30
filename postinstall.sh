@@ -1,130 +1,380 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# Ralakde Installation Script for Arch/Manjaro Linux
+# Author: adamnvrtil
+# Description: Sets up a customized Arch/Manjaro Linux environment with required applications
+# Version: 2.0.0
+# Date: 2025-03-30 12:23:35
+# License: MIT
 
-# Show a large font header at the beginning
-clear
-echo -e "\033[1;37;44mWELCOME $USER TO RALAKDE INSTALLATION - ARCH/MANJARO LINUX INSTALLER\033[0m"
-sleep 2  # Timeout for 2 seconds
+# Set strict error handling
+set -eo pipefail
 
-# Check if dialog is installed, install if necessary
-if ! command -v dialog &> /dev/null; then
-    echo "dialog is not installed. Installing now..."
-    sudo pacman -S --noconfirm dialog
-fi
+# Define colors and formatting
+readonly BOLD="\e[1m"
+readonly GREEN="\e[32m"
+readonly BLUE="\e[34m"
+readonly RED="\e[31m"
+readonly YELLOW="\e[33m"
+readonly RESET="\e[0m"
+readonly BG_BLUE="\e[44m"
+readonly FG_WHITE="\e[97m"
 
-# Function to show a progress box
+# Configuration variables
+readonly HEADER="${BOLD}${FG_WHITE}${BG_BLUE}"
+readonly SCRIPTS_DIR="${HOME}/.scripts"
+readonly RALAKDE_DIR="${HOME}/Dokumenty/Ralakde"
+readonly RALAKDE_SUBDIRS=("1!QUOTES" "Accountant" "Our inquires" "Temp")
+readonly APPLICATIONS_DIR="${HOME}/.local/share/applications"
+readonly CONFIG_DIR="${HOME}/.config"
+readonly ROFI_CONFIG_DIR="${CONFIG_DIR}/rofi"
+readonly GIT_TEMP_DIR="/tmp/work-scripts-$(date +%s)"
+readonly GIT_REPO="https://github.com/yurisuki/work-scripts.git"
+readonly TIMESTAMP="2025-03-30 12:23:35"
+
+# Program defaults
+readonly WHIPTAIL_TITLE="Ralakde Installation"
+readonly WHIPTAIL_BACKTITLE="Arch/Manjaro Linux - Ralakde Setup"
+readonly WHIPTAIL_WIDTH=70
+readonly WHIPTAIL_HEIGHT=15
+
+#------------------------------------------------------------------------------
+# Utility functions
+#------------------------------------------------------------------------------
+
+# Display a message with a colored prefix
+log() {
+    local level=$1
+    local message=$2
+    local color=""
+    local prefix=""
+
+    case $level in
+        info)  color="$BLUE"; prefix="[INFO]";;
+        ok)    color="$GREEN"; prefix="[OK]";;
+        warn)  color="$YELLOW"; prefix="[WARNING]";;
+        error) color="$RED"; prefix="[ERROR]";;
+        *)     color="$RESET"; prefix="[$level]";;
+    esac
+
+    echo -e "${color}${BOLD}${prefix}${RESET} ${message}"
+}
+
+# Show a progress message using whiptail
 show_progress() {
-    dialog --title "Arch/Manjaro Linux - Ralakde Installation" --infobox "$1" 5 50
-    sleep 2
+    whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
+             --title "$WHIPTAIL_TITLE" \
+             --infobox "$1" 8 $WHIPTAIL_WIDTH
+    sleep 1
 }
 
-# Function to install a package if not installed
+# Display an error message and exit
+die() {
+    log error "$1"
+    exit 1
+}
+
+# Check if a command exists
+command_exists() {
+    command -v "$1" &>/dev/null
+}
+
+# Run a command with error handling
+run_cmd() {
+    if ! "$@"; then
+        die "Command failed: $*"
+    fi
+}
+
+# Display a fancy header
+show_header() {
+    clear
+    echo -e "${HEADER}                                                                ${RESET}"
+    echo -e "${HEADER}  WELCOME ${USER} TO RALAKDE INSTALLATION - ARCH/MANJARO LINUX  ${RESET}"
+    echo -e "${HEADER}                                                                ${RESET}"
+    echo
+}
+
+#------------------------------------------------------------------------------
+# Installation functions
+#------------------------------------------------------------------------------
+
+# Check and install whiptail if missing
+ensure_whiptail() {
+    if ! command_exists whiptail; then
+        log info "Installing whiptail..."
+        sudo pacman -S --noconfirm libnewt || die "Failed to install whiptail"
+    fi
+}
+
+# Install a package if not already installed
 install_package() {
-    if ! pacman -Q $1 &> /dev/null; then
+    if ! pacman -Q "$1" &>/dev/null; then
         show_progress "Installing $1..."
-        sudo pacman -S --noconfirm $1 || dialog --title "Error" --msgbox "Failed to install $1." 8 50
+        log info "Installing package: $1"
+        sudo pacman -S --noconfirm "$1" || {
+            whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
+                     --title "Error" \
+                     --msgbox "Failed to install $1." 8 $WHIPTAIL_WIDTH
+            return 1
+        }
+        log ok "Package installed: $1"
     else
         show_progress "$1 is already installed, skipping."
+        log info "Package already installed: $1"
     fi
 }
 
-# Ensure yay is installed
-if ! command -v yay &> /dev/null; then
-    show_progress "Installing yay (AUR helper)..."
-    sudo pacman -S --needed --noconfirm base-devel git
-    git clone https://aur.archlinux.org/yay.git /tmp/yay
-    cd /tmp/yay && makepkg -si --noconfirm
-    cd ~ && rm -rf /tmp/yay
-fi
+# Ensure yay (AUR helper) is installed
+ensure_yay() {
+    if ! command_exists yay; then
+        show_progress "Installing yay (AUR helper)..."
+        log info "Installing yay AUR helper..."
 
-# Function to install AUR package if not installed
+        # Install build dependencies
+        sudo pacman -S --needed --noconfirm base-devel git || die "Failed to install base-devel or git"
+
+        # Clone and build yay
+        git clone https://aur.archlinux.org/yay.git /tmp/yay || die "Failed to clone yay repository"
+        (cd /tmp/yay && makepkg -si --noconfirm) || die "Failed to build yay"
+        rm -rf /tmp/yay
+
+        log ok "Yay installed successfully"
+    else
+        log info "Yay is already installed"
+    fi
+}
+
+# Install an AUR package if not already installed
 install_aur_package() {
-    if ! yay -Q $1 &> /dev/null; then
+    if ! yay -Q "$1" &>/dev/null; then
         show_progress "Installing $1 from AUR..."
-        yay -S --noconfirm $1 || dialog --title "Error" --msgbox "Failed to install $1." 8 50
+        log info "Installing AUR package: $1"
+        yay -S --noconfirm "$1" || {
+            whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
+                     --title "Error" \
+                     --msgbox "Failed to install $1 from AUR." 8 $WHIPTAIL_WIDTH
+            return 1
+        }
+        log ok "AUR package installed: $1"
     else
         show_progress "$1 is already installed, skipping."
+        log info "AUR package already installed: $1"
     fi
 }
 
-# Show a welcome message
-dialog --title "Welcome" --msgbox "Welcome $USER to the Ralakde Linux installation.\n\nPress OK to start the setup." 8 50
+# Install Python packages
+install_python_packages() {
+    show_progress "Installing Python packages..."
+    log info "Installing required Python packages..."
 
-# Show start message
-dialog --title "Arch/Manjaro Linux - Ralakde Installation" --msgbox "Press OK to begin the Ralakde installation.\n\nIt will proceed with updating and installing packages." 8 50
+    local python_packages=("python-pandas" "python-numpy" "python-pyqt6")
+    for pkg in "${python_packages[@]}"; do
+        install_package "$pkg"
+    done
 
-# Update system and AUR packages
-show_progress "Updating system and AUR packages..."
-sudo pacman -Syu --noconfirm
-yay -Syu --noconfirm
+    log ok "Python packages installed"
+}
 
-# Install packages individually
-install_package firefox
-install_package thunderbird
-install_package onlyoffice-desktopeditors
-install_package xournalpp
-install_package libimobiledevice
-install_package rofi-wayland
+# Update system packages
+update_system() {
+    show_progress "Updating system packages..."
+    log info "Updating system packages..."
+    sudo pacman -Syu --noconfirm || die "System update failed"
+    log ok "System packages updated"
 
-# Install AUR packages individually
-install_aur_package zoho-cliq
-install_aur_package zapzap
+    show_progress "Updating AUR packages..."
+    log info "Updating AUR packages..."
+    yay -Syu --noconfirm || log warn "AUR update completed with warnings"
+    log ok "AUR packages updated"
+}
 
-# Show instructions for Zoho WorkDrive
-dialog --title "Zoho WorkDrive Installation" --msgbox "To install Zoho WorkDrive manually, follow these steps:\n\n1. Download the WorkDrive .tar.gz file from the website.\n2. Extract it using: tar -xzf ZohoWorkDrive.tar.gz -C ~/ZohoWorkDrive\n3. Navigate to the extracted folder: cd ~/ZohoWorkDrive\n4. Make the setup file executable: chmod +x .setup\n5. Run the setup: ./setup\n\nPress OK to open the download page." 15 60
+# Setup directories and files
+setup_directories() {
+    show_progress "Setting up directories..."
+    log info "Ensuring Ralakde directories exist..."
 
-# Open Zoho WorkDrive download page and wait for user confirmation
-show_progress "Opening Zoho WorkDrive download page. Please install it manually."
-xdg-open "https://www.zoho.com/workdrive/desktop-sync.html"
-dialog --title "Zoho WorkDrive" --msgbox "Please install Zoho WorkDrive manually. Once done, press OK to continue." 8 50
+    # Create main directory if it doesn't exist
+    if [ ! -d "$RALAKDE_DIR" ]; then
+        mkdir -p "$RALAKDE_DIR"
+        log info "Created main Ralakde directory"
+    fi
 
-# Clone git repository
-show_progress "Cloning scripts repository..."
-git clone https://github.com/yurisuki/work-scripts.git ~/Git/work-scripts
+    # Create subdirectories if they don't exist
+    for dir in "${RALAKDE_SUBDIRS[@]}"; do
+        if [ ! -d "$RALAKDE_DIR/$dir" ]; then
+            mkdir -p "$RALAKDE_DIR/$dir"
+            log info "Created $dir directory"
+        fi
+    done
 
-# Make all scripts executable
-show_progress "Making scripts executable..."
-chmod +x ~/Git/work-scripts/*/*.sh
+    # Create .config/rofi directory if it doesn't exist
+    if [ ! -d "$ROFI_CONFIG_DIR" ]; then
+        mkdir -p "$ROFI_CONFIG_DIR"
+        log info "Created Rofi configuration directory"
+    fi
 
-# Move scripts to ~/.scripts
-show_progress "Setting up scripts..."
-mkdir -p ~/.scripts
-mv ~/Git/work-scripts/*/*.sh ~/.scripts/
-mv ~/Git/work-scripts/*.sh ~/.scripts/
-rm -rf ~/Git/work-scripts
+    log ok "Directory structure verified"
+}
 
-# Create Ralakde directories
-show_progress "Creating Ralakde directories..."
-mkdir -p ~/Dokumenty/Ralakde/{1!QUOTES,Accountant,"Our inquires",Temp}
+# Clone and setup scripts
+setup_scripts() {
+    show_progress "Setting up scripts..."
+    log info "Cloning scripts repository..."
 
-# Copy XLSX file to "Our inquires" folder
-show_progress "Copying XLSX file to Our inquires..."
-cp ~/.scripts/*.xlsx ~/Dokumenty/Ralakde/"Our inquires"/
+    # Clone repository to temporary directory
+    git clone "$GIT_REPO" "$GIT_TEMP_DIR" || die "Failed to clone repository"
 
-# Move .desktop file to applications directory
-show_progress "Moving .desktop file to applications directory..."
-mkdir -p ~/.local/share/applications
-chmod +x ~/.scripts/*/*.desktop
-cp ~/.scripts/*/*.desktop ~/.local/share/applications/
+    # Make scripts directory if it doesn't exist
+    if [ ! -d "$SCRIPTS_DIR" ]; then
+        mkdir -p "$SCRIPTS_DIR"
+    fi
 
-# Enable usbmuxd service
-show_progress "Enabling usbmuxd service..."
-sudo systemctl enable usbmuxd.service
-sudo systemctl start usbmuxd.service
+    # Copy and make shell scripts executable
+    log info "Setting up shell scripts..."
+    find "$GIT_TEMP_DIR" -name "*.sh" -exec chmod +x {} \;
+    find "$GIT_TEMP_DIR" -name "*.sh" -exec cp {} "$SCRIPTS_DIR/" \;
 
-# Show completion message
-dialog --title "Arch/Manjaro Linux - Ralakde Installation" --msgbox "Ralakde Linux setup has been successfully completed!\n\nPress OK to exit." 8 50
+    # Copy XLSX files if they don't exist
+    log info "Setting up inquiry template..."
+    find "$GIT_TEMP_DIR" -name "*.xlsx" -exec cp -n {} "$RALAKDE_DIR/Our inquires/" \;
 
-# Show a summary of what was done
-clear
-echo -e "\033[1;37;44mRALAKDE INSTALLATION COMPLETED!\033[0m"
-echo "The following tasks have been completed:"
-echo "1. System updated."
-echo "2. Packages installed: firefox, thunderbird, onlyoffice-desktopeditors, xournalpp, libimobiledevice."
-echo "3. AUR packages installed: zoho-cliq, zapzap."
-echo "4. Yay AUR helper installed (if missing)."
-echo "5. Zoho WorkDrive download page opened for manual installation."
-echo "6. Git repository cloned and scripts moved to ~/.scripts."
-echo "7. Ralakde directories created under ~/Dokumenty/Ralakde."
-echo "8. XLSX file copied to 'Our inquires' folder."
-echo "9. .desktop files moved to ~/.local/share/applications."
-echo "10. usbmuxd service enabled and started."
+    # Setup desktop files
+    log info "Setting up desktop files..."
+    if [ ! -d "$APPLICATIONS_DIR" ]; then
+        mkdir -p "$APPLICATIONS_DIR"
+    fi
+
+    find "$GIT_TEMP_DIR" -name "*.desktop" -exec chmod +x {} \;
+    find "$GIT_TEMP_DIR" -name "*.desktop" -exec cp {} "$APPLICATIONS_DIR/" \;
+
+    # Setup rofi config if it exists in the repo
+    if [ -f "$GIT_TEMP_DIR/.config/rofi/config.rasi" ]; then
+        log info "Setting up Rofi configuration..."
+        cp "$GIT_TEMP_DIR/.config/rofi/config.rasi" "$ROFI_CONFIG_DIR/"
+    fi
+
+    # Clean up
+    rm -rf "$GIT_TEMP_DIR"
+
+    log ok "Scripts setup completed"
+}
+
+# Configure system services
+configure_services() {
+    show_progress "Configuring system services..."
+    log info "Enabling usbmuxd service..."
+
+    sudo systemctl enable usbmuxd.service || log warn "Failed to enable usbmuxd service"
+    sudo systemctl start usbmuxd.service || log warn "Failed to start usbmuxd service"
+
+    log ok "Services configured"
+}
+
+# Show summary of installation
+show_summary() {
+    local package_list="firefox thunderbird onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland"
+    local python_packages="python-pandas python-numpy python-pyqt6"
+    local aur_package_list="zoho-cliq zapzap"
+
+    whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
+             --title "Installation Complete" \
+             --msgbox "Ralakde Linux setup has been successfully completed!\n\nPress OK to view the summary." 10 $WHIPTAIL_WIDTH
+
+    clear
+    echo -e "${HEADER}                                                   ${RESET}"
+    echo -e "${HEADER}  RALAKDE INSTALLATION COMPLETED!                  ${RESET}"
+    echo -e "${HEADER}                                                   ${RESET}"
+    echo
+    echo -e "${BOLD}Installation Summary:${RESET}"
+    echo "-----------------------------------------------"
+    echo -e "${BOLD}1.${RESET} System updated and upgraded"
+    echo -e "${BOLD}2.${RESET} Standard packages installed: ${BLUE}$package_list${RESET}"
+    echo -e "${BOLD}3.${RESET} Python packages installed: ${BLUE}$python_packages${RESET}"
+    echo -e "${BOLD}4.${RESET} AUR packages installed: ${YELLOW}$aur_package_list${RESET}"
+    echo -e "${BOLD}5.${RESET} Yay AUR helper installed (if missing)"
+    echo -e "${BOLD}6.${RESET} Zoho WorkDrive download page opened for manual installation"
+    echo -e "${BOLD}7.${RESET} Git repository cloned and scripts moved to ${BLUE}$SCRIPTS_DIR${RESET}"
+    echo -e "${BOLD}8.${RESET} Ralakde directories verified under ${BLUE}$RALAKDE_DIR${RESET}"
+    echo -e "${BOLD}9.${RESET} Desktop files added to ${BLUE}$APPLICATIONS_DIR${RESET}"
+    echo -e "${BOLD}10.${RESET} Rofi configuration added to ${BLUE}$ROFI_CONFIG_DIR${RESET}"
+    echo -e "${BOLD}11.${RESET} usbmuxd service enabled and started"
+    echo
+    echo -e "${GREEN}${BOLD}Thank you for installing Ralakde!${RESET}"
+    echo -e "${BLUE}Installation completed at: $(date '+%Y-%m-%d %H:%M:%S')${RESET}"
+    echo -e "${YELLOW}Installed by: ${USER}${RESET}"
+    echo "-----------------------------------------------"
+}
+
+# Handle the Zoho WorkDrive installation
+setup_zoho_workdrive() {
+    whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
+             --title "Zoho WorkDrive Installation" \
+             --msgbox "To install Zoho WorkDrive manually, follow these steps:\n\n1. Download the WorkDrive .tar.gz file from the website\n2. Extract it using: tar -xzf zoho-workdrive*.tar.gz\n3. Run the installation script: ./zoho-workdrive-installer.sh\n\nThe download page will open in your browser." 12 $WHIPTAIL_WIDTH
+
+    show_progress "Opening Zoho WorkDrive download page..."
+    xdg-open "https://www.zoho.com/workdrive/desktop-sync.html"
+
+    whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
+             --title "Zoho WorkDrive" \
+             --msgbox "Please install Zoho WorkDrive manually.\nOnce done, press OK to continue." 8 $WHIPTAIL_WIDTH
+}
+
+#------------------------------------------------------------------------------
+# Main script execution
+#------------------------------------------------------------------------------
+
+main() {
+    # Ensure we have whiptail before anything else
+    ensure_whiptail
+
+    # Show welcome header
+    show_header
+
+    # Welcome message
+    if ! whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
+                 --title "Welcome" \
+                 --yesno "Welcome to the Ralakde Linux installation.\n\nSetup created: ${TIMESTAMP}\nUser: ${USER}\n\nThis script will set up your system with required applications and configurations.\n\nDo you want to continue?" 12 $WHIPTAIL_WIDTH; then
+        log info "Installation cancelled by user"
+        exit 0
+    fi
+
+    # Ensure yay is available for AUR packages
+    ensure_yay
+
+    # Update system
+    update_system
+
+    # Install standard packages
+    local packages=("firefox" "thunderbird" "onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland")
+    for pkg in "${packages[@]}"; do
+        install_package "$pkg"
+    done
+
+    # Install Python packages
+    install_python_packages
+
+    # Install AUR packages
+    local aur_packages=("zoho-cliq" "zapzap")
+    for pkg in "${aur_packages[@]}"; do
+        install_aur_package "$pkg"
+    done
+
+    # Handle Zoho WorkDrive installation
+    setup_zoho_workdrive
+
+    # Setup directories and structure
+    setup_directories
+
+    # Setup scripts
+    setup_scripts
+
+    # Configure services
+    configure_services
+
+    # Show installation summary
+    show_summary
+}
+
+# Execute main function
+main "$@"

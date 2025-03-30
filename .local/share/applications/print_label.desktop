@@ -1,0 +1,15 @@
+[Desktop Entry]
+Categories=Utility;Application;
+Comment=Prints a PDF label using the GK420d printer
+Exec=~/.scripts/print_label.sh
+Icon=yast-printer
+Name=Print Label
+NoDisplay=false
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+Version=1.0
+X-KDE-SubstituteUID=false
+X-KDE-Username=
