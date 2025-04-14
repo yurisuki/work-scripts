@@ -1,13 +1,13 @@
 [Desktop Entry]
 Categories=System;Utility;
 Comment=Check for updates to work-scripts repository
-Exec=$HOME/.scripts/update-checker.sh --show-ui
+Exec=bash -c "$HOME/.scripts/update-checker.sh" --show-ui
 Hidden=false
 Icon=system-software-update
 Name=Work Scripts Updater
 NoDisplay=false
 Path=
-StartupNotify=false
+StartupNotify=true
 Terminal=false
 TerminalOptions=
 Type=Application
