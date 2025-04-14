@@ -1,11 +1,17 @@
 [Desktop Entry]
-Name=rsearch
-GenericName=Multi-engine Search Tool
-Comment=Search across multiple engines with a single query
-Exec=$HOME/.scripts/rsearch.sh
-Icon=system-search
-Terminal=false
-Type=Application
 Categories=Network;WebBrowser;Utility;
+Comment=Search across multiple engines with a single query
+Exec=~/.scripts/rsearch.sh
+GenericName=Multi-engine Search Tool
+Icon=system-search
 Keywords=search;engine;web;query;rofi;
+Name=rsearch
+NoDisplay=false
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
 X-Created-By=yurisuki
+X-KDE-SubstituteUID=false
+X-KDE-Username=

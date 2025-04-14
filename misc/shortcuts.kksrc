@@ -1,6 +1,9 @@
 [Custom Commands][net.local.move_and_open.sh.desktop]
-Exec=/home/adam/.scripts/move_and_open.sh -o
-Name=move_and_open
+Exec=bash -c "$HOME/.scripts/move_and_open.sh --open"
+Name=move_and_open --open
+
+[inquiry_template.desktop][Global Shortcuts]
+_launch=Meta+I
 
 [net.local.move_and_open.sh.desktop][Global Shortcuts]
 _launch=Meta+Shift+Space
