@@ -3,8 +3,7 @@
 # Ralakde Installation Script for Arch/Manjaro Linux
 # Author: adamnvrtil
 # Description: Sets up a customized Arch/Manjaro Linux environment with required applications
-# Version: 2.0.0
-# Date: 2025-03-30 12:23:35
+# Version: 2.5.0
 # License: MIT
 
 # Set strict error handling
@@ -271,6 +270,34 @@ configure_services() {
     log ok "Services configured"
 }
 
+# Create update-checker startup file
+setup_update_checker() {
+    show_progress "Setting up update checker autostart..."
+    log info "Creating update-checker autostart file..."
+
+    # Make sure the autostart directory exists
+    if [ ! -d "${HOME}/.config/autostart" ]; then
+        mkdir -p "${HOME}/.config/autostart"
+        log info "Created autostart directory"
+    fi
+
+    # Create the desktop entry file
+    cat > "${HOME}/.config/autostart/update-checker.sh.desktop" << EOF
+[Desktop Entry]
+Exec=/home/${USER}/.scripts/update-checker.sh
+Icon=
+Name=update-checker.sh
+Path=
+Terminal=False
+Type=Application
+EOF
+
+    # Make sure the file has proper permissions
+    chmod 644 "${HOME}/.config/autostart/update-checker.sh.desktop"
+
+    log ok "Update checker autostart file created successfully"
+}
+
 # Show summary of installation
 show_summary() {
     local package_list="firefox thunderbird onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland"
@@ -368,6 +395,9 @@ main() {
 
     # Setup scripts
     setup_scripts
+
+   # Setup update checker autostart
+    setup_update_checker
 
     # Configure services
     configure_services
