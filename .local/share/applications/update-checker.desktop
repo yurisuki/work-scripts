@@ -1,0 +1,17 @@
+[Desktop Entry]
+Categories=System;Utility;
+Comment=Check for updates to work-scripts repository
+Exec=$HOME/.scripts/update-checker.sh --show-ui
+Hidden=false
+Icon=system-software-update
+Name=Work Scripts Updater
+NoDisplay=false
+Path=
+StartupNotify=false
+Terminal=false
+TerminalOptions=
+Type=Application
+X-GNOME-Autostart-enabled=true
+X-GNOME-UsesNotifications=true
+X-KDE-SubstituteUID=false
+X-KDE-Username=
