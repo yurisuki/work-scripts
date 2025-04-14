@@ -1,7 +1,7 @@
 [Desktop Entry]
 Categories=Office;Finance;
 Comment=Stock search tool for Ralakde
-Exec='/home/adam/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/Search stock tool/search_stock_V1_PRO.py'
+Exec='$HOME/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/Search stock tool/search_stock_V1_PRO.py'
 Icon=preferences-desktop-search
 Keywords=stock;search;inventory;ralakde;
 Name=Search Stock Pro V1

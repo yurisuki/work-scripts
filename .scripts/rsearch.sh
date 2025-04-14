@@ -3,7 +3,7 @@
 # rsearch - Professional multi-engine search tool using rofi
 # Made by: yurisuki
 
-CONFIG_FILE="$HOME/.config/rsearch"
+CONFIG_FILE="$HOME/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/rseach list"
 BROWSER=${BROWSER:-firefox}
 
 # Function to create the config directory and default config if it doesn't exist
