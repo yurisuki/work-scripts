@@ -1,0 +1,15 @@
+[Custom Commands][net.local.move_and_open.sh.desktop]
+Exec=/home/adam/.scripts/move_and_open.sh -o
+Name=move_and_open
+
+[net.local.move_and_open.sh.desktop][Global Shortcuts]
+_launch=Meta+Shift+Space
+
+[print_label.desktop][Global Shortcuts]
+_launch=Meta+Shift+P
+
+[rsearch.desktop][Global Shortcuts]
+_launch=Meta+F
+
+[search_stock.desktop][Global Shortcuts]
+_launch=Meta+Shift+F
