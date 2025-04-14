@@ -29,7 +29,7 @@ readonly CONFIG_DIR="${HOME}/.config"
 readonly ROFI_CONFIG_DIR="${CONFIG_DIR}/rofi"
 readonly GIT_TEMP_DIR="/tmp/work-scripts-$(date +%s)"
 readonly GIT_REPO="https://github.com/yurisuki/work-scripts.git"
-readonly TIMESTAMP="2025-03-30 12:23:35"
+readonly ZOHO_WORKDRIVE_PATH="${HOME}/.zohoworkdrive/bin/zohoworkdrive"
 
 # Program defaults
 readonly WHIPTAIL_TITLE="Ralakde Installation"
@@ -302,7 +302,7 @@ EOF
 show_summary() {
     local package_list="firefox thunderbird onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland"
     local python_packages="python-pandas python-numpy python-pyqt6"
-    local aur_package_list="zoho-cliq zapzap"
+    local aur_package_list="zoho-cliq zapzap ttf-apple-emoji"
 
     whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
              --title "Installation Complete" \
@@ -320,7 +320,11 @@ show_summary() {
     echo -e "${BOLD}3.${RESET} Python packages installed: ${BLUE}$python_packages${RESET}"
     echo -e "${BOLD}4.${RESET} AUR packages installed: ${YELLOW}$aur_package_list${RESET}"
     echo -e "${BOLD}5.${RESET} Yay AUR helper installed (if missing)"
-    echo -e "${BOLD}6.${RESET} Zoho WorkDrive download page opened for manual installation"
+    if [ ! -f "$ZOHO_WORKDRIVE_PATH" ]; then
+        echo -e "${BOLD}6.${RESET} Zoho WorkDrive download page opened for manual installation"
+    else
+        echo -e "${BOLD}6.${RESET} Zoho WorkDrive already installed at ${BLUE}$ZOHO_WORKDRIVE_PATH${RESET}"
+    fi
     echo -e "${BOLD}7.${RESET} Git repository cloned and scripts moved to ${BLUE}$SCRIPTS_DIR${RESET}"
     echo -e "${BOLD}8.${RESET} Ralakde directories verified under ${BLUE}$RALAKDE_DIR${RESET}"
     echo -e "${BOLD}9.${RESET} Desktop files added to ${BLUE}$APPLICATIONS_DIR${RESET}"
@@ -335,9 +339,15 @@ show_summary() {
 
 # Handle the Zoho WorkDrive installation
 setup_zoho_workdrive() {
+    # Check if Zoho WorkDrive is already installed
+    if [ -f "$ZOHO_WORKDRIVE_PATH" ]; then
+        log info "Zoho WorkDrive is already installed, skipping installation"
+        return 0
+    fi
+
     whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
              --title "Zoho WorkDrive Installation" \
-             --msgbox "To install Zoho WorkDrive manually, follow these steps:\n\n1. Download the WorkDrive .tar.gz file from the website\n2. Extract it using: tar -xzf zoho-workdrive*.tar.gz\n3. Run the installation script: ./zoho-workdrive-installer.sh\n\nThe download page will open in your browser." 12 $WHIPTAIL_WIDTH
+             --msgbox "To install Zoho WorkDrive manually, follow these steps:\n\n1. Download the WorkDrive .tar.gz file from the website\n2. Extract it using: tar -xzf zoho-workdrive*.tar.gz\n3. Run the installer as instructed on the website\n\nPress OK to open the download page." 12 $WHIPTAIL_WIDTH
 
     show_progress "Opening Zoho WorkDrive download page..."
     xdg-open "https://www.zoho.com/workdrive/desktop-sync.html"
@@ -361,7 +371,7 @@ main() {
     # Welcome message
     if ! whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
                  --title "Welcome" \
-                 --yesno "Welcome to the Ralakde Linux installation.\n\nSetup created: ${TIMESTAMP}\nUser: ${USER}\n\nThis script will set up your system with required applications and configurations.\n\nDo you want to continue?" 12 $WHIPTAIL_WIDTH; then
+                 --yesno "Welcome to the Ralakde Linux installation.\n\nUser: ${USER}\n\nThis script will set up your system with required applications and configurations.\n\nDo you want to continue?" 12 $WHIPTAIL_WIDTH; then
         log info "Installation cancelled by user"
         exit 0
     fi
@@ -382,7 +392,7 @@ main() {
     install_python_packages
 
     # Install AUR packages
-    local aur_packages=("zoho-cliq" "zapzap")
+    local aur_packages=("zoho-cliq" "zapzap" "ttf-apple-emoji")
     for pkg in "${aur_packages[@]}"; do
         install_aur_package "$pkg"
     done
@@ -396,7 +406,7 @@ main() {
     # Setup scripts
     setup_scripts
 
-   # Setup update checker autostart
+    # Setup update checker autostart
     setup_update_checker
 
     # Configure services
