@@ -1,7 +1,7 @@
 [Desktop Entry]
 Categories=Utility;Application;
 Comment=Run the Inquiry Template script
-Exec=$HOME/.scripts/inquiry_template.sh'
+Exec=${HOME}/.scripts/inquiry_template.sh
 Icon=onlyoffice-desktopeditors
 Name=Inquiry Template
 NoDisplay=false
