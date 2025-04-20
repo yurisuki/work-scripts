@@ -137,14 +137,10 @@ function search_all_engines {
             # For Firefox, open first URL in new window
             $BROWSER --new-window "${all_urls[0]}" &
             
-            # Wait for Firefox to open
-            sleep 2
-            
-            # Send the rest of the URLs to the same Firefox instance
+            # Send the rest of the URLs to the same Firefox instance without delay
             if [[ ${#all_urls[@]} -gt 1 ]]; then
                 for url in "${all_urls[@]:1}"; do
                     xdg-open "$url"
-                    sleep 0.8
                 done
             fi
             
@@ -153,10 +149,9 @@ function search_all_engines {
             $BROWSER --new-window "${all_urls[@]}" &
             
         else
-            # For other browsers, try using xdg-open for all URLs
+            # For other browsers, try using xdg-open for all URLs without delay
             for url in "${all_urls[@]}"; do
                 xdg-open "$url"
-                sleep 0.8
             done
         fi
     fi
