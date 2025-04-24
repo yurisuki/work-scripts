@@ -3,18 +3,26 @@
 # rtemplate - Professional template management tool using rofi
 # Made by: yurisuki
 
-CONFIG_FILE="$HOME/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/rtemplate list"
+# Templates directory - where all template files will be stored
+TEMPLATES_DIR="$HOME/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/rtemplate list"
 
-# Function to create the config directory and default config if it doesn't exist
-function setup_config {
-    if [ ! -d "$(dirname "$CONFIG_FILE")" ]; then
-        mkdir -p "$(dirname "$CONFIG_FILE")"
-    fi
-    
-    if [ ! -f "$CONFIG_FILE" ]; then
-        echo "# rtemplate configuration file" > "$CONFIG_FILE"
-        echo "# Format: TEMPLATE_NAME || TEMPLATE_CONTENT" >> "$CONFIG_FILE"
-        echo "⚙️ || manage_templates" >> "$CONFIG_FILE"
+# Function to ensure the templates directory exists
+function setup_templates_dir {
+    if [ ! -d "$TEMPLATES_DIR" ]; then
+        mkdir -p "$TEMPLATES_DIR"
+        # Create a sample template if directory is new
+        echo "This is a sample template.
+You can create more templates by adding files to the $TEMPLATES_DIR directory.
+
+The filename will be used as the template name in rofi.
+The file contents (like this text) will be copied to clipboard when selected." > "$TEMPLATES_DIR/📝 Sample Template"
+        
+        echo "# Instructions for Templates
+
+1. Create a new file in this directory
+2. The filename will be shown in rofi
+3. The file contents will be copied to clipboard when selected
+4. You can use variables like \$DATE, \$TIME, and \$DATETIME in your templates" > "$TEMPLATES_DIR/ℹ️ Instructions"
     fi
 }
 
@@ -56,20 +64,23 @@ function process_template {
     echo "$content"
 }
 
-# Function to manage templates (add/remove/edit)
+# Function to manage templates
 function manage_templates {
-    local options=("➕ Add new template" "✏️ Edit template" "➖ Remove template" "↩️ Back")
+    local options=("➕ Create new template" "✏️ Edit template" "➖ Delete template" "📂 Open templates folder" "↩️ Back")
     local choice=$(printf "%s\n" "${options[@]}" | rofi -dmenu -i -p "⚙️ Template Management:")
     
     case "$choice" in
-        "➕ Add new template")
-            add_template
+        "➕ Create new template")
+            create_template
             ;;
         "✏️ Edit template")
             edit_template
             ;;
-        "➖ Remove template")
-            remove_template
+        "➖ Delete template")
+            delete_template
+            ;;
+        "📂 Open templates folder")
+            open_templates_folder
             ;;
         *)
             # Back or cancelled
@@ -78,57 +89,121 @@ function manage_templates {
     esac
 }
 
-# Function to add a new template
-function add_template {
+# Function to open the templates folder
+function open_templates_folder {
+    xdg-open "$TEMPLATES_DIR" &
+    notify-send "📋 rtemplate" "Opening templates folder"
+}
+
+# Function to create a new template - completely reworked
+function create_template {
+    # Step 1: Get template name using rofi
     local template_name=$(rofi -dmenu -p "✨ Template name:")
-    [ -z "$template_name" ] && return
     
-    # Use multi-line rofi input for content
-    local template_content=$(rofi -dmenu -p "📝 Template content (use \$DATE, \$TIME, \$DATETIME as variables):" -l 0 -multi-select)
-    [ -z "$template_content" ] && return
+    # If user cancelled, exit function
+    if [ -z "$template_name" ]; then
+        notify-send "📋 rtemplate" "Template creation cancelled"
+        return
+    fi
     
-    # Escape newlines for storage
-    template_content="${template_content//$'\n'/\\n}"
+    # Step 2: Check if template already exists
+    if [ -f "$TEMPLATES_DIR/$template_name" ]; then
+        local overwrite=$(echo -e "Yes\nNo" | rofi -dmenu -i -p "Template already exists. Overwrite?")
+        
+        if [ "$overwrite" != "Yes" ]; then
+            notify-send "📋 rtemplate" "Template creation cancelled"
+            return
+        fi
+    fi
     
-    echo "$template_name || $template_content" >> "$CONFIG_FILE"
-    notify-send "📋 rtemplate" "Added new template: $template_name"
+    # Step 3: Create a temporary file for the content
+    local temp_file=$(mktemp)
+    
+    # Step 4: Open editor for template content
+    if command -v zenity &> /dev/null; then
+        # Use Zenity for GUI text entry if available
+        zenity --text-info --editable --title="Enter Template Content" \
+               --width=600 --height=400 > "$temp_file"
+        
+        # Check if user cancelled
+        if [ $? -ne 0 ]; then
+            rm "$temp_file"
+            notify-send "📋 rtemplate" "Template creation cancelled"
+            return
+        fi
+    else
+        # Fallback to rofi if zenity is not available
+        local template_content=$(rofi -dmenu -p "📝 Template content:" -l 0 -multi-select)
+        
+        if [ -z "$template_content" ]; then
+            rm "$temp_file"
+            notify-send "📋 rtemplate" "Template creation cancelled"
+            return
+        fi
+        
+        echo -e "$template_content" > "$temp_file"
+    fi
+    
+    # Step 5: Save the template file
+    if [ -s "$temp_file" ]; then
+        # Copy the temp file to the template file
+        cp "$temp_file" "$TEMPLATES_DIR/$template_name"
+        rm "$temp_file"
+        
+        # Show success notification
+        notify-send "📋 rtemplate" "Created template: $template_name"
+        
+        # Debug output
+        echo "Template created: $TEMPLATES_DIR/$template_name" >&2
+        ls -la "$TEMPLATES_DIR/$template_name" >&2
+    else
+        # Empty content, show error
+        rm "$temp_file"
+        notify-send "❌ rtemplate" "Template creation failed: Empty content"
+    fi
 }
 
 # Function to edit an existing template
 function edit_template {
-    # Read templates from config file
+    # Get list of template files
     local templates=()
-    local template_names=()
-    while IFS= read -r line; do
-        # Skip empty lines, comments, or the management entry
-        [[ -z "$line" || "$line" =~ ^# || "$line" =~ "⚙️ ||" ]] && continue
-        
-        # Get just the template name (before the ||)
-        template_name="${line%% || *}"
-        template_names+=("$template_name")
-        templates+=("$line")
-    done < "$CONFIG_FILE"
+    local template_paths=()
     
-    # Display just template names in rofi for selection
-    local choice=$(printf "%s\n" "${template_names[@]}" | rofi -dmenu -i -p "✏️ Select template to edit:")
+    # Read files into an array, preserving spaces in filenames
+    while IFS= read -r -d '' file; do
+        templates+=("$(basename "$file")")
+        template_paths+=("$file")
+    done < <(find "$TEMPLATES_DIR" -type f -print0 | sort -z)
+    
+    # If no templates found
+    if [ ${#templates[@]} -eq 0 ]; then
+        notify-send "📋 rtemplate" "No templates found in $TEMPLATES_DIR"
+        return
+    fi
+    
+    # Display templates in rofi for selection
+    local menu_text=""
+    for template in "${templates[@]}"; do
+        menu_text+="$template"$'\n'
+    done
+    menu_text=${menu_text%$'\n'} # Remove trailing newline
+    
+    local choice=$(echo -e "$menu_text" | rofi -dmenu -i -p "✏️ Select template to edit:")
     
     # If no selection, return
     [ -z "$choice" ] && return
     
-    # Find the selected template's content
-    local template_content=""
-    for i in "${!template_names[@]}"; do
-        if [[ "${template_names[$i]}" == "$choice" ]]; then
-            template_content="${templates[$i]#* || }"
+    # Find the corresponding path
+    local template_path=""
+    for i in "${!templates[@]}"; do
+        if [[ "${templates[$i]}" == "$choice" ]]; then
+            template_path="${template_paths[$i]}"
             break
         fi
     done
     
-    # If special management content, return
-    [[ "$template_content" == "manage_templates" ]] && return
-    
-    # Convert escaped newlines back for editing
-    template_content="${template_content//\\n/$'\n'}"
+    # Read file content
+    local template_content=$(cat "$template_path")
     
     # Edit the content
     local new_content=$(echo -e "$template_content" | rofi -dmenu -p "✏️ Edit template content:" -l 0 -multi-select)
@@ -136,104 +211,84 @@ function edit_template {
     # If cancelled, return
     [ -z "$new_content" ] && return
     
-    # Escape newlines for storage
-    new_content="${new_content//$'\n'/\\n}"
-    
-    # Create a temporary file
-    temp_file=$(mktemp)
-    
-    # Create the new line with the updated content
-    local new_line="$choice || $new_content"
-    
-    # Copy all lines, replacing the edited one
-    while IFS= read -r line; do
-        if [[ "${line%% || *}" == "$choice" ]]; then
-            echo "$new_line" >> "$temp_file"
-        else
-            echo "$line" >> "$temp_file"
-        fi
-    done < "$CONFIG_FILE"
-    
-    # Replace the original file
-    mv "$temp_file" "$CONFIG_FILE"
+    # Write updated content to file
+    echo -e "$new_content" > "$template_path"
     
     notify-send "📋 rtemplate" "Updated template: $choice"
 }
 
-# Function to remove a template
-function remove_template {
-    # Read templates from config file
+# Function to delete a template
+function delete_template {
+    # Get list of template files
     local templates=()
-    local template_names=()
-    while IFS= read -r line; do
-        # Skip empty lines, comments, or the management entry
-        [[ -z "$line" || "$line" =~ ^# || "$line" =~ "⚙️ ||" ]] && continue
-        
-        # Get just the template name (before the ||)
-        template_name="${line%% || *}"
-        template_names+=("$template_name")
-        templates+=("$line")
-    done < "$CONFIG_FILE"
+    local template_paths=()
     
-    # Display just template names in rofi for removal
-    local choice=$(printf "%s\n" "${template_names[@]}" | rofi -dmenu -i -p "🗑️ Select template to remove:")
+    # Read files into an array, preserving spaces in filenames
+    while IFS= read -r -d '' file; do
+        templates+=("$(basename "$file")")
+        template_paths+=("$file")
+    done < <(find "$TEMPLATES_DIR" -type f -print0 | sort -z)
+    
+    # If no templates found
+    if [ ${#templates[@]} -eq 0 ]; then
+        notify-send "📋 rtemplate" "No templates found in $TEMPLATES_DIR"
+        return
+    fi
+    
+    # Display templates in rofi for selection
+    local menu_text=""
+    for template in "${templates[@]}"; do
+        menu_text+="$template"$'\n'
+    done
+    menu_text=${menu_text%$'\n'} # Remove trailing newline
+    
+    local choice=$(echo -e "$menu_text" | rofi -dmenu -i -p "🗑️ Select template to delete:")
     
     # If no selection, return
     [ -z "$choice" ] && return
     
-    # Find the full line to remove based on the name
-    local line_to_remove=""
-    for i in "${!template_names[@]}"; do
-        if [[ "${template_names[$i]}" == "$choice" ]]; then
-            line_to_remove="${templates[$i]}"
+    # Find the corresponding path
+    local template_path=""
+    for i in "${!templates[@]}"; do
+        if [[ "${templates[$i]}" == "$choice" ]]; then
+            template_path="${template_paths[$i]}"
             break
         fi
     done
     
-    # If no line found, return
-    [ -z "$line_to_remove" ] && return
+    # Confirm deletion
+    local confirm=$(printf "Yes\nNo" | rofi -dmenu -i -p "Are you sure you want to delete '$choice'?")
     
-    # Create a temporary file
-    temp_file=$(mktemp)
-    
-    # Copy all lines except the one to remove
-    while IFS= read -r line; do
-        if [[ "$line" != "$line_to_remove" ]]; then
-            echo "$line" >> "$temp_file"
-        fi
-    done < "$CONFIG_FILE"
-    
-    # Replace the original file
-    mv "$temp_file" "$CONFIG_FILE"
-    
-    notify-send "📋 rtemplate" "Removed template: $choice"
+    if [ "$confirm" = "Yes" ]; then
+        rm "$template_path"
+        notify-send "📋 rtemplate" "Deleted template: $choice"
+    fi
 }
 
 # Main function
 function main {
-    # Ensure config exists
-    setup_config
+    # Ensure templates directory exists
+    setup_templates_dir
     
-    # Parse templates from config file
-    declare -a template_names=()
-    declare -a template_contents=()
+    # Special option for managing templates
+    local templates=("⚙️")
+    local template_paths=()
     
-    while IFS= read -r line; do
-        # Skip empty lines or lines starting with #
-        [[ -z "$line" || "$line" =~ ^# ]] && continue
-        
-        # Split the line by " || "
-        name="${line%% || *}"
-        content="${line#* || }"
-        
-        # Add to arrays
-        template_names+=("$name")
-        template_contents+=("$content")
-        
-    done < "$CONFIG_FILE"
+    # Get list of template files with proper handling of spaces in filenames
+    while IFS= read -r -d '' file; do
+        templates+=("$(basename "$file")")
+        template_paths+=("$file")
+    done < <(find "$TEMPLATES_DIR" -type f -print0 | sort -z)
+    
+    # Create a menu text with newlines between entries
+    local menu_text=""
+    for template in "${templates[@]}"; do
+        menu_text+="$template"$'\n'
+    done
+    menu_text=${menu_text%$'\n'} # Remove trailing newline to fix empty line in rofi
     
     # Use rofi to get user selection
-    local selection=$(printf "%s\n" "${template_names[@]}" | rofi -dmenu -i -p "📋 Template:")
+    local selection=$(echo -e "$menu_text" | rofi -dmenu -i -p "📋 Template:")
     
     # Check if the user pressed ESC
     [ -z "$selection" ] && exit 0
@@ -245,28 +300,33 @@ function main {
         return
     fi
     
-    # Find the selected template's content
-    local selected_content=""
-    for i in "${!template_names[@]}"; do
-        if [[ "${template_names[$i]}" == "$selection" ]]; then
-            selected_content="${template_contents[$i]}"
+    # Find the corresponding path for the selected template
+    local template_path=""
+    for i in "${!templates[@]}"; do
+        if [[ "${templates[$i]}" == "$selection" ]]; then
+            if [ $i -eq 0 ]; then
+                # This is the "Manage Templates" option, which doesn't have a path
+                template_path=""
+            else
+                template_path="${template_paths[$i-1]}"  # Adjust index for the template_paths array
+            fi
             break
         fi
     done
     
-    # If special manager content, handle it
-    if [[ "$selected_content" == "manage_templates" ]]; then
-        manage_templates
-        main  # Return to main menu after management
-        return
-    fi
-    
-    # Process template variables
-    local processed_content=$(process_template "$selected_content")
-    
-    # Copy to clipboard
-    if copy_to_clipboard "$processed_content"; then
-        notify-send "📋 rtemplate" "Copied template to clipboard: $selection"
+    if [ -f "$template_path" ]; then
+        # Read the file content
+        local content=$(cat "$template_path")
+        
+        # Process template variables
+        local processed_content=$(process_template "$content")
+        
+        # Copy to clipboard
+        if copy_to_clipboard "$processed_content"; then
+            notify-send "📋 rtemplate" "Copied template to clipboard: $selection"
+        fi
+    else
+        notify-send "❌ rtemplate" "Template file not found: $selection"
     fi
 }
 
