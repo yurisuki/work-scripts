@@ -16,3 +16,6 @@ _launch=Meta+F
 
 [search_stock.desktop][Global Shortcuts]
 _launch=Meta+Shift+F
+
+[rtemplate.desktop][Global Shortcuts]
+_launch=Meta+H
