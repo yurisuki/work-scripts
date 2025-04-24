@@ -1,14 +1,10 @@
 [Desktop Entry]
 Categories=Utility;Application;
-Comment[en_GB]=Template management tool using rofi
 Comment=Template management tool using rofi
-Exec='${HOME}/.scripts/rtemplate.sh'
-GenericName[en_GB]=Template Management Tool
-GenericName=Template Management Tool
+Exec=~/.scripts/rtemplate.sh
+GenericName=Template Management tool
 Icon=accessories-text-editor
 Keywords=template;clipboard;text;rofi;
-MimeType=
-Name[en_GB]=rtemplate
 Name=rtemplate
 NoDisplay=false
 Path=
@@ -16,7 +12,6 @@ StartupNotify=true
 Terminal=false
 TerminalOptions=
 Type=Application
-Version=1.0
 X-Created-By=yurisuki
 X-KDE-SubstituteUID=false
 X-KDE-Username=
