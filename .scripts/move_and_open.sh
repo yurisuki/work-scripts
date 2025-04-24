@@ -29,11 +29,21 @@ fi
 
 PDF_FILE="$1"
 BASENAME=$(basename "$PDF_FILE")
-if [[ ! -f "$PDF_FILE" || ! "$BASENAME" =~ ^QT-.*\.pdf$ ]]; then
-	notify_error "File does not exist or its name does not start with QT-"
+
+# Check if file exists
+if [[ ! -f "$PDF_FILE" ]]; then
+	notify_error "File does not exist"
 fi
 
-mv "$PDF_FILE" "$TARGET_DIR/" || notify_error "Failed to move file."
-MOVED_FILE="$TARGET_DIR/$BASENAME"
-echo "$MOVED_FILE" > "$LAST_PDF_FILE"
-echo "Moved: $MOVED_FILE"
+# Check if filename starts with QT-
+if [[ "$BASENAME" =~ ^QT-.*\.pdf$ ]]; then
+	# Apply special procedure for QT- files: just move them, don't open
+	mv "$PDF_FILE" "$TARGET_DIR/" || notify_error "Failed to move file."
+	MOVED_FILE="$TARGET_DIR/$BASENAME"
+	echo "$MOVED_FILE" > "$LAST_PDF_FILE"
+	echo "Moved: $MOVED_FILE"
+else
+	# For non-QT files, simply open them without notification
+	echo "Opening file: $BASENAME"
+	xdg-open "$PDF_FILE"
+fi
