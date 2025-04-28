@@ -45,7 +45,11 @@ The file contents (like this text) will be copied to clipboard when selected." >
 1. Create a new file in this directory
 2. The filename will be shown in rofi
 3. The file contents will be copied to clipboard when selected
-4. You can use variables like \$DATE, \$TIME, and \$DATETIME in your templates" > "$TEMPLATES_DIR/ℹ️ Instructions"
+4. You can use the following variables in your templates:
+   - \$DATE - Current date (YYYY-MM-DD)
+   - \$TIME - Current time (HH:MM)
+   - \$DATETIME - Current date and time (YYYY-MM-DD HH:MM)
+   - \$CLIPBOARD - Content of your clipboard when script is executed" > "$TEMPLATES_DIR/ℹ️ Instructions"
     fi
 }
 
