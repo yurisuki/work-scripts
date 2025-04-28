@@ -214,6 +214,12 @@ if [[ "$1" == "--show-ui" ]]; then
         printf "\n${RED}${BOLD}✗ Your repository has diverged from the remote.${RESET}\n"
         printf "${SILVER}This might be due to local changes. Consider resetting your repository.${RESET}\n"
     fi
+    
+    # Display closing message
+    print_separator
+    printf "${GOLD}${BOLD}Installation complete. Please close this window.${RESET}\n"
+    printf "\n${DARK_GRAY}Press Enter to exit...${RESET}"
+    read
 else
     # This is the background silent check mode - NO OUTPUT AT ALL
 
