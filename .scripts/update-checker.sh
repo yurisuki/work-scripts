@@ -36,15 +36,36 @@ notify() {
     echo -e "${PURPLE}${BOLD}[NOTIFICATION]${RESET} $1"
 }
 
-# Function to display a fancy progress bar
+# Function to update progress in a file
+update_progress() {
+    local progress=$1
+    echo "$progress" > "$LOCAL_DIR/.progress"
+}
+
+# Function to read current progress
+read_progress() {
+    if [ -f "$LOCAL_DIR/.progress" ]; then
+        cat "$LOCAL_DIR/.progress"
+    else
+        echo "0"
+    fi
+}
+
+# Function to display a fancy progress bar with real progress
 progress_bar() {
     local duration=${1:-3}  # Default to 3 seconds if no duration provided
+    local real_progress=${2:-false}  # Whether to use real progress tracking
     local chars="▏▎▍▌▋▊▉█"
     local bar_length=40
     
     # Ensure duration is a valid number
     if ! [[ "$duration" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
         duration=3  # Default to 3 seconds if invalid input
+    fi
+    
+    # Initialize progress file if using real progress
+    if [ "$real_progress" = true ]; then
+        update_progress 0
     fi
     
     local sleep_duration=$(bc -l <<< "scale=3; $duration / $bar_length")
@@ -57,34 +78,82 @@ progress_bar() {
     # Print the bar border
     echo -ne "${DARK_GRAY}╭───────────────────────────────────────────────╮${RESET}\n"
     echo -ne "${DARK_GRAY}│${RESET} "
-
-    for ((i=0; i<$bar_length; i++)); do
-        for ((j=0; j<${#chars}; j++)); do
-            echo -ne "\r${DARK_GRAY}│${RESET} ${GOLD}${BOLD}["
-
-            for ((k=0; k<i; k++)); do
-                echo -ne "${CYAN}█"
-            done
-
-            echo -ne "${BLUE}${chars:$j:1}"
-
-            for ((k=i+1; k<$bar_length; k++)); do
-                echo -ne " "
-            done
-
-            local percentage=$((($i * 100) / $bar_length))
-            echo -ne "${GOLD}]${RESET} ${percentage}%"
-
-            sleep "$sleep_duration" 2>/dev/null || sleep 0.075
+    
+    if [ "$real_progress" = true ]; then
+        # Real progress mode - updates based on progress file
+        local last_progress=0
+        while true; do
+            local current_progress=$(read_progress)
+            
+            # Exit if progress is 100 or greater
+            if (( $(echo "$current_progress >= 100" | bc -l) )); then
+                break
+            fi
+            
+            # Only update display if progress has changed
+            if (( $(echo "$current_progress > $last_progress" | bc -l) )); then
+                local filled_length=$(echo "scale=0; $bar_length * $current_progress / 100" | bc -l)
+                filled_length=${filled_length%.*}  # Remove decimal part
+                
+                echo -ne "\r${DARK_GRAY}│${RESET} ${GOLD}${BOLD}["
+                
+                # Draw filled part
+                for ((i=0; i<filled_length; i++)); do
+                    echo -ne "${CYAN}█"
+                done
+                
+                # Draw animation character at current position
+                if [ "$filled_length" -lt "$bar_length" ]; then
+                    local anim_index=$(( $(date +%s%N) / 100000000 % ${#chars} ))
+                    echo -ne "${BLUE}${chars:$anim_index:1}"
+                    filled_length=$((filled_length + 1))
+                fi
+                
+                # Draw empty part
+                for ((i=filled_length; i<bar_length; i++)); do
+                    echo -ne " "
+                done
+                
+                echo -ne "${GOLD}]${RESET} ${current_progress}%"
+                last_progress=$current_progress
+            fi
+            
+            sleep 0.1
         done
-    done
+    else
+        # Animation mode (original behavior)
+        for ((i=0; i<$bar_length; i++)); do
+            for ((j=0; j<${#chars}; j++)); do
+                echo -ne "\r${DARK_GRAY}│${RESET} ${GOLD}${BOLD}["
 
+                for ((k=0; k<i; k++)); do
+                    echo -ne "${CYAN}█"
+                done
+
+                echo -ne "${BLUE}${chars:$j:1}"
+
+                for ((k=i+1; k<$bar_length; k++)); do
+                    echo -ne " "
+                done
+
+                local percentage=$((($i * 100) / $bar_length))
+                echo -ne "${GOLD}]${RESET} ${percentage}%"
+
+                sleep "$sleep_duration" 2>/dev/null || sleep 0.075
+            done
+        done
+    fi
+
+    # Ensure we end with a 100% filled bar
     echo -ne "\r${DARK_GRAY}│${RESET} ${GOLD}${BOLD}["
     for ((i=0; i<$bar_length; i++)); do
         echo -ne "${CYAN}█"
     done
     echo -e "${GOLD}]${RESET} 100%  "
     echo -e "${DARK_GRAY}╰───────────────────────────────────────────────╯${RESET}"
+    
+    # Clean up progress file if it exists
+    [ -f "$LOCAL_DIR/.progress" ] && rm "$LOCAL_DIR/.progress"
 }
 
 # Function to print a stylish header
