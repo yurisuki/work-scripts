@@ -300,7 +300,7 @@ EOF
 
 # Show summary of installation
 show_summary() {
-    local package_list="firefox thunderbird onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland"
+    local package_list="firefox thunderbird onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland bc"
     local python_packages="python-pandas python-numpy python-pyqt6"
     local aur_package_list="zoho-cliq zapzap ttf-apple-emoji"
 
@@ -383,7 +383,7 @@ main() {
     update_system
 
     # Install standard packages
-    local packages=("firefox" "thunderbird" "onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland")
+    local packages=("firefox" "thunderbird" "onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc")
     for pkg in "${packages[@]}"; do
         install_package "$pkg"
     done
