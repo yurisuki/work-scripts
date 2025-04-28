@@ -13,17 +13,32 @@ INSTALL_SCRIPT="$LOCAL_DIR/postinstall.sh"
 SCRIPT_PATH=$(readlink -f "$0")  # Get the actual path of this script
 
 # Colors and formatting
-BOLD="\e[1m"
-RESET="\e[0m"
-GOLD="\e[38;5;220m"
-SILVER="\e[38;5;248m"
-BLUE="\e[38;5;39m"
-GREEN="\e[38;5;82m"
-RED="\e[38;5;196m"
-PURPLE="\e[38;5;135m"
-CYAN="\e[38;5;51m"
-ORANGE="\e[38;5;208m"
-DARK_GRAY="\e[38;5;240m"
+BOLD=""
+RESET=""
+GOLD=""
+SILVER=""
+BLUE=""
+GREEN=""
+RED=""
+PURPLE=""
+CYAN=""
+ORANGE=""
+DARK_GRAY=""
+
+# Enable colors only if output is a terminal
+if [ -t 1 ]; then
+    BOLD="\033[1m"
+    RESET="\033[0m"
+    GOLD="\033[38;5;220m"
+    SILVER="\033[38;5;248m"
+    BLUE="\033[38;5;39m"
+    GREEN="\033[38;5;82m"
+    RED="\033[38;5;196m"
+    PURPLE="\033[38;5;135m"
+    CYAN="\033[38;5;51m"
+    ORANGE="\033[38;5;208m"
+    DARK_GRAY="\033[38;5;240m"
+fi
 
 # Create directories if they don't exist
 mkdir -p "$LOCAL_DIR"
@@ -33,33 +48,33 @@ notify() {
     if command -v notify-send >/dev/null 2>&1; then
         notify-send "Work Scripts" "$1"
     fi
-    echo -e "${PURPLE}${BOLD}[NOTIFICATION]${RESET} $1"
+    printf "${PURPLE}${BOLD}[NOTIFICATION]${RESET} %s\n" "$1"
 }
 
 # Function to print a stylish header
 print_header() {
-    echo -e "\n${DARK_GRAY}╭─────────────────────────────────────────────────────────╮${RESET}"
-    echo -e "${DARK_GRAY}│${RESET}       ${GOLD}${BOLD}✨ WORK-SCRIPTS UPDATER ✨${RESET}                    ${DARK_GRAY}│${RESET}"
-    echo -e "${DARK_GRAY}│${RESET}                                                         ${DARK_GRAY}│${RESET}"
-    echo -e "${DARK_GRAY}│${RESET}  ${SILVER}Repo:${RESET} ${CYAN}yurisuki/work-scripts${RESET}                        ${DARK_GRAY}│${RESET}"
-    echo -e "${DARK_GRAY}╰─────────────────────────────────────────────────────────╯${RESET}\n"
+    printf "\n${DARK_GRAY}╭─────────────────────────────────────────────────────────╮${RESET}\n"
+    printf "${DARK_GRAY}│${RESET}       ${GOLD}${BOLD}✨ WORK-SCRIPTS UPDATER ✨${RESET}                    ${DARK_GRAY}│${RESET}\n"
+    printf "${DARK_GRAY}│${RESET}                                                         ${DARK_GRAY}│${RESET}\n"
+    printf "${DARK_GRAY}│${RESET}  ${SILVER}Repo:${RESET} ${CYAN}yurisuki/work-scripts${RESET}                        ${DARK_GRAY}│${RESET}\n"
+    printf "${DARK_GRAY}╰─────────────────────────────────────────────────────────╯${RESET}\n"
 }
 
 # Function to print a fancy separator
 print_separator() {
-    echo -e "\n${DARK_GRAY}╭─────────────────────────────────────────────────────────╮${RESET}"
-    echo -e "${DARK_GRAY}│${RESET}                                                         ${DARK_GRAY}│${RESET}"
-    echo -e "${DARK_GRAY}╰─────────────────────────────────────────────────────────╯${RESET}\n"
+    printf "\n${DARK_GRAY}╭─────────────────────────────────────────────────────────╮${RESET}\n"
+    printf "${DARK_GRAY}│${RESET}                                                         ${DARK_GRAY}│${RESET}\n"
+    printf "${DARK_GRAY}╰─────────────────────────────────────────────────────────╯${RESET}\n"
 }
 
 # Function to animate typing effect
 type_text() {
     local text="$1"
     for ((i=0; i<${#text}; i++)); do
-        echo -ne "${text:$i:1}"
+        printf "%c" "${text:$i:1}"
         sleep 0.005 2>/dev/null || sleep 0.01
     done
-    echo
+    printf "\n"
 }
 
 # Function to open a terminal with the updater when updates are available
@@ -79,31 +94,31 @@ if [[ "$1" == "--show-ui" ]]; then
     print_header
 
     # Show UI for checking updates
-    echo -e "\n${BLUE}${BOLD}▶ Checking for updates...${RESET}"
+    printf "\n${BLUE}${BOLD}▶ Checking for updates...${RESET}\n"
 
     # Check if git is installed
     if ! command -v git &> /dev/null; then
-        echo -e "\n${RED}${BOLD}✗ Git not installed. Cannot check for updates.${RESET}"
+        printf "\n${RED}${BOLD}✗ Git not installed. Cannot check for updates.${RESET}\n"
         exit 1
     fi
 
     # Clone repository if it doesn't exist
     if [ ! -d "$LOCAL_DIR/.git" ]; then
-        echo -e "\n${BLUE}${BOLD}▶ First time setup. Cloning repository...${RESET}"
+        printf "\n${BLUE}${BOLD}▶ First time setup. Cloning repository...${RESET}\n"
         
         git clone --quiet "$REPO_URL" "$LOCAL_DIR"
         if [ $? -ne 0 ]; then
-            echo -e "\n${RED}${BOLD}✗ Failed to clone repository.${RESET}"
+            printf "\n${RED}${BOLD}✗ Failed to clone repository.${RESET}\n"
             exit 1
         fi
-        echo -e "\n${GREEN}${BOLD}✓ Repository cloned successfully.${RESET}"
+        printf "\n${GREEN}${BOLD}✓ Repository cloned successfully.${RESET}\n"
         
         # Create timestamp file
         date +%s > "$TIMESTAMP_FILE"
         
         # Check if install script exists and is executable
         if [ -f "$INSTALL_SCRIPT" ]; then
-            echo -e "\n${BLUE}${BOLD}▶ Running install script...${RESET}"
+            printf "\n${BLUE}${BOLD}▶ Running install script...${RESET}\n"
             
             # Make it executable if it's not
             [ -x "$INSTALL_SCRIPT" ] || chmod +x "$INSTALL_SCRIPT"
@@ -111,21 +126,21 @@ if [[ "$1" == "--show-ui" ]]; then
             # Run the install script
             "$INSTALL_SCRIPT"
             
-            echo -e "\n${GREEN}${BOLD}✓ Installation complete.${RESET}"
+            printf "\n${GREEN}${BOLD}✓ Installation complete.${RESET}\n"
         fi
         
-        echo -e "\n${GREEN}${BOLD}✓ Setup complete. You're good to go!${RESET}"
+        printf "\n${GREEN}${BOLD}✓ Setup complete. You're good to go!${RESET}\n"
         exit 0
     fi
 
     # Change to repository directory
     cd "$LOCAL_DIR" || {
-        echo -e "\n${RED}${BOLD}✗ Failed to change to repository directory.${RESET}"
+        printf "\n${RED}${BOLD}✗ Failed to change to repository directory.${RESET}\n"
         exit 1
     }
 
     # Get the current state of the repository
-    echo -e "\n${BLUE}${BOLD}▶ Fetching latest changes...${RESET}"
+    printf "\n${BLUE}${BOLD}▶ Fetching latest changes...${RESET}\n"
     git fetch
 
     # Check if there are any updates
@@ -136,47 +151,47 @@ if [[ "$1" == "--show-ui" ]]; then
 
     if [ "$LOCAL" = "$REMOTE" ]; then
         # Up-to-date
-        echo -e "\n${GREEN}${BOLD}✓ Your system is up-to-date!${RESET}"
+        printf "\n${GREEN}${BOLD}✓ Your system is up-to-date!${RESET}\n"
         
         # Update timestamp anyway
         date +%s > "$TIMESTAMP_FILE"
         
         # Show last update time
         LAST_UPDATE=$(date -d @$(cat "$TIMESTAMP_FILE") "+%Y-%m-%d %H:%M:%S")
-        echo -e "\n${SILVER}Last checked: ${CYAN}$LAST_UPDATE${RESET}"
+        printf "\n${SILVER}Last checked: ${CYAN}%s${RESET}\n" "$LAST_UPDATE"
         
         exit 0
     elif [ "$LOCAL" = "$BASE" ]; then
         # Need to pull
-        echo -e "\n${ORANGE}${BOLD}⚠ Updates available!${RESET}"
+        printf "\n${ORANGE}${BOLD}⚠ Updates available!${RESET}\n"
         
         # Show what's new
-        echo -e "\n${SILVER}Changes:${RESET}"
-        git log --pretty=format:"${CYAN}%h${RESET} - %s (${PURPLE}%an${RESET}, ${SILVER}%ar${RESET})" HEAD..$REMOTE | head -n 5
+        printf "\n${SILVER}Changes:${RESET}\n"
+        git --no-pager log --pretty=format:"%h - %s (%an, %ar)" HEAD..$REMOTE | head -n 5
         
         # If there are more than 5 commits, show a message
         COMMIT_COUNT=$(git rev-list --count HEAD..$REMOTE)
         if [ "$COMMIT_COUNT" -gt 5 ]; then
-            echo -e "${SILVER}...and $(($COMMIT_COUNT - 5)) more${RESET}"
+            printf "${SILVER}...and %d more${RESET}\n" $(($COMMIT_COUNT - 5))
         fi
         
         # Ask if user wants to update
-        echo -e "\n${BLUE}${BOLD}Do you want to update now? (y/n)${RESET} "
+        printf "\n${BLUE}${BOLD}Do you want to update now? (y/n)${RESET} "
         read -r ANSWER
         
         if [[ "$ANSWER" =~ ^[Yy]$ ]]; then
             # Pull the changes
-            echo -e "\n${BLUE}${BOLD}▶ Pulling updates...${RESET}"
+            printf "\n${BLUE}${BOLD}▶ Pulling updates...${RESET}\n"
             
             if git pull --quiet; then
-                echo -e "\n${GREEN}${BOLD}✓ Repository updated successfully.${RESET}"
+                printf "\n${GREEN}${BOLD}✓ Repository updated successfully.${RESET}\n"
 
                 # Update timestamp
                 date +%s > "$TIMESTAMP_FILE"
 
                 # Check if install script exists and is executable
                 if [ -f "$INSTALL_SCRIPT" ]; then
-                    echo -e "\n${BLUE}${BOLD}▶ Running install script...${RESET}"
+                    printf "\n${BLUE}${BOLD}▶ Running install script...${RESET}\n"
                     
                     # Make it executable if it's not
                     [ -x "$INSTALL_SCRIPT" ] || chmod +x "$INSTALL_SCRIPT"
@@ -184,20 +199,20 @@ if [[ "$1" == "--show-ui" ]]; then
                     # Run the install script
                     "$INSTALL_SCRIPT"
                     
-                    echo -e "\n${GREEN}${BOLD}✓ Installation complete.${RESET}"
+                    printf "\n${GREEN}${BOLD}✓ Installation complete.${RESET}\n"
                 else
-                    echo -e "\n${RED}${BOLD}⚠ Install script not found.${RESET}"
+                    printf "\n${RED}${BOLD}⚠ Install script not found.${RESET}\n"
                 fi
             else
-                echo -e "\n${RED}${BOLD}✗ Failed to update repository.${RESET}"
+                printf "\n${RED}${BOLD}✗ Failed to update repository.${RESET}\n"
             fi
         else
-            echo -e "\n${ORANGE}${BOLD}⚠ Update canceled.${RESET}"
+            printf "\n${ORANGE}${BOLD}⚠ Update canceled.${RESET}\n"
         fi
     else
         # Diverged
-        echo -e "\n${RED}${BOLD}✗ Your repository has diverged from the remote.${RESET}"
-        echo -e "${SILVER}This might be due to local changes. Consider resetting your repository.${RESET}"
+        printf "\n${RED}${BOLD}✗ Your repository has diverged from the remote.${RESET}\n"
+        printf "${SILVER}This might be due to local changes. Consider resetting your repository.${RESET}\n"
     fi
 else
     # This is the background silent check mode - NO OUTPUT AT ALL
