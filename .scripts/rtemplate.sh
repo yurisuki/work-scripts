@@ -6,6 +6,29 @@
 # Templates directory - where all template files will be stored
 TEMPLATES_DIR="$HOME/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/rtemplate list"
 
+# Function to get current clipboard content
+function get_clipboard_content {
+    # Try Wayland clipboard tools first
+    if [ -n "$WAYLAND_DISPLAY" ]; then
+        if command -v wl-paste &> /dev/null; then
+            wl-paste 2>/dev/null && return
+        fi
+    fi
+    
+    # Fall back to xclip/xsel (for Xorg)
+    if command -v xclip &> /dev/null; then
+        xclip -selection clipboard -o 2>/dev/null && return
+    elif command -v xsel &> /dev/null; then
+        xsel -b 2>/dev/null && return
+    fi
+    
+    # Return empty string if no clipboard utility found
+    echo ""
+}
+
+# Get current clipboard content
+CLIPBOARD=$(get_clipboard_content)
+
 # Function to ensure the templates directory exists
 function setup_templates_dir {
     if [ ! -d "$TEMPLATES_DIR" ]; then
@@ -60,6 +83,7 @@ function process_template {
     content="${content//\$DATE/$date_now}"
     content="${content//\$TIME/$time_now}"
     content="${content//\$DATETIME/$datetime_now}"
+    content="${content//\$CLIPBOARD/$CLIPBOARD}"
     
     echo "$content"
 }
