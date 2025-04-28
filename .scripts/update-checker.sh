@@ -38,10 +38,21 @@ notify() {
 
 # Function to display a fancy progress bar
 progress_bar() {
-    local duration=$1
+    local duration=${1:-3}  # Default to 3 seconds if no duration provided
     local chars="▏▎▍▌▋▊▉█"
     local bar_length=40
+    
+    # Ensure duration is a valid number
+    if ! [[ "$duration" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+        duration=3  # Default to 3 seconds if invalid input
+    fi
+    
     local sleep_duration=$(bc -l <<< "scale=3; $duration / $bar_length")
+    
+    # Ensure sleep_duration is not empty and is a valid number
+    if [[ -z "$sleep_duration" || ! "$sleep_duration" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+        sleep_duration=0.075  # Default value if calculation fails
+    fi
 
     # Print the bar border
     echo -ne "${DARK_GRAY}╭───────────────────────────────────────────────╮${RESET}\n"
@@ -64,7 +75,7 @@ progress_bar() {
             local percentage=$((($i * 100) / $bar_length))
             echo -ne "${GOLD}]${RESET} ${percentage}%"
 
-            sleep "$sleep_duration"
+            sleep "$sleep_duration" 2>/dev/null || sleep 0.075
         done
     done
 
@@ -97,7 +108,7 @@ type_text() {
     local text="$1"
     for ((i=0; i<${#text}; i++)); do
         echo -ne "${text:$i:1}"
-        sleep 0.005
+        sleep 0.005 2>/dev/null || sleep 0.01
     done
     echo
 }
