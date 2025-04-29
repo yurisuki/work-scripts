@@ -10,6 +10,7 @@ REPO_URL="https://github.com/yurisuki/work-scripts.git"
 LOCAL_DIR="$HOME/.local/share/work-scripts"
 TIMESTAMP_FILE="$LOCAL_DIR/.last_update"
 INSTALL_SCRIPT="$LOCAL_DIR/postinstall.sh"
+UPDATE_FAILED_MARKER="$LOCAL_DIR/.update_failed"
 SCRIPT_PATH=$(readlink -f "$0")  # Get the actual path of this script
 
 # Colors and formatting
@@ -102,6 +103,48 @@ if [[ "$1" == "--show-ui" ]]; then
         exit 1
     fi
 
+    # Check if previous installation failed
+    if [ -f "$UPDATE_FAILED_MARKER" ]; then
+        printf "\n${ORANGE}${BOLD}⚠ Previous installation attempt failed!${RESET}\n"
+        printf "\n${SILVER}Failed on: ${CYAN}$(cat "$UPDATE_FAILED_MARKER")${RESET}\n"
+        
+        # Ask if user wants to retry installation
+        printf "\n${BLUE}${BOLD}Do you want to retry the installation? (y/n)${RESET} "
+        read -r ANSWER
+        
+        if [[ "$ANSWER" =~ ^[Yy]$ ]]; then
+            # Check if install script exists and is executable
+            if [ -f "$INSTALL_SCRIPT" ]; then
+                printf "\n${BLUE}${BOLD}▶ Running install script...${RESET}\n"
+                
+                # Make it executable if it's not
+                [ -x "$INSTALL_SCRIPT" ] || chmod +x "$INSTALL_SCRIPT"
+                
+                # Run the install script
+                "$INSTALL_SCRIPT"
+                INSTALL_EXIT_CODE=$?
+                
+                # Check if install script succeeded
+                if [ $INSTALL_EXIT_CODE -ne 0 ]; then
+                    printf "\n${RED}${BOLD}✗ Installation script failed again with exit code $INSTALL_EXIT_CODE.${RESET}\n"
+                    # Update the failure marker
+                    echo "Failed install on $(date)" > "$UPDATE_FAILED_MARKER"
+                    printf "\n${RED}${BOLD}✗ Installation failed. You may need to fix issues manually.${RESET}\n"
+                else
+                    printf "\n${GREEN}${BOLD}✓ Installation completed successfully.${RESET}\n"
+                    # Remove failure marker
+                    rm "$UPDATE_FAILED_MARKER"
+                    # Update timestamp
+                    date +%s > "$TIMESTAMP_FILE"
+                fi
+            else
+                printf "\n${RED}${BOLD}✗ Install script not found.${RESET}\n"
+            fi
+        else
+            printf "\n${ORANGE}${BOLD}⚠ Installation retry canceled.${RESET}\n"
+        fi
+    fi
+
     # Clone repository if it doesn't exist
     if [ ! -d "$LOCAL_DIR/.git" ]; then
         printf "\n${BLUE}${BOLD}▶ First time setup. Cloning repository...${RESET}\n"
@@ -139,16 +182,16 @@ if [[ "$1" == "--show-ui" ]]; then
                 if [ $INSTALL_EXIT_CODE -ne 0 ]; then
                     printf "\n${RED}${BOLD}✗ Installation script failed again. Update may not be complete.${RESET}\n"
                     # Create a marker file to indicate update failure
-                    echo "Failed install on $(date)" > "$LOCAL_DIR/.update_failed"
+                    echo "Failed install on $(date)" > "$UPDATE_FAILED_MARKER"
                 else
                     printf "\n${GREEN}${BOLD}✓ Installation completed successfully on second attempt.${RESET}\n"
                     # Remove failure marker if it exists
-                    [ -f "$LOCAL_DIR/.update_failed" ] && rm "$LOCAL_DIR/.update_failed"
+                    [ -f "$UPDATE_FAILED_MARKER" ] && rm "$UPDATE_FAILED_MARKER"
                 fi
             else
                 printf "\n${GREEN}${BOLD}✓ Installation complete.${RESET}\n"
                 # Remove failure marker if it exists
-                [ -f "$LOCAL_DIR/.update_failed" ] && rm "$LOCAL_DIR/.update_failed"
+                [ -f "$UPDATE_FAILED_MARKER" ] && rm "$UPDATE_FAILED_MARKER"
             fi
         fi
         
@@ -235,16 +278,16 @@ if [[ "$1" == "--show-ui" ]]; then
                         if [ $INSTALL_EXIT_CODE -ne 0 ]; then
                             printf "\n${RED}${BOLD}✗ Installation script failed again. Update may not be complete.${RESET}\n"
                             # Create a marker file to indicate update failure
-                            echo "Failed install on $(date)" > "$LOCAL_DIR/.update_failed"
+                            echo "Failed install on $(date)" > "$UPDATE_FAILED_MARKER"
                         else
                             printf "\n${GREEN}${BOLD}✓ Installation completed successfully on second attempt.${RESET}\n"
                             # Remove failure marker if it exists
-                            [ -f "$LOCAL_DIR/.update_failed" ] && rm "$LOCAL_DIR/.update_failed"
+                            [ -f "$UPDATE_FAILED_MARKER" ] && rm "$UPDATE_FAILED_MARKER"
                         fi
                     else
                         printf "\n${GREEN}${BOLD}✓ Installation complete.${RESET}\n"
                         # Remove failure marker if it exists
-                        [ -f "$LOCAL_DIR/.update_failed" ] && rm "$LOCAL_DIR/.update_failed"
+                        [ -f "$UPDATE_FAILED_MARKER" ] && rm "$UPDATE_FAILED_MARKER"
                     fi
                 else
                     printf "\n${RED}${BOLD}⚠ Install script not found.${RESET}\n"
@@ -273,6 +316,13 @@ else
     if ! command -v git &> /dev/null; then
         # Silently exit if git is not installed
         exit 1
+    fi
+
+    # Check if previous installation failed
+    if [ -f "$UPDATE_FAILED_MARKER" ]; then
+        # If installation previously failed, open the terminal with UI to handle it
+        open_terminal_with_updater
+        exit 0
     fi
 
     # Clone repository if it doesn't exist
