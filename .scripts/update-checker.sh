@@ -125,8 +125,31 @@ if [[ "$1" == "--show-ui" ]]; then
             
             # Run the install script
             "$INSTALL_SCRIPT"
+            INSTALL_EXIT_CODE=$?
             
-            printf "\n${GREEN}${BOLD}✓ Installation complete.${RESET}\n"
+            # Check if install script succeeded
+            if [ $INSTALL_EXIT_CODE -ne 0 ]; then
+                printf "\n${RED}${BOLD}✗ Installation script failed with exit code $INSTALL_EXIT_CODE.${RESET}\n"
+                printf "\n${ORANGE}${BOLD}⚠ Attempting to run install script again...${RESET}\n"
+                
+                # Try running the install script again
+                "$INSTALL_SCRIPT"
+                INSTALL_EXIT_CODE=$?
+                
+                if [ $INSTALL_EXIT_CODE -ne 0 ]; then
+                    printf "\n${RED}${BOLD}✗ Installation script failed again. Update may not be complete.${RESET}\n"
+                    # Create a marker file to indicate update failure
+                    echo "Failed install on $(date)" > "$LOCAL_DIR/.update_failed"
+                else
+                    printf "\n${GREEN}${BOLD}✓ Installation completed successfully on second attempt.${RESET}\n"
+                    # Remove failure marker if it exists
+                    [ -f "$LOCAL_DIR/.update_failed" ] && rm "$LOCAL_DIR/.update_failed"
+                fi
+            else
+                printf "\n${GREEN}${BOLD}✓ Installation complete.${RESET}\n"
+                # Remove failure marker if it exists
+                [ -f "$LOCAL_DIR/.update_failed" ] && rm "$LOCAL_DIR/.update_failed"
+            fi
         fi
         
         printf "\n${GREEN}${BOLD}✓ Setup complete. You're good to go!${RESET}\n"
@@ -198,8 +221,31 @@ if [[ "$1" == "--show-ui" ]]; then
                     
                     # Run the install script
                     "$INSTALL_SCRIPT"
+                    INSTALL_EXIT_CODE=$?
                     
-                    printf "\n${GREEN}${BOLD}✓ Installation complete.${RESET}\n"
+                    # Check if install script succeeded
+                    if [ $INSTALL_EXIT_CODE -ne 0 ]; then
+                        printf "\n${RED}${BOLD}✗ Installation script failed with exit code $INSTALL_EXIT_CODE.${RESET}\n"
+                        printf "\n${ORANGE}${BOLD}⚠ Attempting to run install script again...${RESET}\n"
+                        
+                        # Try running the install script again
+                        "$INSTALL_SCRIPT"
+                        INSTALL_EXIT_CODE=$?
+                        
+                        if [ $INSTALL_EXIT_CODE -ne 0 ]; then
+                            printf "\n${RED}${BOLD}✗ Installation script failed again. Update may not be complete.${RESET}\n"
+                            # Create a marker file to indicate update failure
+                            echo "Failed install on $(date)" > "$LOCAL_DIR/.update_failed"
+                        else
+                            printf "\n${GREEN}${BOLD}✓ Installation completed successfully on second attempt.${RESET}\n"
+                            # Remove failure marker if it exists
+                            [ -f "$LOCAL_DIR/.update_failed" ] && rm "$LOCAL_DIR/.update_failed"
+                        fi
+                    else
+                        printf "\n${GREEN}${BOLD}✓ Installation complete.${RESET}\n"
+                        # Remove failure marker if it exists
+                        [ -f "$LOCAL_DIR/.update_failed" ] && rm "$LOCAL_DIR/.update_failed"
+                    fi
                 else
                     printf "\n${RED}${BOLD}⚠ Install script not found.${RESET}\n"
                 fi
