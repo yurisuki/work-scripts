@@ -373,7 +373,7 @@ main() {
                  --title "Welcome" \
                  --yesno "Welcome to the Ralakde Linux installation.\n\nUser: ${USER}\n\nThis script will set up your system with required applications and configurations.\n\nDo you want to continue?" 12 $WHIPTAIL_WIDTH; then
         log info "Installation cancelled by user"
-        exit 0
+        exit 1
     fi
 
     # Ensure yay is available for AUR packages
