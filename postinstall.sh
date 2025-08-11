@@ -300,7 +300,7 @@ EOF
 
 # Show summary of installation
 show_summary() {
-    local package_list="firefox thunderbird onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland bc"
+    local package_list="firefox thunderbird onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland bc qalculate-qt"
     local python_packages="python-pandas python-numpy python-pyqt6"
     local aur_package_list="zoho-cliq zapzap ttf-apple-emoji"
 
