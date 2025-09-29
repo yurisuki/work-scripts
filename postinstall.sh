@@ -392,7 +392,7 @@ main() {
     install_python_packages
 
     # Install AUR packages
-    local aur_packages=("zoho-cliq" "zapzap" "ttf-apple-emoji")
+    local aur_packages=("zoho-cliq" "zapzap" "ttf-apple-emoji" "ticktick")
     for pkg in "${aur_packages[@]}"; do
         install_aur_package "$pkg"
     done
