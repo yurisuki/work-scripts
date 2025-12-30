@@ -383,7 +383,7 @@ main() {
     update_system
 
     # Install standard packages
-    local packages=("firefox" "thunderbird" "onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc")
+    local packages=("firefox" "thunderbird" "onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip")
     for pkg in "${packages[@]}"; do
         install_package "$pkg"
     done
