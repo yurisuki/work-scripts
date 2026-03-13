@@ -167,7 +167,7 @@ install_python_packages() {
     show_progress "Installing Python packages..."
     log info "Installing required Python packages..."
 
-    local python_packages=("python-pandas" "python-numpy" "python-pyqt6")
+    local python_packages=("python" "python3" python-pypdf"" "python-pandas" "python-numpy" "python-pyqt6")
     for pkg in "${python_packages[@]}"; do
         install_package "$pkg"
     done
@@ -300,8 +300,8 @@ EOF
 
 # Show summary of installation
 show_summary() {
-    local package_list="firefox thunderbird onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland bc qalculate-qt"
-    local python_packages="python-pandas python-numpy python-pyqt6"
+    local package_list="firefox onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland bc qalculate-qt"
+    local python_packages="python python3 python-pypdf python-pandas python-numpy python-pyqt6"
     local aur_package_list="zoho-cliq zapzap ttf-apple-emoji"
 
     whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
@@ -383,7 +383,7 @@ main() {
     update_system
 
     # Install standard packages
-    local packages=("firefox" "thunderbird" "onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip")
+    local packages=("firefox" "onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip")
     for pkg in "${packages[@]}"; do
         install_package "$pkg"
     done
