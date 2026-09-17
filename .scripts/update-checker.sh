@@ -8,6 +8,7 @@
 # Configuration
 REPO_URL="https://github.com/yurisuki/work-scripts.git"
 LOCAL_DIR="$HOME/.local/share/work-scripts"
+ACTIVE_DIR="$HOME/.scripts"
 TIMESTAMP_FILE="$LOCAL_DIR/.last_update"
 INSTALL_SCRIPT="$LOCAL_DIR/postinstall.sh"
 UPDATE_FAILED_MARKER="$LOCAL_DIR/.update_failed"
@@ -47,7 +48,7 @@ mkdir -p "$LOCAL_DIR"
 # Function to show a simple notification
 notify() {
     if command -v notify-send >/dev/null 2>&1; then
-        notify-send "Work Scripts" "$1"
+        notify-send -a "Work Scripts" -i system-software-update "Work Scripts" "$1"
     fi
     printf "${PURPLE}${BOLD}[NOTIFICATION]${RESET} %s\n" "$1"
 }
@@ -58,6 +59,8 @@ print_header() {
     printf "${DARK_GRAY}│${RESET}       ${GOLD}${BOLD}✨ WORK-SCRIPTS UPDATER ✨${RESET}                    ${DARK_GRAY}│${RESET}\n"
     printf "${DARK_GRAY}│${RESET}                                                         ${DARK_GRAY}│${RESET}\n"
     printf "${DARK_GRAY}│${RESET}  ${SILVER}Repo:${RESET} ${CYAN}yurisuki/work-scripts${RESET}                        ${DARK_GRAY}│${RESET}\n"
+    printf "${DARK_GRAY}│${RESET}  ${SILVER}Active:${RESET} ${CYAN}%s${RESET}                          ${DARK_GRAY}│${RESET}\n" "$ACTIVE_DIR"
+    printf "${DARK_GRAY}│${RESET}  ${SILVER}Cache:${RESET}  ${CYAN}%s${RESET}                ${DARK_GRAY}│${RESET}\n" "$LOCAL_DIR"
     printf "${DARK_GRAY}╰─────────────────────────────────────────────────────────╯${RESET}\n"
 }
 
@@ -80,11 +83,15 @@ type_text() {
 
 # Function to open a terminal with the updater when updates are available
 open_terminal_with_updater() {
-    # Check if konsole is available
     if command -v konsole >/dev/null 2>&1; then
         konsole --noclose -e "$SCRIPT_PATH" --show-ui
+    elif command -v kitty >/dev/null 2>&1; then
+        kitty --hold "$SCRIPT_PATH" --show-ui
+    elif command -v foot >/dev/null 2>&1; then
+        foot "$SCRIPT_PATH" --show-ui
+    elif command -v xterm >/dev/null 2>&1; then
+        xterm -hold -e "$SCRIPT_PATH" --show-ui
     else
-        # Fallback if konsole is not available
         "$SCRIPT_PATH" --show-ui
     fi
     exit 0
@@ -207,7 +214,10 @@ if [[ "$1" == "--show-ui" ]]; then
 
     # Get the current state of the repository
     printf "\n${BLUE}${BOLD}▶ Fetching latest changes...${RESET}\n"
-    git fetch
+    if ! git fetch --quiet; then
+        notify "Could not reach GitHub while checking for updates"
+        exit 1
+    fi
 
     # Check if there are any updates
     UPSTREAM=${2:-'@{u}'}
@@ -345,7 +355,9 @@ else
     cd "$LOCAL_DIR" || exit 1
 
     # Get the current state of the repository silently
-    git fetch --quiet
+    if ! git fetch --quiet; then
+        exit 1
+    fi
 
     # Check if there are any updates
     UPSTREAM=${1:-'@{u}'}

@@ -299,7 +299,7 @@ setup_update_checker() {
     # Create the desktop entry file
     cat > "${HOME}/.config/autostart/update-checker.sh.desktop" << EOF
 [Desktop Entry]
-Exec=/home/${USER}/.scripts/update-checker.sh
+        Exec=${SCRIPTS_DIR}/update-checker.sh
 Icon=
 Name=update-checker.sh
 Path=
