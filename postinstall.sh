@@ -30,6 +30,7 @@ readonly ROFI_CONFIG_DIR="${CONFIG_DIR}/rofi"
 readonly GIT_TEMP_DIR="/tmp/work-scripts-$(date +%s)"
 readonly GIT_REPO="https://github.com/yurisuki/work-scripts.git"
 readonly ZOHO_WORKDRIVE_PATH="${HOME}/.zohoworkdrive/bin/zohoworkdrive"
+SYSTEM_UPDATED=false
 
 # Program defaults
 readonly WHIPTAIL_TITLE="Ralakde Installation"
@@ -186,6 +187,7 @@ update_system() {
     log info "Updating AUR packages..."
     yay -Syu --noconfirm || log warn "AUR update completed with warnings"
     log ok "AUR packages updated"
+    SYSTEM_UPDATED=true
 }
 
 # Setup directories and files
@@ -313,9 +315,9 @@ EOF
 
 # Show summary of installation
 show_summary() {
-    local package_list="firefox onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland bc qalculate-qt"
+    local package_list="onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland bc qalculate-qt"
     local python_packages="python python3 python-pypdf python-pandas python-numpy python-pyqt6"
-    local aur_package_list="zoho-cliq zapzap ttf-apple-emoji"
+    local aur_package_list="brave-browser zapzap ttf-apple-emoji"
 
     whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
              --title "Installation Complete" \
@@ -328,7 +330,11 @@ show_summary() {
     echo
     echo -e "${BOLD}Installation Summary:${RESET}"
     echo "-----------------------------------------------"
-    echo -e "${BOLD}1.${RESET} System updated and upgraded"
+    if [[ "$SYSTEM_UPDATED" == true ]]; then
+        echo -e "${BOLD}1.${RESET} System updated and upgraded"
+    else
+        echo -e "${BOLD}1.${RESET} System update skipped"
+    fi
     echo -e "${BOLD}2.${RESET} Standard packages installed: ${BLUE}$package_list${RESET}"
     echo -e "${BOLD}3.${RESET} Python packages installed: ${BLUE}$python_packages${RESET}"
     echo -e "${BOLD}4.${RESET} AUR packages installed: ${YELLOW}$aur_package_list${RESET}"
@@ -392,11 +398,18 @@ main() {
     # Ensure yay is available for AUR packages
     ensure_yay
 
-    # Update system
-    update_system
+    # Let the user skip a potentially lengthy system-wide update.
+    if whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
+                --title "System Update" \
+                --yesno "Update all system and AUR packages before installation?\n\nSelect No to skip the update." \
+                10 $WHIPTAIL_WIDTH; then
+        update_system
+    else
+        log info "System update skipped by user"
+    fi
 
     # Install standard packages
-    local packages=("firefox" "onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip" "libnotify")
+    local packages=("onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip" "libnotify")
     for pkg in "${packages[@]}"; do
         install_package "$pkg"
     done
@@ -405,7 +418,7 @@ main() {
     install_python_packages
 
     # Install AUR packages
-    local aur_packages=("zoho-cliq" "zapzap" "ttf-apple-emoji" "ticktick")
+    local aur_packages=("brave-browser" "zapzap" "ttf-apple-emoji" "ticktick")
     for pkg in "${aur_packages[@]}"; do
         install_aur_package "$pkg"
     done
