@@ -42,6 +42,7 @@ if [[ "$BASENAME" =~ ^QT-.*\.pdf$ ]]; then
 	MOVED_FILE="$TARGET_DIR/$BASENAME"
 	echo "$MOVED_FILE" > "$LAST_PDF_FILE"
 	echo "Moved: $MOVED_FILE"
+	notify-send -i document-save -a "move_and_open" "QUOTE přesunuta" "$BASENAME"
 else
 	# For non-QT files, simply open them without notification
 	echo "Opening file: $BASENAME"

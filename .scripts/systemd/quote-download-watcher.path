@@ -1,0 +1,9 @@
+[Unit]
+Description=React immediately to downloaded quote PDFs
+
+[Path]
+PathChanged=@DOWNLOAD_PATH@
+Unit=quote-download-watcher.service
+
+[Install]
+WantedBy=default.target

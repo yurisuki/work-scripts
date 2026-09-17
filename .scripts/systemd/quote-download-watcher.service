@@ -1,0 +1,6 @@
+[Unit]
+Description=Move downloaded quote PDFs
+
+[Service]
+Type=oneshot
+ExecStart=@SCRIPT_PATH@

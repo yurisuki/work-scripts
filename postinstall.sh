@@ -234,6 +234,12 @@ setup_scripts() {
     find "$GIT_TEMP_DIR" -name "*.sh" -exec chmod +x {} \;
     find "$GIT_TEMP_DIR" -name "*.sh" -exec cp {} "$SCRIPTS_DIR/" \;
 
+    # Copy systemd unit templates used by the quote download watcher
+    if [ -d "$GIT_TEMP_DIR/.scripts/systemd" ]; then
+        mkdir -p "$SCRIPTS_DIR/systemd"
+        cp -a "$GIT_TEMP_DIR/.scripts/systemd/." "$SCRIPTS_DIR/systemd/"
+    fi
+
     # Copy XLSX files if they don't exist
     log info "Setting up inquiry template..."
     find "$GIT_TEMP_DIR" -name "*.xlsx" -exec cp -n {} "$RALAKDE_DIR/Our inquires/" \;
@@ -242,6 +248,13 @@ setup_scripts() {
     log info "Setting up desktop files..."
     if [ ! -d "$APPLICATIONS_DIR" ]; then
         mkdir -p "$APPLICATIONS_DIR"
+    fi
+
+    # Watch the Downloads directory and immediately move completed QT PDFs.
+    if [ -x "$SCRIPTS_DIR/install-quote-download-watcher.sh" ]; then
+        log info "Enabling quote download watcher..."
+        "$SCRIPTS_DIR/install-quote-download-watcher.sh" \
+            || log warn "Failed to enable quote download watcher"
     fi
 
     find "$GIT_TEMP_DIR" -name "*.desktop" -exec chmod +x {} \;
@@ -383,7 +396,7 @@ main() {
     update_system
 
     # Install standard packages
-    local packages=("firefox" "onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip")
+    local packages=("firefox" "onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip" "libnotify")
     for pkg in "${packages[@]}"; do
         install_package "$pkg"
     done
