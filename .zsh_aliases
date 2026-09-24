@@ -67,5 +67,7 @@ alias zshrc='nvim ~/.zshrc'
 alias nvimrc='nvim ~/.config/nvim/init.lua'
 alias aliasrc='nvim ~/.zsh_aliases'
 
+# chmod hidraw
+alias hid='sudo chmod 666 /dev/hidraw*'
 
 # Add your custom aliases below this line
