@@ -11,6 +11,31 @@ RPROMPT="%F{171}%D{%H:%M}%f"
 # Enter a directory by typing its name without cd.
 setopt AUTO_CD
 
+# Command-line navigation (consistent even when EDITOR is set to vi).
+bindkey -e
+# Ctrl+Left / Ctrl+Right: move by word (common terminal sequences).
+bindkey '^[[1;5D' backward-word
+bindkey '^[[1;5C' forward-word
+bindkey '^[[5D' backward-word
+bindkey '^[[5C' forward-word
+bindkey '^[Od' backward-word
+bindkey '^[Oc' forward-word
+# Home / End: move to the beginning / end of the command line.
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
+bindkey '^[OH' beginning-of-line
+bindkey '^[OF' end-of-line
+bindkey '^[[1~' beginning-of-line
+bindkey '^[[4~' end-of-line
+bindkey '^[[7~' beginning-of-line
+bindkey '^[[8~' end-of-line
+# Delete / Ctrl+Delete: delete the next character / word.
+bindkey '^[[3~' delete-char
+bindkey '^[[3;5~' kill-word
+# Ctrl+Backspace (where supported) / Ctrl+W: delete the previous word.
+bindkey '^H' backward-kill-word
+bindkey '^W' backward-kill-word
+
 # Enable zsh completion system
 autoload -Uz compinit
 
