@@ -14,6 +14,9 @@ alias ll='ls -lah'
 alias la='ls -A'
 alias l='ls -CF'
 
+# Open folder in default GUI file manager
+alias f='xdg-open $PWD'
+
 # Git aliases
 alias gs='git status'
 alias ga='git add'
