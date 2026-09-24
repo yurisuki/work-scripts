@@ -8,6 +8,9 @@ PROMPT="%F{171}┌[%f%F{171}%n%f%F{171}@%f%F{171}%m%f%F{171}]%f%F{171}─[%f%F{1
 # Right prompt with time
 RPROMPT="%F{171}%D{%H:%M}%f"
 
+# Enter a directory by typing its name without cd.
+setopt AUTO_CD
+
 # Enable zsh completion system
 autoload -Uz compinit
 
