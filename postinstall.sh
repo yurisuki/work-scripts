@@ -242,7 +242,10 @@ setup_sudo_feedback() {
 # Back up existing dotfiles before installing the repository versions.
 setup_dotfiles() {
     local source_dir=$1 relative destination backup_dir=""
-    for relative in .zshrc .zsh_aliases .config/nvim; do
+    for relative in .zshrc .zsh_aliases .config/nvim \
+        .config/konsolerc \
+        .local/share/konsole/VioletNight.colorscheme \
+        .local/share/konsole/VioletNight.profile; do
         [ -e "$source_dir/$relative" ] || die "Missing dotfile: $relative"
         destination="$HOME/$relative"
         if [ -e "$destination" ] || [ -L "$destination" ]; then
@@ -257,48 +260,7 @@ setup_dotfiles() {
         cp -a "$source_dir/$relative" "$destination"
     done
     [ -z "$backup_dir" ] || log info "Previous dotfiles backed up to $backup_dir"
-    log ok "Zsh and Neovim configurations installed"
-}
-
-# Install the terminal palette and preserve unrelated Konsole preferences.
-setup_konsole() {
-    local source_dir=$1
-    local data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/konsole"
-    local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
-    local backup_dir
-    mkdir -p "$data_dir" "$config_dir" "$HOME/.local/state/work-scripts"
-    backup_dir=$(mktemp -d "$HOME/.local/state/work-scripts/konsole-backup.XXXXXX")
-    local name
-    for name in VioletNight.colorscheme VioletNight.profile; do
-        [ -f "$source_dir/.local/share/konsole/$name" ] || die "Missing Konsole asset: $name"
-        if [ -e "$data_dir/$name" ]; then
-            cp -a "$data_dir/$name" "$backup_dir/$name"
-        fi
-        install -m 0644 "$source_dir/.local/share/konsole/$name" "$data_dir/$name"
-    done
-    if [ -f "$config_dir/konsolerc" ]; then
-        cp -a "$config_dir/konsolerc" "$backup_dir/konsolerc"
-    fi
-    python3 - "$config_dir/konsolerc" <<'PYTHON'
-from pathlib import Path
-import re
-import sys
-
-path = Path(sys.argv[1])
-lines = path.read_text().splitlines(keepends=True) if path.exists() else []
-start = next((i for i, line in enumerate(lines) if line.strip() == '[Desktop Entry]'), None)
-entry = 'DefaultProfile=VioletNight.profile\n'
-if start is None:
-    if lines and not lines[-1].endswith('\n'):
-        lines[-1] += '\n'
-    lines.extend(['\n[Desktop Entry]\n', entry])
-else:
-    end = next((i for i in range(start + 1, len(lines)) if lines[i].lstrip().startswith('[')), len(lines))
-    section = [line for line in lines[start + 1:end] if not re.match(r'^\s*DefaultProfile\s*=', line)]
-    lines[start:end] = ['[Desktop Entry]\n', entry, *section]
-path.write_text(''.join(lines))
-PYTHON
-    log ok "Violet Night set as the default Konsole profile (backup: $backup_dir)"
+    log ok "Zsh, Neovim and Konsole configurations installed"
 }
 
 # Clone and setup scripts
@@ -313,7 +275,6 @@ setup_scripts() {
         source_dir="$GIT_TEMP_DIR"
     fi
     setup_dotfiles "$source_dir"
-    setup_konsole "$source_dir"
 
     # Make scripts directory if it doesn't exist
     if [ ! -d "$SCRIPTS_DIR" ]; then
@@ -503,7 +464,7 @@ main() {
     fi
 
     # Install standard packages
-    local packages=("onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip" "libnotify" "konsole" "zsh" "neovim" "git" "nodejs" "npm" "python-pip" "ripgrep" "fd" "unzip" "curl" "base-devel" "stylua" "python-black" "shfmt" "clang")
+    local packages=("onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip" "libnotify" "zsh" "neovim" "git" "nodejs" "npm" "python-pip" "ripgrep" "fd" "unzip" "curl" "base-devel" "stylua" "python-black" "shfmt" "clang")
     for pkg in "${packages[@]}"; do
         install_package "$pkg"
     done
