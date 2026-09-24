@@ -14,6 +14,10 @@ alias ll='ls -lah'
 alias la='ls -A'
 alias l='ls -CF'
 
+# Exit
+alias quit='exit'
+alias q='exit'
+
 # Open folder in default GUI file manager
 alias f='xdg-open $PWD'
 
