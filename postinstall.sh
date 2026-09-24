@@ -260,6 +260,47 @@ setup_dotfiles() {
     log ok "Zsh and Neovim configurations installed"
 }
 
+# Install the terminal palette and preserve unrelated Konsole preferences.
+setup_konsole() {
+    local source_dir=$1
+    local data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/konsole"
+    local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
+    local backup_dir
+    mkdir -p "$data_dir" "$config_dir" "$HOME/.local/state/work-scripts"
+    backup_dir=$(mktemp -d "$HOME/.local/state/work-scripts/konsole-backup.XXXXXX")
+    local name
+    for name in VioletNight.colorscheme VioletNight.profile; do
+        [ -f "$source_dir/.local/share/konsole/$name" ] || die "Missing Konsole asset: $name"
+        if [ -e "$data_dir/$name" ]; then
+            cp -a "$data_dir/$name" "$backup_dir/$name"
+        fi
+        install -m 0644 "$source_dir/.local/share/konsole/$name" "$data_dir/$name"
+    done
+    if [ -f "$config_dir/konsolerc" ]; then
+        cp -a "$config_dir/konsolerc" "$backup_dir/konsolerc"
+    fi
+    python3 - "$config_dir/konsolerc" <<'PYTHON'
+from pathlib import Path
+import re
+import sys
+
+path = Path(sys.argv[1])
+lines = path.read_text().splitlines(keepends=True) if path.exists() else []
+start = next((i for i, line in enumerate(lines) if line.strip() == '[Desktop Entry]'), None)
+entry = 'DefaultProfile=VioletNight.profile\n'
+if start is None:
+    if lines and not lines[-1].endswith('\n'):
+        lines[-1] += '\n'
+    lines.extend(['\n[Desktop Entry]\n', entry])
+else:
+    end = next((i for i in range(start + 1, len(lines)) if lines[i].lstrip().startswith('[')), len(lines))
+    section = [line for line in lines[start + 1:end] if not re.match(r'^\s*DefaultProfile\s*=', line)]
+    lines[start:end] = ['[Desktop Entry]\n', entry, *section]
+path.write_text(''.join(lines))
+PYTHON
+    log ok "Violet Night set as the default Konsole profile (backup: $backup_dir)"
+}
+
 # Clone and setup scripts
 setup_scripts() {
     show_progress "Setting up scripts..."
@@ -272,6 +313,7 @@ setup_scripts() {
         source_dir="$GIT_TEMP_DIR"
     fi
     setup_dotfiles "$source_dir"
+    setup_konsole "$source_dir"
 
     # Make scripts directory if it doesn't exist
     if [ ! -d "$SCRIPTS_DIR" ]; then
@@ -400,6 +442,7 @@ show_summary() {
     echo -e "${BOLD}11.${RESET} usbmuxd service enabled and started"
     echo -e "${BOLD}12.${RESET} Zsh and Neovim dotfiles installed (previous files backed up)"
     echo -e "${BOLD}13.${RESET} Sudo password feedback enabled"
+    echo -e "${BOLD}14.${RESET} Konsole Violet Night dark purple theme installed"
     echo
     echo -e "${GREEN}${BOLD}Thank you for installing Ralakde!${RESET}"
     echo -e "${BLUE}Installation completed at: $(date '+%Y-%m-%d %H:%M:%S')${RESET}"
@@ -460,7 +503,7 @@ main() {
     fi
 
     # Install standard packages
-    local packages=("onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip" "libnotify" "zsh" "neovim" "git" "nodejs" "npm" "python-pip" "ripgrep" "fd" "unzip" "curl" "base-devel" "stylua" "python-black" "shfmt" "clang")
+    local packages=("onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip" "libnotify" "konsole" "zsh" "neovim" "git" "nodejs" "npm" "python-pip" "ripgrep" "fd" "unzip" "curl" "base-devel" "stylua" "python-black" "shfmt" "clang")
     for pkg in "${packages[@]}"; do
         install_package "$pkg"
     done
