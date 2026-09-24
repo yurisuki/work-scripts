@@ -20,7 +20,8 @@ zstyle ':completion:*' verbose yes
 zstyle ':completion:*:descriptions' format '%B%d%b'
 zstyle ':completion:*:messages' format '%d'
 zstyle ':completion:*:warnings' format 'No matches for: %d'
-zstyle ':completion:*' accept-exact 'yes'
+# Show all prefix matches even when one is an existing file or directory.
+zstyle ':completion:*' accept-exact false
 
 # Zsh plugins directory
 ZSH_PLUGINS_DIR="$HOME/.zsh/plugins"
