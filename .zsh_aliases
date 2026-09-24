@@ -1,0 +1,71 @@
+# Zsh Aliases
+# Source this file in your ~/.zshrc with: source ~/.zsh_aliases
+
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias ~='cd ~'
+alias home='cd ~'
+
+# List files
+alias ls='ls --color=auto'
+alias ll='ls -lah'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Git aliases
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate'
+alias gd='git diff'
+alias gb='git branch'
+alias gco='git checkout'
+alias gcl='git clone'
+
+# Neovim
+alias vi='nvim'
+alias vim='nvim'
+alias nv='nvim'
+alias v='nvim'
+alias sv='sudo -E nvim'
+
+# System
+alias update='sudo pacman -Syu'
+alias upc='yay -Syu'
+alias install='sudo pacman -S'
+alias remove='sudo pacman -Rns'
+alias search='pacman -Ss'
+
+# Clear
+alias c='clear'
+
+# mkdir with cd
+alias mkcd='mkdir -pv && cd'
+
+# Copy with progress
+alias cp='cp -iv'
+alias mv='mv -iv'
+alias rm='rm -iv'
+
+# Human readable sizes
+alias df='df -h'
+alias du='du -h'
+
+# IP address
+alias ip='ip addr show'
+alias myip='curl ifconfig.me'
+
+# Process management
+alias ps='ps auxf'
+alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
+
+# Quick edit configs
+alias zshrc='nvim ~/.zshrc'
+alias nvimrc='nvim ~/.config/nvim/init.lua'
+alias aliasrc='nvim ~/.zsh_aliases'
+
+
+# Add your custom aliases below this line

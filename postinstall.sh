@@ -30,6 +30,7 @@ readonly ROFI_CONFIG_DIR="${CONFIG_DIR}/rofi"
 readonly GIT_TEMP_DIR="/tmp/work-scripts-$(date +%s)"
 readonly GIT_REPO="https://github.com/yurisuki/work-scripts.git"
 readonly ZOHO_WORKDRIVE_PATH="${HOME}/.zohoworkdrive/bin/zohoworkdrive"
+readonly INSTALL_SOURCE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 SYSTEM_UPDATED=false
 
 # Program defaults
@@ -218,13 +219,59 @@ setup_directories() {
     log ok "Directory structure verified"
 }
 
+# Enable password feedback using the configuration supplied in installsudopass.txt.
+setup_sudo_feedback() {
+    log info "Enabling sudo password feedback..."
+    local candidate
+    candidate=$(mktemp) || die "Failed to create sudo configuration candidate"
+    printf '%s\n' 'Defaults pwfeedback' > "$candidate"
+    if ! sudo visudo -cf "$candidate"; then
+        rm -f "$candidate"
+        die "Invalid sudo password feedback configuration"
+    fi
+    sudo install -d -m 0750 /etc/sudoers.d
+    if ! sudo install -o root -g root -m 0440 "$candidate" /etc/sudoers.d/pwfeedback; then
+        rm -f "$candidate"
+        die "Failed to install sudo password feedback configuration"
+    fi
+    rm -f "$candidate"
+    sudo visudo -cf /etc/sudoers.d/pwfeedback || die "Sudo configuration validation failed"
+    log ok "Sudo password feedback enabled"
+}
+
+# Back up existing dotfiles before installing the repository versions.
+setup_dotfiles() {
+    local source_dir=$1 relative destination backup_dir=""
+    for relative in .zshrc .zsh_aliases .config/nvim; do
+        [ -e "$source_dir/$relative" ] || die "Missing dotfile: $relative"
+        destination="$HOME/$relative"
+        if [ -e "$destination" ] || [ -L "$destination" ]; then
+            if [ -z "$backup_dir" ]; then
+                mkdir -p "$HOME/.local/state/work-scripts"
+                backup_dir=$(mktemp -d "$HOME/.local/state/work-scripts/dotfiles-backup.XXXXXX")
+            fi
+            mkdir -p "$backup_dir/$(dirname "$relative")"
+            mv "$destination" "$backup_dir/$relative"
+        fi
+        mkdir -p "$(dirname "$destination")"
+        cp -a "$source_dir/$relative" "$destination"
+    done
+    [ -z "$backup_dir" ] || log info "Previous dotfiles backed up to $backup_dir"
+    log ok "Zsh and Neovim configurations installed"
+}
+
 # Clone and setup scripts
 setup_scripts() {
     show_progress "Setting up scripts..."
     log info "Cloning scripts repository..."
 
-    # Clone repository to temporary directory
-    git clone "$GIT_REPO" "$GIT_TEMP_DIR" || die "Failed to clone repository"
+    # Use the checkout containing this installer, including unmerged branch changes.
+    local source_dir="$INSTALL_SOURCE_DIR"
+    if [ ! -d "$source_dir/.scripts" ] || [ ! -f "$source_dir/.zshrc" ]; then
+        git clone "$GIT_REPO" "$GIT_TEMP_DIR" || die "Failed to clone repository"
+        source_dir="$GIT_TEMP_DIR"
+    fi
+    setup_dotfiles "$source_dir"
 
     # Make scripts directory if it doesn't exist
     if [ ! -d "$SCRIPTS_DIR" ]; then
@@ -233,18 +280,18 @@ setup_scripts() {
 
     # Copy and make shell scripts executable
     log info "Setting up shell scripts..."
-    find "$GIT_TEMP_DIR" -name "*.sh" -exec chmod +x {} \;
-    find "$GIT_TEMP_DIR" -name "*.sh" -exec cp {} "$SCRIPTS_DIR/" \;
+    find "$source_dir" -name "*.sh" -exec chmod +x {} \;
+    find "$source_dir" -name "*.sh" -exec cp {} "$SCRIPTS_DIR/" \;
 
     # Copy systemd unit templates used by the quote download watcher
-    if [ -d "$GIT_TEMP_DIR/.scripts/systemd" ]; then
+    if [ -d "$source_dir/.scripts/systemd" ]; then
         mkdir -p "$SCRIPTS_DIR/systemd"
-        cp -a "$GIT_TEMP_DIR/.scripts/systemd/." "$SCRIPTS_DIR/systemd/"
+        cp -a "$source_dir/.scripts/systemd/." "$SCRIPTS_DIR/systemd/"
     fi
 
     # Copy XLSX files if they don't exist
     log info "Setting up inquiry template..."
-    find "$GIT_TEMP_DIR" -name "*.xlsx" -exec cp -n {} "$RALAKDE_DIR/Our inquires/" \;
+    find "$source_dir" -name "*.xlsx" -exec cp -n {} "$RALAKDE_DIR/Our inquires/" \;
 
     # Setup desktop files
     log info "Setting up desktop files..."
@@ -259,17 +306,19 @@ setup_scripts() {
             || log warn "Failed to enable quote download watcher"
     fi
 
-    find "$GIT_TEMP_DIR" -name "*.desktop" -exec chmod +x {} \;
-    find "$GIT_TEMP_DIR" -name "*.desktop" -exec cp {} "$APPLICATIONS_DIR/" \;
+    find "$source_dir" -name "*.desktop" -exec chmod +x {} \;
+    find "$source_dir" -name "*.desktop" -exec cp {} "$APPLICATIONS_DIR/" \;
 
     # Setup rofi config if it exists in the repo
-    if [ -f "$GIT_TEMP_DIR/.config/rofi/config.rasi" ]; then
+    if [ -f "$source_dir/.config/rofi/config.rasi" ]; then
         log info "Setting up Rofi configuration..."
-        cp "$GIT_TEMP_DIR/.config/rofi/config.rasi" "$ROFI_CONFIG_DIR/"
+        cp "$source_dir/.config/rofi/config.rasi" "$ROFI_CONFIG_DIR/"
     fi
 
     # Clean up
-    rm -rf "$GIT_TEMP_DIR"
+    if [ "$source_dir" = "$GIT_TEMP_DIR" ]; then
+        rm -rf "$GIT_TEMP_DIR"
+    fi
 
     log ok "Scripts setup completed"
 }
@@ -349,6 +398,8 @@ show_summary() {
     echo -e "${BOLD}9.${RESET} Desktop files added to ${BLUE}$APPLICATIONS_DIR${RESET}"
     echo -e "${BOLD}10.${RESET} Rofi configuration added to ${BLUE}$ROFI_CONFIG_DIR${RESET}"
     echo -e "${BOLD}11.${RESET} usbmuxd service enabled and started"
+    echo -e "${BOLD}12.${RESET} Zsh and Neovim dotfiles installed (previous files backed up)"
+    echo -e "${BOLD}13.${RESET} Sudo password feedback enabled"
     echo
     echo -e "${GREEN}${BOLD}Thank you for installing Ralakde!${RESET}"
     echo -e "${BLUE}Installation completed at: $(date '+%Y-%m-%d %H:%M:%S')${RESET}"
@@ -409,7 +460,7 @@ main() {
     fi
 
     # Install standard packages
-    local packages=("onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip" "libnotify")
+    local packages=("onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip" "libnotify" "zsh" "neovim" "git" "nodejs" "npm" "python-pip" "ripgrep" "fd" "unzip" "curl" "base-devel" "stylua" "python-black" "shfmt" "clang")
     for pkg in "${packages[@]}"; do
         install_package "$pkg"
     done
@@ -425,6 +476,8 @@ main() {
 
     # Handle Zoho WorkDrive installation
     setup_zoho_workdrive
+
+    setup_sudo_feedback
 
     # Setup directories and structure
     setup_directories
