@@ -327,6 +327,15 @@ setup_scripts() {
         cp "$source_dir/.config/rofi/config.rasi" "$ROFI_CONFIG_DIR/"
     fi
 
+    # Offer the optional desktop while its source files are still available.
+    if [[ -f "$source_dir/.scripts/install-hyprland.sh" ]] && \
+       whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
+                --title "Violet Night Hyprland" \
+                --yesno "Install the Violet Night Hyprland desktop alongside your current desktop?\n\nSDDM will not be changed. Select Hyprland at a later login." \
+                12 $WHIPTAIL_WIDTH; then
+        bash "$source_dir/.scripts/install-hyprland.sh"
+    fi
+
     # Clean up
     if [ "$source_dir" = "$GIT_TEMP_DIR" ]; then
         rm -rf "$GIT_TEMP_DIR"

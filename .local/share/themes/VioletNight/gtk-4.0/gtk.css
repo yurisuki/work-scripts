@@ -1,0 +1,32 @@
+@import url("resource:///org/gtk/libgtk/theme/Default/gtk-dark.css");
+
+@define-color theme_fg_color #ede3f5;
+@define-color theme_text_color #ede3f5;
+@define-color theme_bg_color #171020;
+@define-color theme_base_color #241a30;
+@define-color theme_selected_bg_color #71358f;
+@define-color theme_selected_fg_color #fff7ff;
+@define-color insensitive_fg_color #776387;
+@define-color borders #493455;
+@define-color accent_color #cf5aff;
+@define-color accent_bg_color #71358f;
+@define-color accent_fg_color #fff7ff;
+@define-color window_bg_color #171020;
+@define-color window_fg_color #ede3f5;
+@define-color view_bg_color #241a30;
+@define-color view_fg_color #ede3f5;
+@define-color headerbar_bg_color #241a30;
+@define-color headerbar_fg_color #ede3f5;
+@define-color theme_fg_color_breeze #ede3f5;
+@define-color theme_text_color_breeze #ede3f5;
+@define-color theme_bg_color_breeze #171020;
+@define-color theme_base_color_breeze #241a30;
+@define-color theme_selected_bg_color_breeze #71358f;
+@define-color theme_selected_fg_color_breeze #fff7ff;
+@define-color theme_view_hover_decoration_color_breeze #cf5aff;
+@define-color theme_view_focus_decoration_color_breeze #cf5aff;
+window, dialog { background-color: #171020; color: #ede3f5; }
+headerbar { background: #241a30; color: #ede3f5; }
+entry { background: #241a30; color: #ede3f5; border-color: #493455; }
+button { border-radius: 8px; }
+selection { background: #71358f; color: #fff7ff; }

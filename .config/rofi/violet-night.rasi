@@ -1,0 +1,28 @@
+configuration {
+    modi: "drun,run";
+    show-icons: true;
+    display-drun: "Applications";
+    drun-display-format: "{name}";
+    font: "JetBrainsMono Nerd Font 11";
+}
+* {
+    bg: #171020f5;
+    surface: #241a30;
+    fg: #ede3f5;
+    muted: #b4a3c4;
+    accent: #cf5aff;
+    background-color: transparent;
+    text-color: @fg;
+}
+window { width: 620px; border: 2px; border-color: @accent; border-radius: 18px; background-color: @bg; }
+mainbox { padding: 22px; spacing: 14px; children: [inputbar, message, listview]; }
+inputbar { padding: 12px; spacing: 12px; background-color: @surface; border-radius: 10px; children: [prompt, entry]; }
+prompt { text-color: @accent; }
+entry { placeholder: "Search…"; placeholder-color: @muted; }
+listview { lines: 8; columns: 1; spacing: 5px; fixed-height: false; }
+element { padding: 11px; spacing: 12px; border-radius: 9px; }
+element selected.normal { background-color: #493055; }
+element-icon { size: 24px; }
+element-text { vertical-align: 0.5; }
+message { padding: 8px; }
+textbox { text-color: @muted; }

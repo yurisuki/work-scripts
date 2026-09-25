@@ -1,0 +1,25 @@
+@import "/etc/xdg/swaync/style.css";
+:root {
+    --cc-bg: rgba(23, 16, 32, 0.98);
+    --noti-border-color: #493455;
+    --noti-bg: 36, 26, 48;
+    --noti-bg-alpha: 0.98;
+    --noti-bg-darker: #171020;
+    --noti-bg-hover: #362442;
+    --noti-bg-focus: #493055;
+    --noti-close-bg: #493055;
+    --noti-close-bg-hover: #71358f;
+    --text-color: #ede3f5;
+    --text-color-disabled: #b4a3c4;
+    --bg-selected: #cf5aff;
+    --border-radius: 14px;
+    --font-size-body: 13px;
+    --font-size-summary: 14px;
+}
+* { font-family: "JetBrainsMono Nerd Font"; }
+.control-center { border: 1px solid #71358f; border-radius: 18px; padding: 12px; }
+.widget-title { color: #e59bff; }
+.widget-title > button { background: #493055; color: #ede3f5; border-radius: 8px; }
+switch:checked { background: #cf5aff; }
+scale trough highlight { background: #cf5aff; }
+.notification.critical { border: 2px solid #ff799d; }
