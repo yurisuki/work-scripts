@@ -41,6 +41,11 @@ hl.window_rule({
     match = { class = "^(org.pulseaudio.pavucontrol|nm-connection-editor|nm-applet|qt6ct)$" },
     float = true, size = "900 650", center = true,
 })
+hl.window_rule({
+    name = "dropdown-terminal",
+    match = { class = "^dropdown-terminal$" },
+    float = true, size = "80% 70%", center = true,
+})
 hl.on("hyprland.start", function()
     hl.exec_cmd(home .. "/.scripts/hypr-session.sh")
 end)

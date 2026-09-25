@@ -1,17 +1,14 @@
 [Desktop Entry]
 Categories=Office;Finance;
 Comment=Stock search tool for Ralakde
-Exec=bash -c "${HOME}/Dokumenty/Ralakde/Zoho\\ WorkDrive\\ \\(Ralakde\\)/My\\ Folders/Search\\ stock\\ tool/search_stock_V1_PRO.py"
+Exec="@HOME@/.scripts/search-stock.sh"
 Icon=baloo
 Keywords=stock;search;inventory;ralakde;
 Name=Stock Search Tool
 NoDisplay=false
-Path=
 StartupNotify=true
 StartupWMClass=search_stock
 Terminal=false
-TerminalOptions=
 Type=Application
 Version=1.0
 X-KDE-SubstituteUID=false
-X-KDE-Username=

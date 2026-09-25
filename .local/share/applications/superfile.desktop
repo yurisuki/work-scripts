@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=superfile
+GenericName=Terminal File Manager
+Comment=Open directories in superfile
+Exec=kitty --title superfile -e spf %U
+TryExec=spf
+Terminal=false
+Type=Application
+MimeType=inode/directory;
+Categories=System;FileManager;

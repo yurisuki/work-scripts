@@ -1,14 +1,14 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 42,
+  "height": 43,
   "margin-top": 10,
   "margin-left": 12,
   "margin-right": 12,
   "spacing": 4,
   "modules-left": [
     "custom/launcher",
-    "hyprland/workspaces",
+    "group/workspaces",
     "hyprland/window"
   ],
   "modules-center": [
@@ -16,31 +16,19 @@
   ],
   "modules-right": [
     "tray",
-    "custom/clipboard",
+    "custom/weather",
     "network",
     "pulseaudio",
     "custom/brightness",
+    "battery",
+    "bluetooth",
     "custom/notification",
     "custom/power"
   ],
   "custom/launcher": {
-    "format": "󰣇",
+    "format": "○",
     "tooltip-format": "Violet Night · Applications",
     "on-click": "~/.scripts/hypr-menu.sh apps"
-  },
-  "hyprland/workspaces": {
-    "format": "{name}",
-    "on-click": "activate",
-    "sort-by-number": true,
-    "persistent-workspaces": {
-      "*": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ]
-    }
   },
   "hyprland/window": {
     "format": "{}",
@@ -48,25 +36,21 @@
     "separate-outputs": true
   },
   "clock": {
-    "format": "{:%a  %d %b  ·  %H:%M}",
-    "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small>"
+    "format": "{:L%a  %d %b  ·  %H:%M}",
+    "tooltip-format": "<big>{:L%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
+    "locale": "cs_CZ.UTF-8",
+    "on-click": "~/.scripts/bar-calendar.sh"
   },
   "tray": {
     "icon-size": 18,
     "spacing": 10
   },
-  "custom/clipboard": {
-    "format": "󰅌",
-    "tooltip-format": "Clipboard history · Right-click to clear",
-    "on-click": "~/.scripts/hypr-menu.sh clipboard",
-    "on-click-right": "~/.scripts/hypr-menu.sh clear-clipboard"
-  },
   "network": {
-    "format-wifi": "󰖩  {essid}",
-    "format-ethernet": "󰈀  Wired",
-    "format-disconnected": "󰖪  Offline",
-    "tooltip-format": "{ifname} · {ipaddr}\nClick: connection settings · Tray: Wi-Fi networks",
-    "on-click": "nm-connection-editor",
+    "format-wifi": "󰖩",
+    "format-ethernet": "󰈀",
+    "format-disconnected": "󰖪",
+    "tooltip-format": "{ifname} · {ipaddr}",
+    "on-click": "kitty --class network-settings -e nmtui",
     "max-length": 22
   },
   "pulseaudio": {
@@ -79,18 +63,18 @@
         "󰕾"
       ]
     },
-    "on-click": "pavucontrol",
+    "on-click": "kitty --class audio-settings -e wiremix",
     "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
     "scroll-step": 5
   },
   "custom/brightness": {
     "exec": "~/.scripts/hypr-brightness.sh status",
     "return-type": "json",
-    "interval": 10,
+    "interval": 30,
     "signal": 8,
     "on-scroll-up": "~/.scripts/hypr-brightness.sh up",
     "on-scroll-down": "~/.scripts/hypr-brightness.sh down",
-    "on-click": "~/.scripts/hypr-menu.sh brightness"
+    "smooth-scrolling-threshold": 1
   },
   "custom/notification": {
     "exec": "swaync-client -swb",
@@ -114,5 +98,143 @@
     "format": "󰐥",
     "tooltip-format": "Lock · Suspend · Log out · Power",
     "on-click": "~/.scripts/hypr-menu.sh session"
+  },
+  "group/workspaces": {
+    "orientation": "horizontal",
+    "modules": [
+      "custom/workspace1",
+      "custom/workspace2",
+      "custom/workspace3",
+      "custom/workspace4",
+      "custom/workspace5",
+      "custom/workspace6",
+      "custom/workspace7",
+      "custom/workspace8",
+      "custom/workspace9",
+      "custom/workspace10"
+    ]
+  },
+  "custom/workspace1": {
+    "exec": "~/.scripts/hypr-workspace.py status 1",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.scripts/hypr-workspace.py focus 1",
+    "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
+    "on-scroll-down": "~/.scripts/hypr-workspace.py next",
+    "smooth-scrolling-threshold": 1
+  },
+  "custom/workspace2": {
+    "exec": "~/.scripts/hypr-workspace.py status 2",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.scripts/hypr-workspace.py focus 2",
+    "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
+    "on-scroll-down": "~/.scripts/hypr-workspace.py next",
+    "smooth-scrolling-threshold": 1
+  },
+  "custom/workspace3": {
+    "exec": "~/.scripts/hypr-workspace.py status 3",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.scripts/hypr-workspace.py focus 3",
+    "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
+    "on-scroll-down": "~/.scripts/hypr-workspace.py next",
+    "smooth-scrolling-threshold": 1
+  },
+  "custom/workspace4": {
+    "exec": "~/.scripts/hypr-workspace.py status 4",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.scripts/hypr-workspace.py focus 4",
+    "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
+    "on-scroll-down": "~/.scripts/hypr-workspace.py next",
+    "smooth-scrolling-threshold": 1
+  },
+  "custom/workspace5": {
+    "exec": "~/.scripts/hypr-workspace.py status 5",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.scripts/hypr-workspace.py focus 5",
+    "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
+    "on-scroll-down": "~/.scripts/hypr-workspace.py next",
+    "smooth-scrolling-threshold": 1
+  },
+  "battery": {
+    "format": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
+    "format-icons": [
+      "󰁺",
+      "󰁼",
+      "󰁾",
+      "󰂀",
+      "󰁹"
+    ],
+    "states": {
+      "warning": 25,
+      "critical": 10
+    },
+    "tooltip-format": "{capacity}% · {timeTo}"
+  },
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "",
+    "format-off": "",
+    "format-on": "",
+    "format-connected": "",
+    "format-connected-battery": " {device_battery_percentage}%",
+    "tooltip-format-connected-battery": "{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}",
+    "tooltip-format-enumerate-connected-battery": "{device_alias}: {device_battery_percentage}%"
+  },
+  "custom/weather": {
+    "exec": "~/.scripts/bar-weather.py",
+    "return-type": "json",
+    "interval": 1800,
+    "on-click": "kitty -e nvim ~/.config/waybar/weather.json"
+  },
+  "custom/workspace6": {
+    "exec": "~/.scripts/hypr-workspace.py status 6",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.scripts/hypr-workspace.py focus 6",
+    "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
+    "on-scroll-down": "~/.scripts/hypr-workspace.py next",
+    "smooth-scrolling-threshold": 1
+  },
+  "custom/workspace7": {
+    "exec": "~/.scripts/hypr-workspace.py status 7",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.scripts/hypr-workspace.py focus 7",
+    "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
+    "on-scroll-down": "~/.scripts/hypr-workspace.py next",
+    "smooth-scrolling-threshold": 1
+  },
+  "custom/workspace8": {
+    "exec": "~/.scripts/hypr-workspace.py status 8",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.scripts/hypr-workspace.py focus 8",
+    "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
+    "on-scroll-down": "~/.scripts/hypr-workspace.py next",
+    "smooth-scrolling-threshold": 1
+  },
+  "custom/workspace9": {
+    "exec": "~/.scripts/hypr-workspace.py status 9",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.scripts/hypr-workspace.py focus 9",
+    "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
+    "on-scroll-down": "~/.scripts/hypr-workspace.py next",
+    "smooth-scrolling-threshold": 1
+  },
+  "custom/workspace10": {
+    "exec": "~/.scripts/hypr-workspace.py status 10",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.scripts/hypr-workspace.py focus 10",
+    "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
+    "on-scroll-down": "~/.scripts/hypr-workspace.py next",
+    "smooth-scrolling-threshold": 1
   }
 }

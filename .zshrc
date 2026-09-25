@@ -51,28 +51,13 @@ zstyle ':completion:*:warnings' format 'No matches for: %d'
 # Show all prefix matches even when one is an existing file or directory.
 zstyle ':completion:*' accept-exact false
 
-# Zsh plugins directory
-ZSH_PLUGINS_DIR="$HOME/.zsh/plugins"
-mkdir -p "$ZSH_PLUGINS_DIR"
-
-# zsh-autosuggestions
-if [[ ! -d "$ZSH_PLUGINS_DIR/zsh-autosuggestions" ]]; then
-  git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_PLUGINS_DIR/zsh-autosuggestions"
-fi
-source "$ZSH_PLUGINS_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
-
-# zsh-syntax-highlighting
-if [[ ! -d "$ZSH_PLUGINS_DIR/zsh-syntax-highlighting" ]]; then
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_PLUGINS_DIR/zsh-syntax-highlighting"
-fi
-source "$ZSH_PLUGINS_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-
-# zsh-completions
-if [[ ! -d "$ZSH_PLUGINS_DIR/zsh-completions" ]]; then
-  git clone https://github.com/zsh-users/zsh-completions "$ZSH_PLUGINS_DIR/zsh-completions"
-fi
-fpath=("$ZSH_PLUGINS_DIR/zsh-completions/src" $fpath)
+# Use distro-managed plugins; no network requests when opening a shell.
+fpath=(/usr/share/zsh/site-functions $fpath)
 compinit
+[[ ! -r /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] || source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+[[ ! -r /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] || source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+export PATH="$HOME/.local/bin:$PATH"
+export EDITOR=nvim
 
 # Source custom aliases
 if [[ -e ~/.zsh_aliases ]]; then

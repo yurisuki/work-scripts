@@ -1,520 +1,75 @@
 #!/usr/bin/env bash
-#
-# Ralakde Installation Script for Arch Linux
-# Author: adamnvrtil
-# Description: Sets up a customized Arch Linux environment with required applications
-# Version: 2.5.0
-# License: MIT
-
-# Set strict error handling
-set -eo pipefail
-
-# Define colors and formatting
-readonly BOLD="\e[1m"
-readonly GREEN="\e[32m"
-readonly BLUE="\e[34m"
-readonly RED="\e[31m"
-readonly YELLOW="\e[33m"
-readonly RESET="\e[0m"
-readonly BG_BLUE="\e[44m"
-readonly FG_WHITE="\e[97m"
-
-# Configuration variables
-readonly HEADER="${BOLD}${FG_WHITE}${BG_BLUE}"
-readonly SCRIPTS_DIR="${HOME}/.scripts"
-readonly RALAKDE_DIR="${HOME}/Dokumenty/Ralakde"
-readonly RALAKDE_SUBDIRS=("1!QUOTES" "Accountant" "Our inquires" "Temp")
-readonly APPLICATIONS_DIR="${HOME}/.local/share/applications"
-readonly CONFIG_DIR="${HOME}/.config"
-readonly ROFI_CONFIG_DIR="${CONFIG_DIR}/rofi"
-readonly GIT_TEMP_DIR="/tmp/work-scripts-$(date +%s)"
-readonly GIT_REPO="https://github.com/yurisuki/work-scripts.git"
-readonly ZOHO_WORKDRIVE_PATH="${HOME}/.zohoworkdrive/bin/zohoworkdrive"
-readonly INSTALL_SOURCE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-SYSTEM_UPDATED=false
-
-# Arch package names shared by installation and the completion summary.
-readonly REPO_PACKAGES=(
-    xournalpp libimobiledevice rofi bc wl-clipboard qalculate-qt xclip
-    libnotify zsh neovim git nodejs npm python-pip ripgrep fd unzip curl
-    base-devel stylua python-black shfmt clang konsole xdg-utils
-)
-readonly PYTHON_PACKAGES=(python python-pypdf python-pandas python-numpy python-pyqt6)
-readonly AUR_PACKAGES=(onlyoffice-bin brave-bin zapzap ttf-apple-emoji ticktick)
-
-# Program defaults
-readonly WHIPTAIL_TITLE="Ralakde Installation"
-readonly WHIPTAIL_BACKTITLE="Arch Linux - Ralakde Setup"
-readonly WHIPTAIL_WIDTH=70
-readonly WHIPTAIL_HEIGHT=15
-
-#------------------------------------------------------------------------------
-# Utility functions
-#------------------------------------------------------------------------------
-
-# Display a message with a colored prefix
-log() {
-    local level=$1
-    local message=$2
-    local color=""
-    local prefix=""
-
-    case $level in
-        info)  color="$BLUE"; prefix="[INFO]";;
-        ok)    color="$GREEN"; prefix="[OK]";;
-        warn)  color="$YELLOW"; prefix="[WARNING]";;
-        error) color="$RED"; prefix="[ERROR]";;
-        *)     color="$RESET"; prefix="[$level]";;
-    esac
-
-    echo -e "${color}${BOLD}${prefix}${RESET} ${message}"
-}
-
-# Show a progress message using whiptail
-show_progress() {
-    whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
-             --title "$WHIPTAIL_TITLE" \
-             --infobox "$1" 8 $WHIPTAIL_WIDTH
-    sleep 1
-}
-
-# Display an error message and exit
-die() {
-    log error "$1"
-    exit 1
-}
-
-# Check if a command exists
-command_exists() {
-    command -v "$1" &>/dev/null
-}
-
-# Run a command with error handling
-run_cmd() {
-    if ! "$@"; then
-        die "Command failed: $*"
-    fi
-}
-
-# Display a fancy header
-show_header() {
-    clear
-    echo -e "${HEADER}                                                                ${RESET}"
-    echo -e "${HEADER}  WELCOME ${USER} TO RALAKDE INSTALLATION - ARCH LINUX  ${RESET}"
-    echo -e "${HEADER}                                                                ${RESET}"
-    echo
-}
-
-#------------------------------------------------------------------------------
-# Installation functions
-#------------------------------------------------------------------------------
-
-# Check and install whiptail if missing
-ensure_whiptail() {
-    if ! command_exists whiptail; then
-        log info "Installing whiptail..."
-        sudo pacman -S --noconfirm libnewt || die "Failed to install whiptail"
-    fi
-}
-
-# Install a package if not already installed
-install_package() {
-    if ! pacman -Q "$1" &>/dev/null; then
-        show_progress "Installing $1..."
-        log info "Installing package: $1"
-        sudo pacman -S --noconfirm "$1" || {
-            whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
-                     --title "Error" \
-                     --msgbox "Failed to install $1." 8 $WHIPTAIL_WIDTH
-            return 1
-        }
-        log ok "Package installed: $1"
-    else
-        show_progress "$1 is already installed, skipping."
-        log info "Package already installed: $1"
-    fi
-}
-
-# Ensure yay (AUR helper) is installed
-ensure_yay() {
-    if ! command_exists yay; then
-        show_progress "Installing yay (AUR helper)..."
-        log info "Installing yay AUR helper..."
-
-        # Install build dependencies
-        sudo pacman -S --needed --noconfirm base-devel git || die "Failed to install base-devel or git"
-
-        # Clone and build yay
-        git clone https://aur.archlinux.org/yay.git /tmp/yay || die "Failed to clone yay repository"
-        (cd /tmp/yay && makepkg -si --noconfirm) || die "Failed to build yay"
-        rm -rf /tmp/yay
-
-        log ok "Yay installed successfully"
-    else
-        log info "Yay is already installed"
-    fi
-}
-
-# Install an AUR package if not already installed
-install_aur_package() {
-    if ! yay -Q "$1" &>/dev/null; then
-        show_progress "Installing $1 from AUR..."
-        log info "Installing AUR package: $1"
-        yay -S --noconfirm "$1" || {
-            whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
-                     --title "Error" \
-                     --msgbox "Failed to install $1 from AUR." 8 $WHIPTAIL_WIDTH
-            return 1
-        }
-        log ok "AUR package installed: $1"
-    else
-        show_progress "$1 is already installed, skipping."
-        log info "AUR package already installed: $1"
-    fi
-}
-
-# Install Python packages
-install_python_packages() {
-    show_progress "Installing Python packages..."
-    log info "Installing required Python packages..."
-
-    local pkg
-    for pkg in "${PYTHON_PACKAGES[@]}"; do
-        install_package "$pkg"
-    done
-
-    log ok "Python packages installed"
-}
-
-# Update system packages
-update_system() {
-    show_progress "Updating system packages..."
-    log info "Updating system packages..."
-    sudo pacman -Syu --noconfirm || die "System update failed"
-    log ok "System packages updated"
-
-    show_progress "Updating AUR packages..."
-    log info "Updating AUR packages..."
-    yay -Syu --noconfirm || log warn "AUR update completed with warnings"
-    log ok "AUR packages updated"
-    SYSTEM_UPDATED=true
-}
-
-# Setup directories and files
-setup_directories() {
-    show_progress "Setting up directories..."
-    log info "Ensuring Ralakde directories exist..."
-
-    # Create main directory if it doesn't exist
-    if [ ! -d "$RALAKDE_DIR" ]; then
-        mkdir -p "$RALAKDE_DIR"
-        log info "Created main Ralakde directory"
-    fi
-
-    # Create subdirectories if they don't exist
-    for dir in "${RALAKDE_SUBDIRS[@]}"; do
-        if [ ! -d "$RALAKDE_DIR/$dir" ]; then
-            mkdir -p "$RALAKDE_DIR/$dir"
-            log info "Created $dir directory"
-        fi
-    done
-
-    # Create .config/rofi directory if it doesn't exist
-    if [ ! -d "$ROFI_CONFIG_DIR" ]; then
-        mkdir -p "$ROFI_CONFIG_DIR"
-        log info "Created Rofi configuration directory"
-    fi
-
-    log ok "Directory structure verified"
-}
-
-# Enable password feedback using the configuration supplied in installsudopass.txt.
-setup_sudo_feedback() {
-    log info "Enabling sudo password feedback..."
-    local candidate
-    candidate=$(mktemp) || die "Failed to create sudo configuration candidate"
-    printf '%s\n' 'Defaults pwfeedback' > "$candidate"
-    if ! sudo visudo -cf "$candidate"; then
-        rm -f "$candidate"
-        die "Invalid sudo password feedback configuration"
-    fi
-    sudo install -d -m 0750 /etc/sudoers.d
-    if ! sudo install -o root -g root -m 0440 "$candidate" /etc/sudoers.d/pwfeedback; then
-        rm -f "$candidate"
-        die "Failed to install sudo password feedback configuration"
-    fi
-    rm -f "$candidate"
-    sudo visudo -cf /etc/sudoers.d/pwfeedback || die "Sudo configuration validation failed"
-    log ok "Sudo password feedback enabled"
-}
-
-# Back up existing dotfiles before installing the repository versions.
-setup_dotfiles() {
-    local source_dir=$1 relative destination backup_dir=""
-    for relative in .zshrc .zsh_aliases .config/nvim \
-        .config/konsolerc \
-        .local/share/konsole/VioletNight.colorscheme \
-        .local/share/konsole/VioletNight.profile; do
-        [ -e "$source_dir/$relative" ] || die "Missing dotfile: $relative"
-        destination="$HOME/$relative"
-        if [ -e "$destination" ] || [ -L "$destination" ]; then
-            if [ -z "$backup_dir" ]; then
-                mkdir -p "$HOME/.local/state/work-scripts"
-                backup_dir=$(mktemp -d "$HOME/.local/state/work-scripts/dotfiles-backup.XXXXXX")
-            fi
-            mkdir -p "$backup_dir/$(dirname "$relative")"
-            mv "$destination" "$backup_dir/$relative"
-        fi
-        mkdir -p "$(dirname "$destination")"
-        cp -a "$source_dir/$relative" "$destination"
-    done
-    [ -z "$backup_dir" ] || log info "Previous dotfiles backed up to $backup_dir"
-    log ok "Zsh, Neovim and Konsole configurations installed"
-}
-
-# Clone and setup scripts
-setup_scripts() {
-    show_progress "Setting up scripts..."
-    log info "Cloning scripts repository..."
-
-    # Use the checkout containing this installer, including unmerged branch changes.
-    local source_dir="$INSTALL_SOURCE_DIR"
-    if [ ! -d "$source_dir/.scripts" ] || [ ! -f "$source_dir/.zshrc" ]; then
-        git clone "$GIT_REPO" "$GIT_TEMP_DIR" || die "Failed to clone repository"
-        source_dir="$GIT_TEMP_DIR"
-    fi
-    setup_dotfiles "$source_dir"
-
-    # Make scripts directory if it doesn't exist
-    if [ ! -d "$SCRIPTS_DIR" ]; then
-        mkdir -p "$SCRIPTS_DIR"
-    fi
-
-    # Copy and make shell scripts executable
-    log info "Setting up shell scripts..."
-    find "$source_dir" -name "*.sh" -exec chmod +x {} \;
-    find "$source_dir" -name "*.sh" -exec cp {} "$SCRIPTS_DIR/" \;
-
-    # Copy systemd unit templates used by the quote download watcher
-    if [ -d "$source_dir/.scripts/systemd" ]; then
-        mkdir -p "$SCRIPTS_DIR/systemd"
-        cp -a "$source_dir/.scripts/systemd/." "$SCRIPTS_DIR/systemd/"
-    fi
-
-    # Copy XLSX files if they don't exist
-    log info "Setting up inquiry template..."
-    find "$source_dir" -name "*.xlsx" -exec cp -n {} "$RALAKDE_DIR/Our inquires/" \;
-
-    # Setup desktop files
-    log info "Setting up desktop files..."
-    if [ ! -d "$APPLICATIONS_DIR" ]; then
-        mkdir -p "$APPLICATIONS_DIR"
-    fi
-
-    # Watch the Downloads directory and immediately move completed QT PDFs.
-    if [ -x "$SCRIPTS_DIR/install-quote-download-watcher.sh" ]; then
-        log info "Enabling quote download watcher..."
-        "$SCRIPTS_DIR/install-quote-download-watcher.sh" \
-            || log warn "Failed to enable quote download watcher"
-    fi
-
-    find "$source_dir" -name "*.desktop" -exec chmod +x {} \;
-    find "$source_dir" -name "*.desktop" -exec cp {} "$APPLICATIONS_DIR/" \;
-
-    # Setup rofi config if it exists in the repo
-    if [ -f "$source_dir/.config/rofi/config.rasi" ]; then
-        log info "Setting up Rofi configuration..."
-        cp "$source_dir/.config/rofi/config.rasi" "$ROFI_CONFIG_DIR/"
-    fi
-
-    # Offer the optional desktop while its source files are still available.
-    if [[ -f "$source_dir/.scripts/install-hyprland.sh" ]] && \
-       whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
-                --title "Violet Night Hyprland" \
-                --yesno "Install the Violet Night Hyprland desktop alongside your current desktop?\n\nSDDM will not be changed. Select Hyprland at a later login." \
-                12 $WHIPTAIL_WIDTH; then
-        bash "$source_dir/.scripts/install-hyprland.sh"
-    fi
-
-    # Clean up
-    if [ "$source_dir" = "$GIT_TEMP_DIR" ]; then
-        rm -rf "$GIT_TEMP_DIR"
-    fi
-
-    log ok "Scripts setup completed"
-}
-
-# Configure system services
-configure_services() {
-    show_progress "Configuring system services..."
-    log info "Enabling usbmuxd service..."
-
-    sudo systemctl enable usbmuxd.service || log warn "Failed to enable usbmuxd service"
-    sudo systemctl start usbmuxd.service || log warn "Failed to start usbmuxd service"
-
-    log ok "Services configured"
-}
-
-# Create update-checker startup file
-setup_update_checker() {
-    show_progress "Setting up update checker autostart..."
-    log info "Creating update-checker autostart file..."
-
-    # Make sure the autostart directory exists
-    if [ ! -d "${HOME}/.config/autostart" ]; then
-        mkdir -p "${HOME}/.config/autostart"
-        log info "Created autostart directory"
-    fi
-
-    # Create the desktop entry file
-    cat > "${HOME}/.config/autostart/update-checker.sh.desktop" << EOF
-[Desktop Entry]
-        Exec=${SCRIPTS_DIR}/update-checker.sh
-Icon=
-Name=update-checker.sh
-Path=
-Terminal=False
-Type=Application
+# Full desktop + work tools. Run as a normal sudo-capable user from this checkout.
+set -euo pipefail
+source_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+mode=all
+upgrade=1
+force_greetd=0
+usage() {
+    cat <<'EOF'
+Usage: ./install.sh [--config-only|--packages-only] [--no-upgrade] [--greetd]
+  default          Install packages, work scripts, desktop and user services.
+  --config-only    Copy configuration with backups; no packages or service changes.
+  --packages-only  Install dependencies only.
+  --no-upgrade     Use existing package databases (only on an up-to-date system).
+  --greetd         Use tuigreet at next boot, replacing an existing login manager.
+Existing login managers are kept by default; greetd is configured if none exists.
 EOF
-
-    # Make sure the file has proper permissions
-    chmod 644 "${HOME}/.config/autostart/update-checker.sh.desktop"
-
-    log ok "Update checker autostart file created successfully"
 }
-
-# Show summary of installation
-show_summary() {
-    local package_list="${REPO_PACKAGES[*]}"
-    local python_packages="${PYTHON_PACKAGES[*]}"
-    local aur_package_list="${AUR_PACKAGES[*]}"
-
-    whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
-             --title "Installation Complete" \
-             --msgbox "Ralakde Linux setup has been successfully completed!\n\nPress OK to view the summary." 10 $WHIPTAIL_WIDTH
-
-    clear
-    echo -e "${HEADER}                                                   ${RESET}"
-    echo -e "${HEADER}  RALAKDE INSTALLATION COMPLETED!                  ${RESET}"
-    echo -e "${HEADER}                                                   ${RESET}"
-    echo
-    echo -e "${BOLD}Installation Summary:${RESET}"
-    echo "-----------------------------------------------"
-    if [[ "$SYSTEM_UPDATED" == true ]]; then
-        echo -e "${BOLD}1.${RESET} System updated and upgraded"
-    else
-        echo -e "${BOLD}1.${RESET} System update skipped"
-    fi
-    echo -e "${BOLD}2.${RESET} Standard packages installed: ${BLUE}$package_list${RESET}"
-    echo -e "${BOLD}3.${RESET} Python packages installed: ${BLUE}$python_packages${RESET}"
-    echo -e "${BOLD}4.${RESET} AUR packages installed: ${YELLOW}$aur_package_list${RESET}"
-    echo -e "${BOLD}5.${RESET} Yay AUR helper installed (if missing)"
-    if [ ! -f "$ZOHO_WORKDRIVE_PATH" ]; then
-        echo -e "${BOLD}6.${RESET} Zoho WorkDrive download page opened for manual installation"
-    else
-        echo -e "${BOLD}6.${RESET} Zoho WorkDrive already installed at ${BLUE}$ZOHO_WORKDRIVE_PATH${RESET}"
-    fi
-    echo -e "${BOLD}7.${RESET} Git repository cloned and scripts moved to ${BLUE}$SCRIPTS_DIR${RESET}"
-    echo -e "${BOLD}8.${RESET} Ralakde directories verified under ${BLUE}$RALAKDE_DIR${RESET}"
-    echo -e "${BOLD}9.${RESET} Desktop files added to ${BLUE}$APPLICATIONS_DIR${RESET}"
-    echo -e "${BOLD}10.${RESET} Rofi configuration added to ${BLUE}$ROFI_CONFIG_DIR${RESET}"
-    echo -e "${BOLD}11.${RESET} usbmuxd service enabled and started"
-    echo -e "${BOLD}12.${RESET} Zsh and Neovim dotfiles installed (previous files backed up)"
-    echo -e "${BOLD}13.${RESET} Sudo password feedback enabled"
-    echo -e "${BOLD}14.${RESET} Konsole Violet Night dark purple theme installed"
-    echo
-    echo -e "${GREEN}${BOLD}Thank you for installing Ralakde!${RESET}"
-    echo -e "${BLUE}Installation completed at: $(date '+%Y-%m-%d %H:%M:%S')${RESET}"
-    echo -e "${YELLOW}Installed by: ${USER}${RESET}"
-    echo "-----------------------------------------------"
-}
-
-# Handle the Zoho WorkDrive installation
-setup_zoho_workdrive() {
-    # Check if Zoho WorkDrive is already installed
-    if [ -f "$ZOHO_WORKDRIVE_PATH" ]; then
-        log info "Zoho WorkDrive is already installed, skipping installation"
-        return 0
-    fi
-
-    whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
-             --title "Zoho WorkDrive Installation" \
-             --msgbox "To install Zoho WorkDrive manually, follow these steps:\n\n1. Download the WorkDrive .tar.gz file from the website\n2. Extract it using: tar -xzf zoho-workdrive*.tar.gz\n3. Run the installer as instructed on the website\n\nPress OK to open the download page." 12 $WHIPTAIL_WIDTH
-
-    show_progress "Opening Zoho WorkDrive download page..."
-    xdg-open "https://www.zoho.com/workdrive/desktop-sync.html"
-
-    whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
-             --title "Zoho WorkDrive" \
-             --msgbox "Please install Zoho WorkDrive manually.\nOnce done, press OK to continue." 8 $WHIPTAIL_WIDTH
-}
-
-#------------------------------------------------------------------------------
-# Main script execution
-#------------------------------------------------------------------------------
-
-main() {
-    # Ensure we have whiptail before anything else
-    ensure_whiptail
-
-    # Show welcome header
-    show_header
-
-    # Welcome message
-    if ! whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
-                 --title "Welcome" \
-                 --yesno "Welcome to the Ralakde Linux installation.\n\nUser: ${USER}\n\nThis script will set up your system with required applications and configurations.\n\nDo you want to continue?" 12 $WHIPTAIL_WIDTH; then
-        log info "Installation cancelled by user"
-        exit 1
-    fi
-
-    # Ensure yay is available for AUR packages
-    ensure_yay
-
-    # Let the user skip a potentially lengthy system-wide update.
-    if whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
-                --title "System Update" \
-                --yesno "Update all system and AUR packages before installation?\n\nSelect No to skip the update." \
-                10 $WHIPTAIL_WIDTH; then
-        update_system
-    else
-        log info "System update skipped by user"
-    fi
-
-    # Install standard packages
-    local pkg
-    for pkg in "${REPO_PACKAGES[@]}"; do
-        install_package "$pkg"
-    done
-
-    # Install Python packages
-    install_python_packages
-
-    # Install AUR packages
-    for pkg in "${AUR_PACKAGES[@]}"; do
-        install_aur_package "$pkg"
-    done
-
-    # Handle Zoho WorkDrive installation
-    setup_zoho_workdrive
-
-    setup_sudo_feedback
-
-    # Setup directories and structure
-    setup_directories
-
-    # Setup scripts
-    setup_scripts
-
-    # Setup update checker autostart
-    setup_update_checker
-
-    # Configure services
-    configure_services
-
-    # Show installation summary
-    show_summary
-}
-
-# Execute main function
-main "$@"
+for argument in "$@"; do
+    case "$argument" in
+        --all) mode=all ;;
+        --config-only) mode=config ;;
+        --packages-only) mode=packages ;;
+        --no-upgrade) upgrade=0 ;;
+        --greetd) force_greetd=1 ;;
+        --help|-h) usage; exit 0 ;;
+        *) usage >&2; exit 2 ;;
+    esac
+done
+(( EUID != 0 )) || { echo 'Run as your normal user, not root or sudo.' >&2; exit 1; }
+[[ -f "$source_dir/install/deploy.py" ]] || { echo 'Clone the whole repository first.' >&2; exit 1; }
+trap 'printf "Installation failed at line %s. Fix the error above and rerun the same command.\n" "$LINENO" >&2' ERR
+if [[ $mode == config ]]; then
+    exec python3 "$source_dir/install/deploy.py" "$source_dir" "$HOME"
+fi
+command -v pacman >/dev/null || { echo 'Requires Arch Linux or Manjaro.' >&2; exit 1; }
+command -v sudo >/dev/null || { echo 'Configure sudo access for your normal user first.' >&2; exit 1; }
+[[ $(uname -m) == x86_64 ]] || { echo 'The bundled binary AUR packages require x86_64.' >&2; exit 1; }
+source "$source_dir/install/packages.sh"
+printf '\nInstalling Violet Night + work tools. Package managers will show their transactions.\n'
+sudo -v
+if (( upgrade )); then
+    sudo pacman -Syu --needed "${REPO_PACKAGES[@]}"
+else
+    sudo pacman -S --needed "${REPO_PACKAGES[@]}"
+fi
+version=$(pacman -Q hyprland | cut -d ' ' -f2)
+[[ $(vercmp "$version" 0.55) -ge 0 ]] || { echo 'Hyprland 0.55+ is required for this Lua configuration.' >&2; exit 1; }
+command -v start-hyprland >/dev/null
+if ! command -v yay >/dev/null; then
+    build_dir=$(mktemp -d)
+    git clone https://aur.archlinux.org/yay-bin.git "$build_dir/yay-bin"
+    (cd "$build_dir/yay-bin" && makepkg -si)
+    rm -rf -- "$build_dir"
+fi
+# Keep AUR review and package conflict prompts available.
+yay -S --needed "${AUR_PACKAGES[@]}"
+uv tool install 'calcure==3.4'
+[[ $mode != packages ]] || { echo 'All package dependencies installed.'; exit 0; }
+python3 "$source_dir/install/deploy.py" "$source_dir" "$HOME"
+xdg-user-dirs-update
+fc-cache -f
+update-desktop-database "$HOME/.local/share/applications"
+sudo systemctl enable --now NetworkManager.service bluetooth.service cups.service
+# usbmuxd is socket/udev activated by its distribution package.
+sudo modprobe i2c-dev || echo 'i2c-dev unavailable; laptop brightness still works.'
+systemctl --user enable --now pipewire.socket pipewire-pulse.socket wireplumber.service
+bash "$HOME/.scripts/install-quote-download-watcher.sh"
+if (( force_greetd )) || [[ ! -e /etc/systemd/system/display-manager.service ]]; then
+    bash "$HOME/.scripts/setup-greetd.sh" --configure-only
+fi
+printf '\nInstallation complete. Select Hyprland at your next login, or run start-hyprland from a TTY.\n'
+printf 'Weather: ~/.config/waybar/weather.json; monitor/input overrides: ~/.config/hypr/local.lua\n'
+printf 'Configure your printer in CUPS and sign in to work applications. Zoho WorkDrive requires its vendor installer.\n'
+printf 'No automatic update job is installed. No reboot or logout was performed.\n'
