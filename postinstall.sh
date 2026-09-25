@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Ralakde Installation Script for Arch/Manjaro Linux
+# Ralakde Installation Script for Arch Linux
 # Author: adamnvrtil
-# Description: Sets up a customized Arch/Manjaro Linux environment with required applications
+# Description: Sets up a customized Arch Linux environment with required applications
 # Version: 2.5.0
 # License: MIT
 
@@ -33,9 +33,18 @@ readonly ZOHO_WORKDRIVE_PATH="${HOME}/.zohoworkdrive/bin/zohoworkdrive"
 readonly INSTALL_SOURCE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 SYSTEM_UPDATED=false
 
+# Arch package names shared by installation and the completion summary.
+readonly REPO_PACKAGES=(
+    xournalpp libimobiledevice rofi bc wl-clipboard qalculate-qt xclip
+    libnotify zsh neovim git nodejs npm python-pip ripgrep fd unzip curl
+    base-devel stylua python-black shfmt clang konsole xdg-utils
+)
+readonly PYTHON_PACKAGES=(python python-pypdf python-pandas python-numpy python-pyqt6)
+readonly AUR_PACKAGES=(onlyoffice-bin brave-bin zapzap ttf-apple-emoji ticktick)
+
 # Program defaults
 readonly WHIPTAIL_TITLE="Ralakde Installation"
-readonly WHIPTAIL_BACKTITLE="Arch/Manjaro Linux - Ralakde Setup"
+readonly WHIPTAIL_BACKTITLE="Arch Linux - Ralakde Setup"
 readonly WHIPTAIL_WIDTH=70
 readonly WHIPTAIL_HEIGHT=15
 
@@ -91,7 +100,7 @@ run_cmd() {
 show_header() {
     clear
     echo -e "${HEADER}                                                                ${RESET}"
-    echo -e "${HEADER}  WELCOME ${USER} TO RALAKDE INSTALLATION - ARCH/MANJARO LINUX  ${RESET}"
+    echo -e "${HEADER}  WELCOME ${USER} TO RALAKDE INSTALLATION - ARCH LINUX  ${RESET}"
     echo -e "${HEADER}                                                                ${RESET}"
     echo
 }
@@ -169,8 +178,8 @@ install_python_packages() {
     show_progress "Installing Python packages..."
     log info "Installing required Python packages..."
 
-    local python_packages=("python" "python3" python-pypdf"" "python-pandas" "python-numpy" "python-pyqt6")
-    for pkg in "${python_packages[@]}"; do
+    local pkg
+    for pkg in "${PYTHON_PACKAGES[@]}"; do
         install_package "$pkg"
     done
 
@@ -367,9 +376,9 @@ EOF
 
 # Show summary of installation
 show_summary() {
-    local package_list="onlyoffice-desktopeditors xournalpp libimobiledevice rofi-wayland bc qalculate-qt"
-    local python_packages="python python3 python-pypdf python-pandas python-numpy python-pyqt6"
-    local aur_package_list="brave-browser zapzap ttf-apple-emoji"
+    local package_list="${REPO_PACKAGES[*]}"
+    local python_packages="${PYTHON_PACKAGES[*]}"
+    local aur_package_list="${AUR_PACKAGES[*]}"
 
     whiptail --backtitle "$WHIPTAIL_BACKTITLE" \
              --title "Installation Complete" \
@@ -464,8 +473,8 @@ main() {
     fi
 
     # Install standard packages
-    local packages=("onlyoffice-desktopeditors" "xournalpp" "libimobiledevice" "rofi-wayland" "bc" "wl-clipboard" "qalculate-qt" "xclip" "libnotify" "zsh" "neovim" "git" "nodejs" "npm" "python-pip" "ripgrep" "fd" "unzip" "curl" "base-devel" "stylua" "python-black" "shfmt" "clang")
-    for pkg in "${packages[@]}"; do
+    local pkg
+    for pkg in "${REPO_PACKAGES[@]}"; do
         install_package "$pkg"
     done
 
@@ -473,8 +482,7 @@ main() {
     install_python_packages
 
     # Install AUR packages
-    local aur_packages=("brave-browser" "zapzap" "ttf-apple-emoji" "ticktick")
-    for pkg in "${aur_packages[@]}"; do
+    for pkg in "${AUR_PACKAGES[@]}"; do
         install_aur_package "$pkg"
     done
 
