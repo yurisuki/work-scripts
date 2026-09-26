@@ -30,7 +30,6 @@ fi
 start "$HOME/.scripts/bar-start.py"
 start swaync
 start hypridle
-start nm-applet --indicator
 start /usr/lib/hyprpolkitagent/hyprpolkitagent
 start wl-paste --type text --watch cliphist store
 start wl-paste --type image --watch cliphist store
