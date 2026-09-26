@@ -30,6 +30,8 @@ fi
 start "$HOME/.scripts/bar-start.py"
 start swaync
 start hypridle
+start zapzap
+start sleep 10 && QT_QPA_PLATFORM=xcb /home/adam/.zohoworkdrive/bin/zohoworkdrive
 start /usr/lib/hyprpolkitagent/hyprpolkitagent
 start wl-paste --type text --watch cliphist store
 start wl-paste --type image --watch cliphist store
