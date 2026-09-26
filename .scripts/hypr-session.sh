@@ -12,7 +12,10 @@ cleanup() {
 }
 trap cleanup EXIT
 trap 'exit 0' INT TERM
-start() { "$@" 9>&- & pids+=("$!"); }
+start() {
+    "$@" 9>&- &
+    pids+=("$!")
+}
 export PATH="$HOME/.local/bin:$PATH"
 export XDG_CURRENT_DESKTOP=Hyprland
 export XDG_SESSION_DESKTOP=Hyprland
@@ -22,7 +25,7 @@ wallpaper_file="$HOME/.config/hypr/wallpaper"
 if [[ -s "$wallpaper_file" && -f "$(<"$wallpaper_file")" ]]; then
     start swaybg -i "$(<"$wallpaper_file")" -m fill -c '#171020'
 else
-    start swaybg -i "$HOME/.local/share/backgrounds/current-wallpaper.webp" -m fill -c '#171020'
+    start swaybg -i "$HOME/.local/share/backgrounds/dark.jpg" -m fill -c '#171020'
 fi
 start "$HOME/.scripts/bar-start.py"
 start swaync
