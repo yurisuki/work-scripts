@@ -76,6 +76,7 @@ installed on your notebook. Kitty uses Zsh without changing your login shell.
 | Super+Alt+H/J/K/L or arrows       | Resize window                        |
 | Super+number / Super+Shift+number | Workspace / move window to workspace |
 | Super+X / Super+F / Super+Q       | Lock / fullscreen / close            |
+| Super+G                           | Make focused window largest          |
 | Super+C / Super+Shift+Escape      | Calculator / gotop                   |
 | Super+Escape                      | Session menu                         |
 | Super+B                           | Toggle bar                           |
