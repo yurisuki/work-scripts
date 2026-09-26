@@ -119,6 +119,14 @@ hl.animation({
 	bezier = "violet",
 })
 
+-- Normal terminals join the tiling layout; the dropdown keeps its own class.
+hl.window_rule({
+    name = "kitty-tiled",
+    match = { class = "^kitty$" },
+    tile = true,
+    suppress_event = "maximize fullscreen",
+})
+
 hl.window_rule({
 	name = "settings-dialogs",
 	match = {
