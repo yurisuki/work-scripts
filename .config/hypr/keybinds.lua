@@ -6,6 +6,7 @@ hl.bind("SUPER + R", hl.dsp.exec_cmd("kitty -e spf"))
 hl.bind("SUPER + C", hl.dsp.exec_cmd("qalculate-qt"))
 hl.bind("SUPER + SHIFT + W", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh browser"))
 hl.bind("SUPER + W", hl.dsp.exec_cmd("kitty --class network-settings -e nmtui"))
+hl.bind("SUPER + B", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"))
 hl.bind("SUPER + D", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh apps"))
 hl.bind("SUPER + V", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh clipboard"))
 hl.bind("SUPER + N", hl.dsp.exec_cmd("swaync-client -t -sw"))
@@ -29,18 +30,24 @@ for key, direction in pairs({ H = "left", J = "down", K = "up", L = "right" }) d
 end
 -- Vim-style focus: H left, J down, K up, L right.
 for key, direction in pairs({ H = "left", J = "down", K = "up", L = "right" }) do
-    hl.bind("SUPER + " .. key, hl.dsp.focus({ direction = direction }))
+	hl.bind("SUPER + " .. key, hl.dsp.focus({ direction = direction }))
 end
 -- Resize the active window by 30 pixels; repeat while held.
 for key, delta in pairs({
-    H = { -30, 0 }, left = { -30, 0 },
-    J = { 0, 30 }, down = { 0, 30 },
-    K = { 0, -30 }, up = { 0, -30 },
-    L = { 30, 0 }, right = { 30, 0 },
+	H = { -30, 0 },
+	left = { -30, 0 },
+	J = { 0, 30 },
+	down = { 0, 30 },
+	K = { 0, -30 },
+	up = { 0, -30 },
+	L = { 30, 0 },
+	right = { 30, 0 },
 }) do
-    hl.bind("SUPER + ALT + " .. key,
-        hl.dsp.window.resize({ x = delta[1], y = delta[2], relative = true }),
-        { repeating = true })
+	hl.bind(
+		"SUPER + ALT + " .. key,
+		hl.dsp.window.resize({ x = delta[1], y = delta[2], relative = true }),
+		{ repeating = true }
+	)
 end
 -- Physical number-row keys also work with the Czech layout's accented letters.
 for i = 1, 10 do

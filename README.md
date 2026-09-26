@@ -65,19 +65,20 @@ installed on your notebook. Kitty uses Zsh without changing your login shell.
 
 ## Shortcuts
 
-| Shortcut | Action |
-| --- | --- |
-| Super+Enter / Super+Shift+Enter | Kitty / dropdown terminal |
-| Super+D / Super+R | Launcher / Superfile |
-| Super+Shift+W / Super+W | Brave / nmtui |
-| Super+V / Super+N | Clipboard / notifications |
-| Super+H/J/K/L or arrows | Focus left/down/up/right |
-| Super+Shift+H/J/K/L or arrows | Move window |
-| Super+Alt+H/J/K/L or arrows | Resize window |
+| Shortcut                          | Action                               |
+| --------------------------------- | ------------------------------------ |
+| Super+Enter / Super+Shift+Enter   | Kitty / dropdown terminal            |
+| Super+D / Super+R                 | Launcher / Superfile                 |
+| Super+Shift+W / Super+W           | Brave / nmtui                        |
+| Super+V / Super+N                 | Clipboard / notifications            |
+| Super+H/J/K/L or arrows           | Focus left/down/up/right             |
+| Super+Shift+H/J/K/L or arrows     | Move window                          |
+| Super+Alt+H/J/K/L or arrows       | Resize window                        |
 | Super+number / Super+Shift+number | Workspace / move window to workspace |
-| Super+X / Super+F / Super+Q | Lock / fullscreen / close |
-| Super+C / Super+Shift+Escape | Calculator / gotop |
-| Super+Escape | Session menu |
+| Super+X / Super+F / Super+Q       | Lock / fullscreen / close            |
+| Super+C / Super+Shift+Escape      | Calculator / gotop                   |
+| Super+Escape                      | Session menu                         |
+| Super+B                           | Toggle bar                           |
 
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
 Wiremix and the clock for Calcure. Clipboard is available through its shortcut.
