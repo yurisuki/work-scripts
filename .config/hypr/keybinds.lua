@@ -1,8 +1,7 @@
 -- Starter bindings; the final keymap is intentionally a separate follow-up.
 local scripts = os.getenv("HOME") .. "/.scripts/"
 hl.bind("SUPER + Return", hl.dsp.exec_cmd("kitty"))
-hl.bind("SUPER + SHIFT + Return", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.scripts/toggle-dropdown-terminal.sh"))
-hl.bind("SUPER + R", hl.dsp.exec_cmd("kitty -e spf"))
+hl.bind("SUPER + R", hl.dsp.exec_cmd("gtk-launch superfile"))
 hl.bind("SUPER + C", hl.dsp.exec_cmd("qalculate-qt"))
 hl.bind("SUPER + SHIFT + W", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh browser"))
 hl.bind("SUPER + W", hl.dsp.exec_cmd("kitty --class network-settings -e nmtui"))
