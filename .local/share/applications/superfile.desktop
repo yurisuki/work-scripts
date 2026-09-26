@@ -2,7 +2,7 @@
 Name=superfile
 GenericName=Terminal File Manager
 Comment=Open directories in superfile
-Exec=kitty --title superfile -e spf %U
+Exec=kitty --title zsh superfile -e spf %U
 TryExec=spf
 Terminal=false
 Type=Application
