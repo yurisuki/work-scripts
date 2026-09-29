@@ -50,7 +50,7 @@
     "format-ethernet": "󰈀",
     "format-disconnected": "󰖪",
     "tooltip-format": "{ifname} · {ipaddr}",
-    "on-click": "kitty --class network-settings -e nmtui",
+    "on-click": "hyprctl eval 'open_network()'",
     "max-length": 22
   },
   "pulseaudio": {
@@ -63,7 +63,7 @@
         "󰕾"
       ]
     },
-    "on-click": "kitty --class audio-settings -e wiremix",
+    "on-click": "hyprctl eval 'open_audio()'",
     "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
     "scroll-step": 5
   },

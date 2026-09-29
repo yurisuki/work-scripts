@@ -21,6 +21,12 @@ export XDG_CURRENT_DESKTOP=Hyprland
 export XDG_SESSION_DESKTOP=Hyprland
 export XDG_SESSION_TYPE=wayland
 dbus-update-activation-environment --systemd PATH WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE HYPRLAND_INSTANCE_SIGNATURE
+# Keep portal/GSettings consumers consistent with the GTK and Qt font settings.
+if command -v gsettings >/dev/null 2>&1; then
+    gsettings set org.gnome.desktop.interface font-name 'Inter 10'
+    gsettings set org.gnome.desktop.interface document-font-name 'Inter 10'
+    gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Inter Bold 10'
+fi
 wallpaper_file="$HOME/.config/hypr/wallpaper"
 if [[ -s "$wallpaper_file" && -f "$(<"$wallpaper_file")" ]]; then
     start swaybg -i "$(<"$wallpaper_file")" -m fill -c '#171020'
@@ -32,7 +38,7 @@ start swaync
 start hypridle
 start udiskie
 start snappy-switcher --daemon
-start sleep 10 && QT_QPA_PLATFORM=xcb /home/adam/.zohoworkdrive/bin/zohoworkdrive
+start bash -c 'sleep 10; exec env QT_QPA_PLATFORM=xcb "$HOME/.zohoworkdrive/bin/zohoworkdrive"'
 start /usr/lib/hyprpolkitagent/hyprpolkitagent
 start wl-paste --type text --watch cliphist store
 start wl-paste --type image --watch cliphist store

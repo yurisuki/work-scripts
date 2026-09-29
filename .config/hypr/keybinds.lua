@@ -11,20 +11,50 @@ hl.bind(
 	})
 )
 hl.bind("SUPER + R", hl.dsp.exec_cmd("gtk-launch superfile"))
-hl.bind("SUPER + C", toggle_app({
-    name = "calculator",
-    class = "io.github.Qalculate.qalculate-qt",
-    command = "qalculate-qt",
-    size = "720 600",
-}))
+hl.bind(
+	"SUPER + C",
+	toggle_app({
+		name = "calculator",
+		class = "io.github.Qalculate.qalculate-qt",
+		command = "qalculate-qt",
+		size = "720 600",
+	})
+)
 hl.bind("SUPER + SHIFT + W", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh browser"))
-hl.bind("SUPER + W", toggle_app({
-    name = "network-settings",
-    class = "network-settings",
-    command = "kitty --class network-settings -e nmtui",
-    size = "900 650",
-    close_on_toggle = true,
-}))
+-- Settings open on the current workspace; repeated activation only focuses them.
+local function settings_window(class, command)
+    hl.window_rule({
+        name = class,
+        match = { class = "^" .. class .. "$" },
+        float = true,
+        size = "900 650",
+        center = true,
+    })
+    local launched = 0
+    return function()
+        for _, window in ipairs(hl.get_windows()) do
+            if window.mapped and window.class == class then
+                local workspace = hl.get_active_workspace()
+                if workspace then
+                    hl.dispatch(hl.dsp.window.move({
+                        window = "address:" .. window.address,
+                        workspace = tostring(workspace.id),
+                        follow = false,
+                    }))
+                end
+                hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
+                return
+            end
+        end
+        if os.time() - launched < 2 then return end
+        launched = os.time()
+        hl.exec_cmd(command)
+    end
+end
+open_network = settings_window("network-settings", "kitty --class network-settings -e nmtui")
+open_audio = settings_window("audio-settings", "kitty --class audio-settings -e wiremix")
+hl.bind("SUPER + W", open_network)
+
 hl.bind("SUPER + B", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"))
 hl.bind("SUPER + D", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh apps"))
 hl.bind("SUPER + G", hl.dsp.exec_cmd(scripts .. "hypr-largest.sh"))

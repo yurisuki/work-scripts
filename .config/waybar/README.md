@@ -1,7 +1,8 @@
 # Violet Night bar
 
-- Network icon and Super+W: nmtui in Kitty.
-- Audio click: wiremix (Arch package: wiremix); wheel changes volume.
+- Network left-click and Super+W: open or focus the same centered nmtui terminal.
+- Audio left-click: open or focus a centered wiremix terminal (Arch package: wiremix);
+  wheel changes volume. Repeated clicks focus the existing window.
 - Brightness: wheel changes by 5%; requests are coalesced by a single worker.
   The slider has been removed. DDC/CI hardware still has its own write latency.
 - Clock: system locale from /etc/locale.conf, optionally overridden by

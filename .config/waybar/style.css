@@ -1,4 +1,4 @@
-* { font-family: "JetBrainsMono Nerd Font"; font-size: 12px; min-height: 0; }
+* { font-family: "Inter", "JetBrainsMono Nerd Font"; font-size: 12px; min-height: 0; }
 window#waybar { background: rgba(23, 16, 32, 0.96); color: #ede3f5; border: 1px solid #493455; border-radius: 14px; }
 button { border: none; box-shadow: none; text-shadow: none; }
 #workspaces { background: #241a30; border-radius: 10px; margin: 5px 8px; padding: 0 4px; }
