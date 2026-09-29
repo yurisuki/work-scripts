@@ -1,10 +1,30 @@
 -- Starter bindings; the final keymap is intentionally a separate follow-up.
 local scripts = os.getenv("HOME") .. "/.scripts/"
 hl.bind("SUPER + Return", hl.dsp.exec_cmd("kitty"))
+hl.bind(
+	"SUPER + dead_acute",
+	toggle_app({
+		name = "dropdown-terminal",
+		class = "dropdown-terminal",
+		command = "kitty --class dropdown-terminal",
+		size = "80% 70%",
+	})
+)
 hl.bind("SUPER + R", hl.dsp.exec_cmd("gtk-launch superfile"))
-hl.bind("SUPER + C", hl.dsp.exec_cmd("qalculate-qt"))
+hl.bind("SUPER + C", toggle_app({
+    name = "calculator",
+    class = "io.github.Qalculate.qalculate-qt",
+    command = "qalculate-qt",
+    size = "720 600",
+}))
 hl.bind("SUPER + SHIFT + W", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh browser"))
-hl.bind("SUPER + W", hl.dsp.exec_cmd("kitty --class network-settings -e nmtui"))
+hl.bind("SUPER + W", toggle_app({
+    name = "network-settings",
+    class = "network-settings",
+    command = "kitty --class network-settings -e nmtui",
+    size = "900 650",
+    close_on_toggle = true,
+}))
 hl.bind("SUPER + B", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"))
 hl.bind("SUPER + D", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh apps"))
 hl.bind("SUPER + G", hl.dsp.exec_cmd(scripts .. "hypr-largest.sh"))
@@ -14,7 +34,24 @@ hl.bind("SUPER + Y", hl.dsp.exec_cmd("$HOME/.scripts/move_and_open.sh"))
 hl.bind("SUPER + X", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh lock"))
 hl.bind("SUPER + F", hl.dsp.window.fullscreen_state({ action = "toggle", internal = 2, client = 0 }))
 hl.bind("SUPER + Escape", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh session"))
-hl.bind("SUPER + SHIFT + Escape", hl.dsp.exec_cmd("kitty -e gotop"))
+hl.bind(
+	"SUPER + SHIFT + Escape",
+	toggle_app({
+		name = "gotop",
+		class = "gotop",
+		command = "kitty --class gotop -e gotop",
+		size = "1100 750",
+	})
+)
+hl.bind(
+	"SUPER + period",
+	toggle_app({
+		name = "chatgpt",
+		class = "brave-chatgpt.com__-Profile_6",
+		command = scripts .. "webapp.sh 'https://chatgpt.com'",
+		size = "1200 850",
+	})
+)
 hl.bind("ALT + Tab", hl.dsp.exec_cmd("snappy-switcher next --mod alt"))
 --hl.bind("ALT + Tab", hl.dsp.window.cycle_next({ next = true }))
 hl.bind("ALT + SHIFT + Tab", hl.dsp.window.cycle_next({ next = false }))

@@ -151,6 +151,101 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd(home .. "/.scripts/hypr-session.sh")
 end)
 
+-- Reusable scratchpad: keep the process alive while its workspace is hidden.
+-- In keybinds.lua: toggle_app({ name = "notes", class = "my-notes",
+--     command = "my-notes", size = "900 650" })
+-- Use tiled = true to use the special workspace's tiling layout instead.
+-- Use close_on_toggle = true to close running windows instead of hiding them.
+function toggle_app(opts)
+    assert(opts.name:match("^[%w_-]+$"), "toggle_app: invalid name")
+    local workspace = "special:toggle-" .. opts.name
+    local class_pattern = "^" .. opts.class:gsub("([\\.^$|?*+()%[%]{}])", "\\%1") .. "$"
+    local rule = {
+        name = "toggle-" .. opts.name,
+        match = { class = class_pattern },
+        workspace = workspace .. " silent",
+    }
+    if opts.tiled then
+        rule.tile = true
+    else
+        rule.float = true
+        rule.size = opts.size or "900 650"
+        rule.center = true
+    end
+    hl.window_rule(rule)
+
+    local launch_time = 0
+    local function focus_if_visible(window)
+        local active = hl.get_active_special_workspace()
+        if active and active.name == workspace then
+            hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
+        end
+    end
+    hl.on("window.open", function(window)
+        if launch_time > 0 and (window.class == opts.class or window.initial_class == opts.class) then
+            launch_time = 0
+            focus_if_visible(window)
+        end
+    end)
+    return function()
+        if opts.close_on_toggle then
+            local closed = false
+            for _, window in ipairs(hl.get_windows()) do
+                if window.mapped and (window.class == opts.class or window.initial_class == opts.class) then
+                    hl.dispatch(hl.dsp.window.close({ window = "address:" .. window.address }))
+                    closed = true
+                end
+            end
+            if closed then
+                launch_time = 0
+                local active = hl.get_active_special_workspace()
+                if active and active.name == workspace then
+                    hl.dispatch(hl.dsp.workspace.toggle_special("toggle-" .. opts.name))
+                end
+                return
+            end
+        end
+        local found = false
+        local target_window
+        for _, window in ipairs(hl.get_windows()) do
+            if window.mapped and (window.class == opts.class or window.initial_class == opts.class) then
+                found = true
+                target_window = target_window or window
+                launch_time = 0
+                if not window.workspace or window.workspace.name ~= workspace then
+                    hl.dispatch(hl.dsp.window.move({
+                        window = "address:" .. window.address,
+                        workspace = workspace,
+                        follow = false,
+                    }))
+                    hl.dispatch(hl.dsp.window.float({
+                        window = "address:" .. window.address,
+                        action = opts.tiled and "unset" or "set",
+                    }))
+                    if not opts.tiled then
+                        local width, height = (opts.size or "900 650"):match("^(%d+) (%d+)$")
+                        if width then
+                            hl.dispatch(hl.dsp.window.resize({
+                                window = "address:" .. window.address,
+                                x = tonumber(width), y = tonumber(height), relative = false,
+                            }))
+                        end
+                        hl.dispatch(hl.dsp.window.center({ window = "address:" .. window.address }))
+                    end
+                end
+            end
+        end
+        if not found then
+            -- Avoid duplicate launches while a slow application is starting.
+            if os.time() - launch_time < 10 then return end
+            launch_time = os.time()
+            hl.exec_cmd(opts.command)
+        end
+        hl.dispatch(hl.dsp.workspace.toggle_special("toggle-" .. opts.name))
+        if target_window then focus_if_visible(target_window) end
+    end
+end
+
 dofile(home .. "/.config/hypr/keybinds.lua")
 
 -- Optional machine-specific monitor/input overrides, preserved by the installer.
