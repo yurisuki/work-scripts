@@ -84,7 +84,7 @@ case "$(basename "$0")" in
 esac
 exit 0
 '''
-        for command in ('sudo', 'pacman', 'yay', 'uv', 'start-hyprland', 'xdg-user-dirs-update', 'xdg-user-dir', 'fc-cache', 'update-desktop-database', 'systemctl'):
+        for command in ('sudo', 'pacman', 'yay', 'uv', 'uwsm', 'start-hyprland', 'xdg-user-dirs-update', 'xdg-user-dir', 'fc-cache', 'update-desktop-database', 'systemctl'):
             path = bin_dir / command
             path.write_text(stub)
             path.chmod(0o755)
@@ -99,7 +99,31 @@ exit 0
         self.assertNotIn('--now greetd', commands)
         unit = self.home / '.config/systemd/user/quote-download-watcher.service'
         self.assertIn(f'ExecStart="{self.home}/.scripts/quote-download-watcher.sh"', unit.read_text())
-        self.assertIn('--cmd start-hyprland', (self.home / '.config/greetd/config.toml').read_text())
+        self.assertIn("--cmd 'uwsm start -e -D Hyprland hyprland.desktop'", (self.home / '.config/greetd/config.toml').read_text())
+
+    def test_profile_install_is_repeatable_and_preserves_existing_content(self):
+        profile = self.home / 'profile'
+        original = '# system profile\nexport PATH=/usr/bin\n'
+        profile.write_text(original)
+        command = ['python3', str(ROOT / 'install/setup-profile.py'), str(profile)]
+        subprocess.run(command, check=True, capture_output=True)
+        installed = profile.read_text()
+        self.assertTrue(installed.startswith(original))
+        self.assertEqual(installed.count('exec uwsm start default'), 1)
+        subprocess.run(command, check=True, capture_output=True)
+        self.assertEqual(profile.read_text(), installed)
+        backups = list(self.home.glob('profile.backup.*'))
+        self.assertEqual(len(backups), 1)
+        self.assertEqual(backups[0].read_text(), original)
+        subprocess.run(['sh', '-n', str(profile)], check=True)
+
+    def test_existing_manual_profile_block_is_preserved(self):
+        profile = self.home / 'profile'
+        original = '# existing\nif uwsm check may-start && uwsm select; then\n\texec uwsm start default\nfi\n'
+        profile.write_text(original)
+        subprocess.run(['python3', str(ROOT / 'install/setup-profile.py'), str(profile)], check=True, capture_output=True)
+        self.assertEqual(profile.read_text(), original)
+        self.assertEqual(list(self.home.glob('profile.backup.*')), [])
 
     def test_package_failure_stops_before_deployment(self):
         bin_dir = Path(self.temp.name) / 'bin'

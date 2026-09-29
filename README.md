@@ -20,8 +20,12 @@ then asks yay to install the AUR applications. Review package/build prompts norm
 Calcure 3.4 is installed in an isolated user environment with uv. Hyprland must be
 0.55 or newer; the installer checks this before deploying the Lua configuration.
 
-At the next login, choose **Hyprland**. Without a display manager the installer
-configures greetd/tuigreet for the next boot. It starts **start-hyprland**.
+At the next login, choose **Hyprland (uwsm-managed)**. Without a display manager the installer
+configures greetd/tuigreet for the next boot. It starts `uwsm start -e -D Hyprland hyprland.desktop`.
+The full installation also adds the UWSM TTY login block to `/etc/profile`
+(`uwsm check may-start` → `uwsm select` → `exec uwsm start default`).
+An existing block is preserved; repeated installation does not duplicate it.
+UWSM and libnewt (the session selector) are installed as dependencies.
 An existing display manager is kept. To explicitly switch it to greetd:
 
 ```sh
@@ -79,6 +83,7 @@ installed on your notebook. Kitty uses Zsh without changing your login shell.
 | Super+G                           | Make focused window largest          |
 | Super+C / Super+Shift+Escape      | Calculator / gotop                   |
 | Super+Escape                      | Session menu                         |
+| Super+Y                           | Open the last downloaded quote         |
 | Super+B                           | Toggle bar                           |
 
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
@@ -103,6 +108,7 @@ are included.
 Each configuration deployment creates `~/.local/state/work-scripts/install-backup.*`
 with `manifest.json` and `files/`. To undo, restore `replaced`/`removed` files from
 that backup and remove only files marked `created`. Do not delete shared directories.
+Profile changes are backed up in `/etc/profile.backup.*`.
 Login manager changes are backed up separately in `/etc/greetd/config.toml.backup.*`.
 Symlinked parent directories are rejected before deployment; existing individual
 file symlinks are backed up and replaced without writing through them.

@@ -58,6 +58,7 @@ yay -S --needed "${AUR_PACKAGES[@]}"
 uv tool install 'calcure==3.4'
 [[ $mode != packages ]] || { echo 'All package dependencies installed.'; exit 0; }
 python3 "$source_dir/install/deploy.py" "$source_dir" "$HOME"
+sudo python3 "$source_dir/install/setup-profile.py" /etc/profile
 xdg-user-dirs-update
 fc-cache -f
 update-desktop-database "$HOME/.local/share/applications"
@@ -69,7 +70,7 @@ bash "$HOME/.scripts/install-quote-download-watcher.sh"
 if (( force_greetd )) || [[ ! -e /etc/systemd/system/display-manager.service ]]; then
     bash "$HOME/.scripts/setup-greetd.sh" --configure-only
 fi
-printf '\nInstallation complete. Select Hyprland at your next login, or run start-hyprland from a TTY.\n'
+printf '\nInstallation complete. Select Hyprland (uwsm-managed) at your next login, or run uwsm start hyprland.desktop from a TTY.\n'
 printf 'Weather: ~/.config/waybar/weather.json; monitor/input overrides: ~/.config/hypr/local.lua\n'
 printf 'Configure your printer in CUPS and sign in to work applications. Zoho WorkDrive requires its vendor installer.\n'
 printf 'No automatic update job is installed. No reboot or logout was performed.\n'

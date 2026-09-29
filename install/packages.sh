@@ -1,7 +1,7 @@
 # Packages from the system's configured Arch/Manjaro repositories.
 REPO_PACKAGES=(
     base-devel git curl python uv zsh zsh-autosuggestions zsh-syntax-highlighting zsh-completions
-    hyprland waybar swaync kitty rofi hyprlock hypridle hyprpolkitagent
+    hyprland uwsm libnewt waybar swaync kitty rofi hyprlock hypridle hyprpolkitagent
     swaybg cliphist wl-clipboard brightnessctl ddcutil networkmanager network-manager-applet
     pipewire wireplumber pipewire-pulse wiremix bluez bluez-utils upower
     xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-utils xdg-user-dirs desktop-file-utils
