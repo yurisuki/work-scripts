@@ -23,33 +23,35 @@ hl.bind(
 hl.bind("SUPER + SHIFT + W", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh browser"))
 -- Settings open on the current workspace; repeated activation only focuses them.
 local function settings_window(class, command)
-    hl.window_rule({
-        name = class,
-        match = { class = "^" .. class .. "$" },
-        float = true,
-        size = "900 650",
-        center = true,
-    })
-    local launched = 0
-    return function()
-        for _, window in ipairs(hl.get_windows()) do
-            if window.mapped and window.class == class then
-                local workspace = hl.get_active_workspace()
-                if workspace then
-                    hl.dispatch(hl.dsp.window.move({
-                        window = "address:" .. window.address,
-                        workspace = tostring(workspace.id),
-                        follow = false,
-                    }))
-                end
-                hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
-                return
-            end
-        end
-        if os.time() - launched < 2 then return end
-        launched = os.time()
-        hl.exec_cmd(command)
-    end
+	hl.window_rule({
+		name = class,
+		match = { class = "^" .. class .. "$" },
+		float = true,
+		size = "900 650",
+		center = true,
+	})
+	local launched = 0
+	return function()
+		for _, window in ipairs(hl.get_windows()) do
+			if window.mapped and window.class == class then
+				local workspace = hl.get_active_workspace()
+				if workspace then
+					hl.dispatch(hl.dsp.window.move({
+						window = "address:" .. window.address,
+						workspace = tostring(workspace.id),
+						follow = false,
+					}))
+				end
+				hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
+				return
+			end
+		end
+		if os.time() - launched < 2 then
+			return
+		end
+		launched = os.time()
+		hl.exec_cmd(command)
+	end
 end
 open_network = settings_window("network-settings", "kitty --class network-settings -e nmtui")
 open_audio = settings_window("audio-settings", "kitty --class audio-settings -e wiremix")
@@ -58,9 +60,10 @@ hl.bind("SUPER + W", open_network)
 hl.bind("SUPER + B", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"))
 hl.bind("SUPER + D", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh apps"))
 hl.bind("SUPER + G", hl.dsp.exec_cmd(scripts .. "hypr-largest.sh"))
+hl.bind("SUPER + E", hl.dsp.exec_cmd(scripts .. "webapp.sh 'https://www.icloud.com/mail'"))
 hl.bind("SUPER + V", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh clipboard"))
 hl.bind("SUPER + N", hl.dsp.exec_cmd("swaync-client -t -sw"))
-hl.bind("SUPER + Y", hl.dsp.exec_cmd("$HOME/.scripts/move_and_open.sh"))
+hl.bind("SUPER + Y", hl.dsp.exec_cmd(scripts .. "move_and_open.sh"))
 hl.bind("SUPER + X", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh lock"))
 hl.bind("SUPER + F", hl.dsp.window.fullscreen_state({ action = "toggle", internal = 2, client = 0 }))
 hl.bind("SUPER + Escape", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh session"))
@@ -87,7 +90,8 @@ hl.bind("ALT + Tab", hl.dsp.exec_cmd("snappy-switcher next --mod alt"))
 hl.bind("ALT + SHIFT + Tab", hl.dsp.window.cycle_next({ next = false }))
 hl.bind("SUPER + Tab", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind("SUPER + SHIFT + Tab", hl.dsp.focus({ workspace = "e-1" }))
-hl.bind("SUPER + Q", hl.dsp.window.close())
+hl.bind("SUPER + Q", hl.dsp.window.close()) -- normal close
+hl.bind("SUPER + SHIFT + Q", hl.dsp.window.kill()) -- force kill
 hl.bind("SUPER + SHIFT + Space", hl.dsp.window.float({ action = "toggle" }))
 for _, direction in ipairs({ "left", "right", "up", "down" }) do
 	hl.bind("SUPER + " .. direction, hl.dsp.focus({ direction = direction }))
@@ -126,6 +130,8 @@ for i = 1, 10 do
 end
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
+hl.bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp -d)" - | wl-copy'))
+hl.bind("SUPER + Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | swappy -f -'))
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { repeating = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { repeating = true })
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
