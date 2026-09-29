@@ -38,7 +38,6 @@ start swaync
 start hypridle
 start udiskie
 start snappy-switcher --daemon
-start bash -c 'sleep 10; exec env QT_QPA_PLATFORM=xcb "$HOME/.zohoworkdrive/bin/zohoworkdrive"'
 start /usr/lib/hyprpolkitagent/hyprpolkitagent
 start wl-paste --type text --watch cliphist store
 start wl-paste --type image --watch cliphist store
