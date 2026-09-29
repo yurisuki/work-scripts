@@ -86,6 +86,15 @@ hl.bind(
 		size = "1200 850",
 	})
 )
+hl.bind(
+	"SUPER + M",
+	toggle_app({
+		name = "cider",
+		class = "cider",
+		command = "cider",
+		size = "1100 750",
+	})
+)
 hl.bind("ALT + Tab", hl.dsp.exec_cmd("snappy-switcher next --mod alt"))
 --hl.bind("ALT + Tab", hl.dsp.window.cycle_next({ next = true }))
 hl.bind("ALT + SHIFT + Tab", hl.dsp.window.cycle_next({ next = false }))
