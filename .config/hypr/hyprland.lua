@@ -147,6 +147,15 @@ hl.window_rule({
 	center = true,
 })
 
+-- Compact weather panel below the right side of Waybar.
+hl.window_rule({
+    name = "weather-popup",
+    match = { class = "^weather-popup$" },
+    float = true,
+    size = "1040 740",
+    move = "(monitor_w-1060) 65",
+})
+
 hl.on("hyprland.start", function()
 	hl.exec_cmd(home .. "/.scripts/hypr-session.sh")
 end)

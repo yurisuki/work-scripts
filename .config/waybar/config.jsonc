@@ -190,7 +190,8 @@
     "exec": "~/.scripts/bar-weather.py",
     "return-type": "json",
     "interval": 1800,
-    "on-click": "kitty -e nvim ~/.config/waybar/weather.json"
+    "on-click": "kitty --class weather-popup --title Počasí -o font_size=10 -e python3 ~/.scripts/weather-popup.py",
+    "on-click-right": "kitty -e nvim ~/.config/waybar/weather.json"
   },
   "custom/workspace6": {
     "exec": "~/.scripts/hypr-workspace.py status 6",

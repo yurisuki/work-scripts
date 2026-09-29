@@ -15,7 +15,9 @@
 
 ## Weather
 
-Click the weather icon to edit ~/.config/waybar/weather.json:
+Left-click the weather icon for the full colored wttr.in report, including the
+three-day forecast, in a floating terminal below the bar.
+Press Enter to close it. Right-click to edit ~/.config/waybar/weather.json:
 
 ```json
 {"location": "Praha", "units": "m"}
@@ -23,8 +25,8 @@ Click the weather icon to edit ~/.config/waybar/weather.json:
 
 Use a city, address supported by wttr.in, or latitude,longitude. Empty location
 means no network request. `m` selects Celsius, `u` Fahrenheit. The configured
-location is sent to wttr.in every 30 minutes at most, with a shared cache across
-monitors. A failed request keeps the previous reading marked offline.
+bar reading is fetched every 30 minutes at most, with a shared cache across
+monitors. Opening the forecast makes a separate request to wttr.in for the configured location. A failed request keeps the previous reading marked offline.
 
 Restart the bar after locale changes with ~/.scripts/bar-start.py (first stop the
 existing Waybar), or log in again. Dependencies: waybar, kitty, networkmanager,

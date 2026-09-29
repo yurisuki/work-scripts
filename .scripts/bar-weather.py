@@ -17,7 +17,7 @@ try:
     settings = json.loads(config.read_text())
     location = settings.get('location', '').strip()
     if not location:
-        result = {'text': '☁ ⚙', 'tooltip': 'Kliknutím nastavte location v weather.json (např. Praha).'}
+        result = {'text': '☁ ⚙', 'tooltip': 'Pravým kliknutím nastavte location v weather.json (např. Praha).'}
     else:
         units = settings.get('units', 'm')
         if units not in ('m', 'u'):
@@ -34,7 +34,7 @@ try:
             current = json.load(response)['current_condition'][0]
         temperature = current['temp_F' if units == 'u' else 'temp_C']
         description = current['weatherDesc'][0]['value']
-        result = {'text': f'☁ {temperature}°' + ('F' if units == 'u' else 'C'), 'tooltip': html.escape(f'{location}: {description}\nHumidity: {current["humidity"]}%\nwttr.in · 30 min')}
+        result = {'text': f'☁ {temperature}°' + ('F' if units == 'u' else 'C'), 'tooltip': html.escape(f'{location}: {description}\nPocitově: {current.get("FeelsLikeF" if units == "u" else "FeelsLikeC", "—")}°{"F" if units == "u" else "C"}\nVlhkost: {current["humidity"]}%\nVítr: {current.get("windspeedMiles" if units == "u" else "windspeedKmph", "—")} {"mph" if units == "u" else "km/h"} {current.get("winddir16Point", "")}\nSrážky: {current.get("precipMM", "—")} mm\nwttr.in · 30 min')}
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_text(json.dumps({'location':location,'units':units,'result':result,'fetched':time.time()}))
 except Exception as error:
