@@ -123,10 +123,17 @@ hl.animation({
 
 -- Normal terminals join the tiling layout; the dropdown keeps its own class.
 hl.window_rule({
-    name = "kitty-tiled",
-    match = { class = "^kitty$" },
-    tile = true,
-    suppress_event = "maximize fullscreen",
+	name = "kitty-tiled",
+	match = { class = "^kitty$" },
+	tile = true,
+	suppress_event = "maximize fullscreen",
+})
+
+-- Super+R opens superfile in Kitty; keep the file manager slightly transparent.
+hl.window_rule({
+	name = "superfile-transparent",
+	match = { title = "^superfile$" },
+	opacity = "0.90 0.90",
 })
 
 hl.window_rule({
