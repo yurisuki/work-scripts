@@ -31,7 +31,7 @@ start "$HOME/.scripts/bar-start.py"
 start swaync
 start hypridle
 start udiskie
-start zapzap
+start snappy-switcher --daemon
 start sleep 10 && QT_QPA_PLATFORM=xcb /home/adam/.zohoworkdrive/bin/zohoworkdrive
 start /usr/lib/hyprpolkitagent/hyprpolkitagent
 start wl-paste --type text --watch cliphist store

@@ -14,4 +14,4 @@ REPO_PACKAGES=(
     ghostscript cups lua-language-server bash-language-server pyright
     vscode-json-languageserver yaml-language-server typescript-language-server prettier
 )
-AUR_PACKAGES=(onlyoffice-bin brave-bin zapzap ticktick gotop-bin)
+AUR_PACKAGES=(onlyoffice-bin brave-bin zapzap ticktick gotop-bin snappy-switcher)
