@@ -136,6 +136,13 @@ hl.window_rule({
 	opacity = "0.90 0.90",
 })
 
+-- Super+C calculator with pronounced transparency.
+hl.window_rule({
+	name = "calculator-transparent",
+	match = { class = "^io[.]github[.]Qalculate[.]qalculate-qt$" },
+	opacity = "0.75 0.75",
+})
+
 hl.window_rule({
 	name = "settings-dialogs",
 	match = {
