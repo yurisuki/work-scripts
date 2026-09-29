@@ -28,7 +28,7 @@ case ${1:-apps} in
         [[ "$choice" =~ ^(10|25|50|75|100)%$ ]] || exit 0
         "$HOME/.scripts/hypr-brightness.sh" set "${choice%%%}"
         ;;
-    lock) pgrep -x hyprlock >/dev/null || exec hyprlock ;;
+    lock) pgrep -x hyprlock >/dev/null || exec "$HOME/.scripts/hypr-lock.sh" ;;
     session)
         choice=$(printf 'Lock\nSuspend\nLog out\nRestart\nShut down\n' | rofi_menu -dmenu -p Session) || exit 0
         case "$choice" in
