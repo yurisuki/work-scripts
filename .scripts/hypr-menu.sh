@@ -7,6 +7,7 @@ confirm() {
     [[ "$answer" == Confirm ]]
 }
 case ${1:-apps} in
+    emoji) exec "$HOME/.scripts/rofi-emoji.py" ;;
     apps) rofi_menu -show drun ;;
     browser)
         for browser in brave brave-browser; do

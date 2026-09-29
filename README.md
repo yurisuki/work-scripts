@@ -75,6 +75,7 @@ installed on your notebook. Kitty uses Zsh without changing your login shell.
 | Super+D / Super+R                 | Launcher / Superfile                 |
 | Super+Shift+W / Super+W           | Brave / nmtui                        |
 | Super+V / Super+N                 | Clipboard / notifications            |
+| Super+Shift+E                    | Search emoji and copy to clipboard   |
 | Super+H/J/K/L or arrows           | Focus left/down/up/right             |
 | Super+Shift+H/J/K/L or arrows     | Move window                          |
 | Super+Alt+H/J/K/L or arrows       | Resize window                        |
@@ -88,6 +89,15 @@ installed on your notebook. Kitty uses Zsh without changing your login shell.
 
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
 Wiremix and the clock for Calcure. Clipboard is available through its shortcut.
+
+Emoji picker: `~/.scripts/rofi-emoji.py` (or `~/.scripts/hypr-menu.sh emoji`).
+Search English names or categories, press Enter to copy, then Ctrl+V to paste.
+Escape cancels without changing the clipboard. All Unicode Emoji 17.0 entries,
+including skin tones, flags and ZWJ sequences, are bundled for offline use in
+`.local/share/emoji/emoji-test.txt`; newer glyphs depend on your emoji font.
+Source: https://unicode.org/Public/17.0.0/emoji/emoji-test.txt (Unicode license
+included alongside the data). Dependencies: Python 3, rofi, wl-clipboard and
+noto-fonts-emoji, already included in the installer.
 
 ## Work-specific setup
 
