@@ -6,7 +6,7 @@ REPO_PACKAGES=(
     pipewire wireplumber pipewire-pulse wiremix bluez bluez-utils upower
     xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-utils xdg-user-dirs desktop-file-utils
     qt5ct qt6ct qt5-wayland qt6-wayland breeze breeze-gtk breeze-icons
-    inter-font ttf-jetbrains-mono-nerd noto-fonts noto-fonts-emoji udisks2 udiskie
+    inter-font ttf-jetbrains-mono-nerd noto-fonts udisks2 udiskie
     grim slurp libnotify util-linux jq zenity greetd greetd-tuigreet
     xournalpp libimobiledevice usbmuxd bc qalculate-qt xclip neovim nodejs npm
     ripgrep fd unzip stylua python-black shfmt clang konsole mupdf sxiv vlc superfile
@@ -14,4 +14,4 @@ REPO_PACKAGES=(
     ghostscript cups lua-language-server bash-language-server pyright
     vscode-json-languageserver yaml-language-server typescript-language-server prettier
 )
-AUR_PACKAGES=(onlyoffice-bin brave-bin zapzap ticktick gotop-bin snappy-switcher hyprmod)
+AUR_PACKAGES=(onlyoffice-bin brave-bin zapzap ticktick gotop-bin snappy-switcher ttf-apple-emoji hyprmod)
