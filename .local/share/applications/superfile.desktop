@@ -2,7 +2,7 @@
 Name=superfile
 GenericName=Terminal File Manager
 Comment=Open directories in superfile
-Exec=kitty --hold --title superfile -e zsh -ic 'cd -- "$1" && spf' sh %U
+Exec=kitty --hold --title superfile -e /home/adamn/.local/bin/superfile-open %U
 TryExec=spf
 Terminal=false
 Type=Application

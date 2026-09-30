@@ -18,8 +18,8 @@ alias l='ls -CF'
 alias quit='exit'
 alias q='exit'
 
-# Open folder in default GUI file manager
-alias f='xdg-open $PWD'
+# SPF 
+alias f='spf'
 
 # Git aliases
 alias gs='git status'

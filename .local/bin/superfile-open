@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+if [[ -n "$1" ]]; then
+    cd -- "$1" || exit 1
+else
+    cd -- "$HOME" || exit 1
+fi
+
+exec spf
