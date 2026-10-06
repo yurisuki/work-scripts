@@ -7,7 +7,7 @@ REPO_PACKAGES=(
     xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-utils xdg-user-dirs desktop-file-utils
     qt5ct qt6ct qt5-wayland qt6-wayland breeze breeze-gtk breeze-icons
     inter-font ttf-jetbrains-mono-nerd noto-fonts udisks2 udiskie
-    grim slurp libnotify util-linux jq zenity greetd greetd-tuigreet
+    grim slurp swappy libnotify util-linux jq zenity greetd greetd-tuigreet
     xournalpp libimobiledevice usbmuxd bc qalculate-qt xclip neovim nodejs npm
     ripgrep fd unzip stylua python-black shfmt clang konsole sxiv vlc superfile
     python-gobject python-pypdf python-openpyxl python-pandas python-numpy python-pyqt6
