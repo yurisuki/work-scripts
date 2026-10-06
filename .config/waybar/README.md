@@ -43,3 +43,9 @@ wiremix, calcure, bluez, brightnessctl, ddcutil, python.
 Clipboard image entries show cached 64 px previews in Rofi. Original image data is
 copied on Enter; Shift+Delete removes the selected entry and its preview. Thumbnails
 are kept only in the session runtime directory.
+
+Enter the place name normally, including Czech diacritics. Both the bar and forecast
+normalize the service query automatically (lowercase, without diacritics), while
+preserving the original display name. No separate coordinates are needed. A failed
+forecast request shows the last successful forecast for the same query and units,
+with its age and an offline label.
