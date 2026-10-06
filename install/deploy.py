@@ -18,6 +18,41 @@ OBSOLETE = (
     '.local/share/applications/update-checker.desktop',
 )
 
+def expected_content(src, relative, home):
+    data = src.read_bytes()
+    if str(relative) in ('.config/qt5ct/qt5ct.conf', '.config/qt6ct/qt6ct.conf'):
+        data = data.replace(b'@HOME@', str(home).encode())
+    if relative.suffix == '.desktop':
+        desktop_home = str(home)
+        for char in ('\\', '"', '`', '$'):
+            desktop_home = desktop_home.replace(char, '\\' + char)
+        desktop_home = desktop_home.replace('\\', '\\\\')
+        data = data.replace(b'@HOME@', desktop_home.encode())
+    return data
+
+
+def report_drift(source, home):
+    changed = []
+    candidates = []
+    for directory in ('.config', '.local', '.scripts'):
+        candidates.extend((source / directory).rglob('*'))
+    candidates.extend(source / name for name in ('.zshrc', '.zsh_aliases'))
+    for src in sorted(candidates):
+        relative = src.relative_to(source)
+        if not src.is_file() or '__pycache__' in relative.parts or str(relative) in PRESERVE:
+            continue
+        target = home / relative
+        if target.is_file() and target.read_bytes() != expected_content(src, relative, home):
+            changed.append(str(relative))
+    if changed:
+        print('Local files differing from the repository (deployment will back them up and replace them):')
+        for relative in changed:
+            print('  ' + relative)
+    else:
+        print('Existing managed files match the repository.')
+    return changed
+
+
 def deploy(source, home):
     source, home = source.resolve(), home.resolve()
     if source == home:
@@ -38,6 +73,7 @@ def deploy(source, home):
         target = home / relative
         if target.is_dir() and not target.is_symlink():
             raise ValueError(f'Expected a file but found a directory: {target}')
+    report_drift(source, home)
     state = home / '.local/state/work-scripts'
     state.mkdir(parents=True, exist_ok=True)
     backup = Path(tempfile.mkdtemp(prefix='install-backup.', dir=state))
@@ -66,15 +102,7 @@ def deploy(source, home):
             shutil.copy2(src, staged)
             if (relative.parts[0] == '.scripts' and src.suffix in ('.sh', '.py')) or relative.parts[:2] == ('.local', 'bin'):
                 staged.chmod(staged.stat().st_mode | 0o111)
-            if str(relative) in ('.config/qt5ct/qt5ct.conf', '.config/qt6ct/qt6ct.conf'):
-                staged.write_text(staged.read_text().replace('@HOME@', str(home)))
-            if relative.suffix == '.desktop':
-                # Desktop entry string escaping plus Exec argument escaping.
-                desktop_home = str(home)
-                for char in ('\\', '"', '`', '$'):
-                    desktop_home = desktop_home.replace(char, '\\' + char)
-                desktop_home = desktop_home.replace('\\', '\\\\')
-                staged.write_text(staged.read_text().replace('@HOME@', desktop_home))
+            staged.write_bytes(expected_content(src, relative, home))
             staged.replace(target)
         finally:
             staged.unlink(missing_ok=True)

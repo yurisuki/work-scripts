@@ -51,8 +51,8 @@ keymap("v", "<leader>P", '"+P', opts)
 -- Quick fix navigation
 keymap("n", "[d", vim.diagnostic.goto_prev, opts)
 keymap("n", "]d", vim.diagnostic.goto_next, opts)
-keymap("n", "<leader>e", vim.diagnostic.open_float, opts)
-keymap("n", "<leader>q", vim.diagnostic.setloclist, opts)
+keymap("n", "<leader>de", vim.diagnostic.open_float, opts)
+keymap("n", "<leader>dq", vim.diagnostic.setloclist, opts)
 
 -- Toggle term (placeholder, will be configured in terminal.lua)
 keymap("n", "<leader>tt", function()

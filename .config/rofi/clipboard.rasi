@@ -1,0 +1,21 @@
+@import "violet-night.rasi"
+window { width: 720px; }
+mainbox { padding: 18px; spacing: 12px; children: [inputbar, listview, message]; }
+inputbar { padding: 12px 14px; }
+prompt { text-color: @accent; }
+entry { placeholder: "Search clipboard…"; }
+listview { lines: 6; columns: 1; spacing: 5px; fixed-height: true; }
+element {
+    children: [element-icon, element-text];
+    padding: 8px 12px;
+    spacing: 16px;
+    border: 1px;
+    border-color: transparent;
+    border-radius: 10px;
+    background-color: @surface;
+}
+element selected.normal { border-color: @accent; background-color: #392247; }
+element-icon { size: 64px; vertical-align: 0.5; }
+element-text { vertical-align: 0.5; }
+message { padding: 4px 2px; }
+textbox { font: "Inter 9"; text-color: @muted; }

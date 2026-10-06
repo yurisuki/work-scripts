@@ -2,6 +2,7 @@
 """Render the clock locale from system settings at each Waybar start."""
 import json
 import os
+import subprocess
 from pathlib import Path
 
 home=Path.home()
@@ -19,4 +20,6 @@ runtime.write_text(json.dumps(config,ensure_ascii=False))
 env=os.environ.copy()
 env.pop('LC_ALL',None)
 env['LC_TIME']=config['clock']['locale']
+subprocess.Popen([str(home/'.scripts/hypr-workspace.py'), 'watch', str(os.getpid())],
+                 stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 os.execvpe('waybar',['waybar','-c',str(runtime),'-s',str(home/'.config/waybar/style.css')],env)

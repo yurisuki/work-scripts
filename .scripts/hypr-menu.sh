@@ -16,11 +16,7 @@ case ${1:-apps} in
         notify-send 'Browser unavailable' 'Install brave-bin to use the browser shortcut.'
         exit 1
         ;;
-    clipboard)
-        choice=$(cliphist list | rofi_menu -dmenu -display-columns 2 -p Clipboard) || exit 0
-        [[ -n "$choice" ]] || exit 0
-        printf '%s\n' "$choice" | cliphist decode | wl-copy
-        ;;
+    clipboard) exec "$HOME/.scripts/hypr-clipboard.py" ;;
     clear-clipboard)
         if confirm 'Clear clipboard history?'; then cliphist wipe; wl-copy --clear; fi
         ;;

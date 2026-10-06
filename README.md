@@ -96,9 +96,12 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+D / Super+R                 | Launcher / Superfile                 |
 | Super+Shift+W / Super+W           | Brave / nmtui                        |
 | Super+V / Super+N                 | Clipboard / notifications            |
+| Super+Shift+V                     | Clear clipboard history (confirmation) |
+| Super+Ctrl+F                      | Toggle work mode (DND + keep awake)   |
+| Print / Super+Print               | Save and copy screenshot / edit in Swappy |
 | Super+Shift+E                     | Search emoji and copy to clipboard   |
 | Super+H/J/K/L or arrows           | Focus left/down/up/right             |
-| Super+Shift+H/J/K/L or arrows     | Move window                          |
+| Super+Shift+H/J/K/L or arrows     | Move tiled window / floating by 30 px |
 | Super+Alt+H/J/K/L or arrows       | Resize window                        |
 | Super+Ctrl+H/K or ←/↑             | Decrease inner and outer gaps by 2 px |
 | Super+Ctrl+J/L or ↓/→             | Increase inner and outer gaps by 2 px |
@@ -112,7 +115,15 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+B                           | Toggle bar                           |
 
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
-Wiremix and the clock for Calcure. Clipboard is available through its shortcut.
+Wiremix and the clock for Calcure. Clipboard is available through its shortcut; Shift+Delete in the picker deletes the selected entry.
+Work mode shows a brief notification when enabled or disabled, including while DND is on.
+Turning it off restores the previous DND setting.
+It prevents idle locking and screen blanking, while manual locking and suspend remain available.
+Screenshots are saved under the XDG Pictures directory in `Screenshots`, copied to the clipboard,
+and announced with an Open action. Cancelling region selection saves nothing.
+Kitty: `Ctrl+Shift+O` toggles full opacity and the configured 85% opacity.
+Neovim: `<leader>q` quits, `<leader>e` opens Neo-tree, `<leader>de` shows diagnostics,
+and `<leader>dq` fills the diagnostic location list.
 
 Emoji picker: `~/.scripts/rofi-emoji.py` (or `~/.scripts/hypr-menu.sh emoji`).
 Search English names or categories, press Enter to copy, then Ctrl+V to paste.
@@ -145,7 +156,15 @@ file symlinks are backed up and replaced without writing through them.
 
 ```sh
 hyprctl configerrors
+python install/check-config.py  # Read-only comparison with your local files
 ```
+
+The comparison exits with status 1 when managed files differ. Deployment also lists these
+differences before replacing files, and keeps its existing backups and personal-setting exclusions.
 
 Package downloads and AUR builds can change or fail independently of this repo;
 installation stops on errors, and the same command can be rerun after fixing them.
+
+Clipboard image entries show cached 64 px previews in Rofi. Original image data is
+copied on Enter; Shift+Delete removes the selected entry and its preview. Thumbnails
+are kept only in the session runtime directory.

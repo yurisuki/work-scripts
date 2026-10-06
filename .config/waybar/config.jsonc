@@ -117,47 +117,47 @@
   "custom/workspace1": {
     "exec": "~/.scripts/hypr-workspace.py status 1",
     "return-type": "json",
-    "interval": 1,
     "on-click": "~/.scripts/hypr-workspace.py focus 1",
     "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
     "on-scroll-down": "~/.scripts/hypr-workspace.py next",
-    "smooth-scrolling-threshold": 1
+    "smooth-scrolling-threshold": 1,
+    "signal": 9
   },
   "custom/workspace2": {
     "exec": "~/.scripts/hypr-workspace.py status 2",
     "return-type": "json",
-    "interval": 1,
     "on-click": "~/.scripts/hypr-workspace.py focus 2",
     "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
     "on-scroll-down": "~/.scripts/hypr-workspace.py next",
-    "smooth-scrolling-threshold": 1
+    "smooth-scrolling-threshold": 1,
+    "signal": 9
   },
   "custom/workspace3": {
     "exec": "~/.scripts/hypr-workspace.py status 3",
     "return-type": "json",
-    "interval": 1,
     "on-click": "~/.scripts/hypr-workspace.py focus 3",
     "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
     "on-scroll-down": "~/.scripts/hypr-workspace.py next",
-    "smooth-scrolling-threshold": 1
+    "smooth-scrolling-threshold": 1,
+    "signal": 9
   },
   "custom/workspace4": {
     "exec": "~/.scripts/hypr-workspace.py status 4",
     "return-type": "json",
-    "interval": 1,
     "on-click": "~/.scripts/hypr-workspace.py focus 4",
     "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
     "on-scroll-down": "~/.scripts/hypr-workspace.py next",
-    "smooth-scrolling-threshold": 1
+    "smooth-scrolling-threshold": 1,
+    "signal": 9
   },
   "custom/workspace5": {
     "exec": "~/.scripts/hypr-workspace.py status 5",
     "return-type": "json",
-    "interval": 1,
     "on-click": "~/.scripts/hypr-workspace.py focus 5",
     "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
     "on-scroll-down": "~/.scripts/hypr-workspace.py next",
-    "smooth-scrolling-threshold": 1
+    "smooth-scrolling-threshold": 1,
+    "signal": 9
   },
   "battery": {
     "format": "{icon} {capacity}%",
@@ -196,46 +196,46 @@
   "custom/workspace6": {
     "exec": "~/.scripts/hypr-workspace.py status 6",
     "return-type": "json",
-    "interval": 1,
     "on-click": "~/.scripts/hypr-workspace.py focus 6",
     "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
     "on-scroll-down": "~/.scripts/hypr-workspace.py next",
-    "smooth-scrolling-threshold": 1
+    "smooth-scrolling-threshold": 1,
+    "signal": 9
   },
   "custom/workspace7": {
     "exec": "~/.scripts/hypr-workspace.py status 7",
     "return-type": "json",
-    "interval": 1,
     "on-click": "~/.scripts/hypr-workspace.py focus 7",
     "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
     "on-scroll-down": "~/.scripts/hypr-workspace.py next",
-    "smooth-scrolling-threshold": 1
+    "smooth-scrolling-threshold": 1,
+    "signal": 9
   },
   "custom/workspace8": {
     "exec": "~/.scripts/hypr-workspace.py status 8",
     "return-type": "json",
-    "interval": 1,
     "on-click": "~/.scripts/hypr-workspace.py focus 8",
     "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
     "on-scroll-down": "~/.scripts/hypr-workspace.py next",
-    "smooth-scrolling-threshold": 1
+    "smooth-scrolling-threshold": 1,
+    "signal": 9
   },
   "custom/workspace9": {
     "exec": "~/.scripts/hypr-workspace.py status 9",
     "return-type": "json",
-    "interval": 1,
     "on-click": "~/.scripts/hypr-workspace.py focus 9",
     "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
     "on-scroll-down": "~/.scripts/hypr-workspace.py next",
-    "smooth-scrolling-threshold": 1
+    "smooth-scrolling-threshold": 1,
+    "signal": 9
   },
   "custom/workspace10": {
     "exec": "~/.scripts/hypr-workspace.py status 10",
     "return-type": "json",
-    "interval": 1,
     "on-click": "~/.scripts/hypr-workspace.py focus 10",
     "on-scroll-up": "~/.scripts/hypr-workspace.py prev",
     "on-scroll-down": "~/.scripts/hypr-workspace.py next",
-    "smooth-scrolling-threshold": 1
+    "smooth-scrolling-threshold": 1,
+    "signal": 9
   }
 }

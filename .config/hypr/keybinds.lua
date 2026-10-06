@@ -112,13 +112,30 @@ hl.bind("SUPER + SHIFT + Tab", hl.dsp.focus({ workspace = "e-1" }))
 hl.bind("SUPER + Q", hl.dsp.window.close()) -- normal close
 hl.bind("SUPER + SHIFT + Q", hl.dsp.window.kill()) -- force kill
 hl.bind("SUPER + SHIFT + Space", hl.dsp.window.float({ action = "toggle" }))
+-- Move floating windows by 30 pixels; move tiled windows in the layout.
+local movement_delta = {
+	left = { -30, 0 }, right = { 30, 0 },
+	up = { 0, -30 }, down = { 0, 30 },
+}
+local function move_window(direction)
+	return function()
+		local window = hl.get_active_window()
+		if not window then return end
+		if window.floating then
+			local delta = movement_delta[direction]
+			hl.dispatch(hl.dsp.window.move({ x = delta[1], y = delta[2], relative = true }))
+		else
+			hl.dispatch(hl.dsp.window.move({ direction = direction }))
+		end
+	end
+end
 for _, direction in ipairs({ "left", "right", "up", "down" }) do
 	hl.bind("SUPER + " .. direction, hl.dsp.focus({ direction = direction }))
-	hl.bind("SUPER + SHIFT + " .. direction, hl.dsp.window.move({ direction = direction }))
+	hl.bind("SUPER + SHIFT + " .. direction, move_window(direction), { repeating = true })
 end
 -- Vim-style window movement: H left, J down, K up, L right.
 for key, direction in pairs({ H = "left", J = "down", K = "up", L = "right" }) do
-	hl.bind("SUPER + SHIFT + " .. key, hl.dsp.window.move({ direction = direction }))
+	hl.bind("SUPER + SHIFT + " .. key, move_window(direction), { repeating = true })
 end
 -- Vim-style focus: H left, J down, K up, L right.
 for key, direction in pairs({ H = "left", J = "down", K = "up", L = "right" }) do
@@ -175,11 +192,15 @@ for i = 1, 10 do
 end
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
-hl.bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp -d)" - | wl-copy'))
-hl.bind("SUPER + Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | swappy -f -'))
+hl.bind("Print", hl.dsp.exec_cmd(scripts .. "hypr-screenshot.sh copy"))
+hl.bind("SUPER + Print", hl.dsp.exec_cmd(scripts .. "hypr-screenshot.sh edit"))
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { repeating = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { repeating = true })
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
 hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(scripts .. "hypr-brightness.sh up"), { repeating = true })
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(scripts .. "hypr-brightness.sh down"), { repeating = true })
+
+-- Work mode and clipboard maintenance.
+hl.bind("SUPER + CTRL + F", hl.dsp.exec_cmd(scripts .. "hypr-focus.py toggle"))
+hl.bind("SUPER + SHIFT + V", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh clear-clipboard"))
