@@ -1,5 +1,6 @@
 [Unit]
 Description=Move downloaded quote PDFs
+StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot

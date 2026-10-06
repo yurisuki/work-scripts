@@ -1,8 +1,9 @@
 [Unit]
 Description=React immediately to downloaded quote PDFs
+StartLimitIntervalSec=0
 
 [Path]
-PathChanged=@DOWNLOAD_PATH@
+PathExistsGlob=@DOWNLOAD_PATH@/QT-*.pdf
 Unit=quote-download-watcher.service
 
 [Install]

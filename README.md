@@ -124,7 +124,6 @@ Symlinked parent directories are rejected before deployment; existing individual
 file symlinks are backed up and replaced without writing through them.
 
 ```sh
-python3 -m unittest discover -s tests -v
 hyprctl configerrors
 ```
 

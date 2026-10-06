@@ -17,4 +17,7 @@ for unit in ('service', 'path'):
     (destination / f'quote-download-watcher.{unit}').write_text(text)
 PY
 systemctl --user daemon-reload
+systemctl --user reset-failed quote-download-watcher.path quote-download-watcher.service || true
 systemctl --user enable --now quote-download-watcher.path
+systemctl --user restart quote-download-watcher.path
+systemctl --user start quote-download-watcher.service
