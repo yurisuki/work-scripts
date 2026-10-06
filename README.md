@@ -100,6 +100,8 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+H/J/K/L or arrows           | Focus left/down/up/right             |
 | Super+Shift+H/J/K/L or arrows     | Move window                          |
 | Super+Alt+H/J/K/L or arrows       | Resize window                        |
+| Super+Ctrl+H/K or ←/↑             | Decrease inner and outer gaps by 2 px |
+| Super+Ctrl+J/L or ↓/→             | Increase inner and outer gaps by 2 px |
 | Super+number / Super+Shift+number | Workspace / move window to workspace |
 | Super+X / Super+F / Super+Q       | Lock / fullscreen / close            |
 | Super+G                           | Make focused window largest          |

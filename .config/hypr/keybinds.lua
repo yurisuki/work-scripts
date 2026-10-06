@@ -141,6 +141,28 @@ for key, delta in pairs({
 		{ repeating = true }
 	)
 end
+-- Adjust inner and outer gaps by 2 pixels; clamp at zero and repeat while held.
+local function change_gaps(delta)
+	return function()
+		local general = {}
+		for _, option in ipairs({ "gaps_in", "gaps_out" }) do
+			local current = hl.get_config("general." .. option)
+			if type(current) == "number" then
+				general[option] = math.max(0, current + delta)
+			elseif type(current) == "table" then
+				local gaps = {}
+				for _, side in ipairs({ "top", "right", "bottom", "left" }) do
+					gaps[side] = math.max(0, (current[side] or 0) + delta)
+				end
+				general[option] = gaps
+			end
+		end
+		hl.config({ general = general })
+	end
+end
+for key, delta in pairs({ H = -2, left = -2, K = -2, up = -2, J = 2, down = 2, L = 2, right = 2 }) do
+	hl.bind("SUPER + CTRL + " .. key, change_gaps(delta), { repeating = true })
+end
 -- Physical number-row keys also work with the Czech layout's accented letters.
 for i = 1, 10 do
 	local key = "code:" .. (i + 9)
