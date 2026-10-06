@@ -1,9 +1,9 @@
 @import "/etc/xdg/swaync/style.css";
 :root {
-    --cc-bg: rgba(23, 16, 32, 0.98);
+    --cc-bg: rgba(23, 16, 32, 0.95);
     --noti-border-color: #493455;
     --noti-bg: 36, 26, 48;
-    --noti-bg-alpha: 0.98;
+    --noti-bg-alpha: 0.95;
     --noti-bg-darker: #171020;
     --noti-bg-hover: #362442;
     --noti-bg-focus: #493055;
@@ -17,9 +17,18 @@
     --font-size-summary: 14px;
 }
 * { font-family: "Inter", "JetBrainsMono Nerd Font"; }
-.control-center { border: 1px solid #71358f; border-radius: 18px; padding: 12px; }
-.widget-title { color: #e59bff; }
-.widget-title > button { background: #493055; color: #ede3f5; border-radius: 8px; }
+.control-center { border: 1px solid #493455; border-radius: 14px; padding: 18px; }
+.widget-title { color: #ede3f5; }
+.widget-title > button { background: #241a30; color: #b4a3c4; border-radius: 8px; }
 switch:checked { background: #cf5aff; }
 scale trough highlight { background: #cf5aff; }
 .notification.critical { border: 2px solid #ff799d; }
+
+.widget-title > label { font-size: 17px; font-weight: 600; }
+.widget-title > button { padding: 6px 12px; border: 1px solid #493455; }
+.widget-title > button:hover { background: #362442; color: #ede3f5; }
+.widget-dnd { margin: 12px 0; }
+.widget-dnd label { font-size: 13px; }
+.widget-dnd switch, .widget-dnd switch slider { border-radius: 8px; }
+.widget-volume { margin: 8px 0; }
+.notification-row .notification-background .notification .notification-default-action { padding: 12px; }

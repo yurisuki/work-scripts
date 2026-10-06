@@ -3,6 +3,7 @@
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 home=Path.home()
@@ -17,6 +18,8 @@ config=json.loads((home/'.config/waybar/config.jsonc').read_text())
 config['clock']['locale']=settings.get('LC_TIME',settings.get('LANG',os.environ.get('LANG','C.UTF-8')))
 runtime=Path(os.environ['XDG_RUNTIME_DIR'])/'violet-waybar.json'
 runtime.write_text(json.dumps(config,ensure_ascii=False))
+if sys.argv[1:] == ["--render-only"]:
+    raise SystemExit(0)
 env=os.environ.copy()
 env.pop('LC_ALL',None)
 env['LC_TIME']=config['clock']['locale']

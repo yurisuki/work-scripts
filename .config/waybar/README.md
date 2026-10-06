@@ -10,6 +10,8 @@
   Hover for the built-in calendar; click for Calcure in Kitty. Install Calcure with `uv tool install calcure` or `yay -S calcure`.
 - Laptop battery: automatically hidden when absent. Bluetooth battery appears
   only when a connected device reports a percentage through BlueZ.
+- Network, audio and brightness share one status group.
+- Super+Ctrl+R reloads Hyprland and refreshes Waybar configuration, locale and CSS.
 - Workspaces: 1–5 always visible; 6–10 appear only when selected or occupied.
   Mouse wheel cycles persistent and existing workspaces.
 - Workspace state is cached by one event-socket listener launched alongside Waybar;

@@ -17,9 +17,7 @@
   "modules-right": [
     "tray",
     "custom/weather",
-    "network",
-    "pulseaudio",
-    "custom/brightness",
+    "group/system-status",
     "battery",
     "bluetooth",
     "custom/notification",
@@ -237,5 +235,13 @@
     "on-scroll-down": "~/.scripts/hypr-workspace.py next",
     "smooth-scrolling-threshold": 1,
     "signal": 9
+  },
+  "group/system-status": {
+    "orientation": "horizontal",
+    "modules": [
+      "network",
+      "pulseaudio",
+      "custom/brightness"
+    ]
   }
 }

@@ -204,3 +204,6 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(scripts .. "hypr-brightness.sh 
 -- Work mode and clipboard maintenance.
 hl.bind("SUPER + CTRL + F", hl.dsp.exec_cmd(scripts .. "hypr-focus.py toggle"))
 hl.bind("SUPER + SHIFT + V", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh clear-clipboard"))
+
+-- Reload Hyprland and refresh Waybar without restarting the session.
+hl.bind("SUPER + CTRL + R", hl.dsp.exec_cmd(scripts .. "hypr-reload.sh"))

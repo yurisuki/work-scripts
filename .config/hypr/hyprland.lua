@@ -53,8 +53,9 @@ hl.config({
 
 		blur = {
 			enabled = true,
-			size = 5,
+			size = 6,
 			passes = 2,
+			vibrancy = 0.08,
 		},
 	},
 
@@ -281,4 +282,14 @@ local f = io.open(local_config, "r")
 if f then
 	f:close()
 	dofile(local_config)
+end
+
+-- Subtle glass surfaces for desktop panels and menus.
+for _, namespace in ipairs({ "rofi", "waybar", "swaync-control-center", "swaync-notification-window" }) do
+    hl.layer_rule({
+        name = "violet-glass-" .. namespace,
+        match = { namespace = "^" .. namespace .. "$" },
+        blur = true,
+        ignore_alpha = 0.1,
+    })
 end

@@ -98,6 +98,7 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+V / Super+N                 | Clipboard / notifications            |
 | Super+Shift+V                     | Clear clipboard history (confirmation) |
 | Super+Ctrl+F                      | Toggle work mode (DND + keep awake)   |
+| Super+Ctrl+R                      | Reload Hyprland and refresh Waybar    |
 | Print / Super+Print               | Save and copy screenshot / edit in Swappy |
 | Super+Shift+E                     | Search emoji and copy to clipboard   |
 | Super+H/J/K/L or arrows           | Focus left/down/up/right             |

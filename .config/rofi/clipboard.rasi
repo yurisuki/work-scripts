@@ -11,7 +11,7 @@ element {
     spacing: 16px;
     border: 1px;
     border-color: transparent;
-    border-radius: 10px;
+    border-radius: 8px;
     background-color: @surface;
 }
 element selected.normal { border-color: @accent; background-color: #392247; }
