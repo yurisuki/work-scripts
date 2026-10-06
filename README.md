@@ -75,7 +75,7 @@ installed on your notebook. Kitty uses Zsh without changing your login shell.
 | Super+D / Super+R                 | Launcher / Superfile                 |
 | Super+Shift+W / Super+W           | Brave / nmtui                        |
 | Super+V / Super+N                 | Clipboard / notifications            |
-| Super+Shift+E                    | Search emoji and copy to clipboard   |
+| Super+Shift+E                     | Search emoji and copy to clipboard   |
 | Super+H/J/K/L or arrows           | Focus left/down/up/right             |
 | Super+Shift+H/J/K/L or arrows     | Move window                          |
 | Super+Alt+H/J/K/L or arrows       | Resize window                        |
@@ -84,7 +84,7 @@ installed on your notebook. Kitty uses Zsh without changing your login shell.
 | Super+G                           | Make focused window largest          |
 | Super+C / Super+Shift+Escape      | Calculator / gotop                   |
 | Super+Escape                      | Session menu                         |
-| Super+Y                           | Open the last downloaded quote         |
+| Super+Y                           | Open the last downloaded quote       |
 | Super+B                           | Toggle bar                           |
 
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
@@ -107,11 +107,7 @@ Neovim installs its pinned plugins on first launch (internet required); configur
 language servers and formatters are supplied by the installer.
 
 Zoho WorkDrive uses its [vendor installer](https://www.zoho.com/workdrive/desktop-sync.html)
-and requires your account. Sign in and sync your files before using Stock Search;
-its launcher expects `~/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/Search stock tool/search_stock_V1_PRO.py`.
-Printer hardware/queues are not guessed: configure CUPS, then use `GK420d` or set
-`LABEL_PRINTER` for the label printing script. No credentials or printer settings
-are included.
+and requires your account. Sign in and sync your files .
 
 ## Backups and checks
 
