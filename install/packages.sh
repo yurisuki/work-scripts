@@ -9,9 +9,9 @@ REPO_PACKAGES=(
     inter-font ttf-jetbrains-mono-nerd noto-fonts udisks2 udiskie
     grim slurp libnotify util-linux jq zenity greetd greetd-tuigreet
     xournalpp libimobiledevice usbmuxd bc qalculate-qt xclip neovim nodejs npm
-    ripgrep fd unzip stylua python-black shfmt clang konsole mupdf sxiv vlc superfile
+    ripgrep fd unzip stylua python-black shfmt clang konsole sxiv vlc superfile
     python-gobject python-pypdf python-openpyxl python-pandas python-numpy python-pyqt6
     ghostscript cups lua-language-server bash-language-server pyright
     vscode-json-languageserver yaml-language-server typescript-language-server prettier
 )
-AUR_PACKAGES=(onlyoffice-bin brave-bin zapzap ticktick gotop-bin snappy-switcher ttf-apple-emoji hyprmod)
+AUR_PACKAGES=(sioyek-appimage onlyoffice-bin brave-bin zapzap ticktick gotop-bin snappy-switcher ttf-apple-emoji hyprmod)

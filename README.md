@@ -51,6 +51,27 @@ weather location, wallpaper selection and existing work documents are preserved.
 The repository uses automatic monitor detection; no desktop-specific DP-1 mode is
 installed on your notebook. Kitty uses Zsh without changing your login shell.
 
+## PDF viewer
+
+Sioyek opens PDFs in standard dark mode without custom theme overrides.
+Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
+`~/.config/sioyek/keys_user.config`. Restart Sioyek after changing settings.
+
+| Shortcut | Action |
+| --- | --- |
+| `y` / `Y` | Copy selected text (drag to select; double-click selects a word) |
+| `,` / `.` | Zoom out / in |
+| `Ctrl+Shift+N` / `Ctrl+Shift+M` | Zoom out / in, matching Kitty directions |
+| `w` / `W` | Fit text width without white margins / fit page height |
+| `F8` | Toggle dark mode; restore original quote colors |
+| `J` / `K` | Next / previous page |
+| `Alt+Left` / `Alt+Right` | Back / forward in location history |
+| `Ctrl+F`, then `n` / `N` | Search, then next / previous match |
+| `b` / `gb` | Add / list document bookmarks |
+| `O` | Search recently opened PDFs |
+| `Ctrl+B` | Toggle scrollbar |
+| `:` | Search all available commands |
+
 ## Personal settings
 
 - Monitor, scale, keyboard overrides: `~/.config/hypr/local.lua`.

@@ -1,7 +1,7 @@
 [Default Applications]
 inode/directory=superfile.desktop
-application/pdf=mupdf.desktop
-application/x-pdf=mupdf.desktop
+application/pdf=sioyek.desktop
+application/x-pdf=sioyek.desktop
 image/bmp=sxiv.desktop
 image/gif=sxiv.desktop
 image/jpeg=sxiv.desktop
