@@ -141,6 +141,10 @@ for key, delta in pairs({
 		{ repeating = true }
 	)
 end
+-- Restore the default inner and outer gaps.
+hl.bind("SUPER + SHIFT + G", function()
+	hl.config({ general = { gaps_in = 5, gaps_out = 12 } })
+end)
 -- Adjust inner and outer gaps by 2 pixels; clamp at zero and repeat while held.
 local function change_gaps(delta)
 	return function()
