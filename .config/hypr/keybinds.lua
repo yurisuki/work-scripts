@@ -81,7 +81,7 @@ hl.bind(
 	"SUPER + period",
 	toggle_app({
 		name = "chatgpt",
-		class = "brave-chatgpt.com__-Profile_6",
+		class = "brave-chatgpt.com__-Default",
 		command = scripts .. "webapp.sh 'https://chatgpt.com'",
 		size = "1200 850",
 	})
@@ -93,6 +93,15 @@ hl.bind(
 		class = "cider",
 		command = "cider",
 		size = "1100 750",
+	})
+)
+hl.bind(
+	"SUPER + P",
+	toggle_app({
+		name = "leaveflow",
+		class = "brave-leaveflow.ai__dashboard-Default",
+		command = scripts .. "webapp.sh 'https://leaveflow.ai/dashboard'",
+		size = "1000 700",
 	})
 )
 hl.bind("ALT + Tab", hl.dsp.exec_cmd("snappy-switcher next --mod alt"))
