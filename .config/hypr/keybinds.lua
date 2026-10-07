@@ -11,6 +11,7 @@ hl.bind(
 	})
 )
 hl.bind("SUPER + R", hl.dsp.exec_cmd("gtk-launch superfile"))
+hl.bind("SUPER + U", hl.dsp.exec_cmd('kitty -e "' .. os.getenv("HOME") .. '/.local/bin/ttui"'))
 hl.bind(
 	"SUPER + C",
 	toggle_app({
@@ -207,3 +208,6 @@ hl.bind("SUPER + SHIFT + V", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh clear-clip
 
 -- Reload Hyprland and refresh Waybar without restarting the session.
 hl.bind("SUPER + CTRL + R", hl.dsp.exec_cmd(scripts .. "hypr-reload.sh"))
+
+-- Select and copy a text template.
+hl.bind("SUPER + T", hl.dsp.exec_cmd(scripts .. "rtemplate.sh"))

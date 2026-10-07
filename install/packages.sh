@@ -1,6 +1,6 @@
 # Packages from the system's configured Arch/Manjaro repositories.
 REPO_PACKAGES=(
-    base-devel git curl python uv zsh zsh-autosuggestions zsh-syntax-highlighting zsh-completions
+    base-devel git go curl python uv zsh zsh-autosuggestions zsh-syntax-highlighting zsh-completions
     hyprland uwsm libnewt waybar swaync kitty rofi hyprlock hypridle hyprpolkitagent
     swaybg cliphist wl-clipboard brightnessctl ddcutil networkmanager network-manager-applet
     pipewire wireplumber pipewire-pulse wiremix bluez bluez-utils upower
@@ -14,4 +14,4 @@ REPO_PACKAGES=(
     ghostscript cups lua-language-server bash-language-server pyright
     vscode-json-languageserver yaml-language-server typescript-language-server prettier
 )
-AUR_PACKAGES=(sioyek-appimage onlyoffice-bin brave-bin zapzap ticktick gotop-bin snappy-switcher ttf-apple-emoji hyprmod)
+AUR_PACKAGES=(sioyek-appimage onlyoffice-bin brave-bin zapzap gotop-bin snappy-switcher ttf-apple-emoji hyprmod)

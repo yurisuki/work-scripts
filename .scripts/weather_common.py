@@ -10,7 +10,7 @@ def read_settings():
     location = settings.get('location', '').strip()
     units = settings.get('units', 'm')
     if units not in ('m', 'u'):
-        raise ValueError('Jednotky musí být m nebo u.')
+        raise ValueError('Units must be m or u.')
     # wttr.in can fail on Czech diacritics even when the plain name resolves.
     # Keep the user's display name; normalize only the service query.
     query = ''.join(
@@ -25,10 +25,10 @@ def error_message(error):
     if isinstance(error, HTTPError):
         detail = error.read(512).decode('utf-8', errors='replace').lower()
         if error.code == 404 or 'location not found' in detail or 'unknown location' in detail:
-            return 'wttr.in nerozpoznalo lokalitu. Zkus upřesnit název místa v weather.json.'
+            return 'wttr.in could not find this location. Try a more specific place name in weather.json.'
         if error.code == 429:
-            return 'wttr.in dočasně omezuje požadavky. Zkus to později.'
-        return f'wttr.in je dočasně nedostupné (HTTP {error.code}).'
+            return 'wttr.in is temporarily limiting requests. Try again later.'
+        return f'wttr.in is temporarily unavailable (HTTP {error.code}).'
     if isinstance(error, (TimeoutError, URLError)):
-        return 'wttr.in neodpovídá nebo není dostupné připojení k internetu.'
+        return 'wttr.in is not responding or the internet connection is unavailable.'
     return str(error)

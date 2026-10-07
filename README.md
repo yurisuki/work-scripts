@@ -19,6 +19,10 @@ The installer installs desktop/work dependencies from your configured repositori
 then asks yay to install the AUR applications. Review package/build prompts normally.
 Calcure 3.4 is installed in an isolated user environment with uv. Hyprland must be
 0.55 or newer; the installer checks this before deploying the Lua configuration.
+TickTick TUI is built with Go from reviewed commit `c1e5a5e1a03ca091a66994fb2f51e82bd3de32d1`
+of `raccoon-overlord-dev/ticktick-tui` and installed to `~/.local/bin/ttui`.
+Super+U opens it in Kitty; use browser OAuth on first launch. The source build
+keeps its default `dev` version, which disables the app's release updater.
 
 At the next login, choose **Hyprland (uwsm-managed)**. Without a display manager the installer
 configures greetd/tuigreet for the next boot. It starts `uwsm start -e -D Hyprland hyprland.desktop`.
@@ -99,6 +103,8 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+Shift+V                     | Clear clipboard history (confirmation) |
 | Super+Ctrl+F                      | Toggle work mode (DND + keep awake)   |
 | Super+Ctrl+R                      | Reload Hyprland and refresh Waybar    |
+| Super+T                           | Open the text template picker         |
+| Super+U                           | Open TickTick TUI in Kitty            |
 | Print / Super+Print               | Save and copy screenshot / edit in Swappy |
 | Super+Shift+E                     | Search emoji and copy to clipboard   |
 | Super+H/J/K/L or arrows           | Focus left/down/up/right             |
@@ -137,7 +143,7 @@ noto-fonts-emoji, already included in the installer.
 
 ## Work-specific setup
 
-Applications installed include OnlyOffice, Brave, Zapzap, TickTick, Superfile,
+Applications installed include OnlyOffice, Brave, Zapzap, TickTick TUI, Superfile,
 gotop, Qalculate, Xournal++, VLC and the Python dependencies for work scripts.
 Neovim installs its pinned plugins on first launch (internet required); configured
 language servers and formatters are supplied by the installer.
@@ -175,3 +181,14 @@ normalize the service query automatically (lowercase, without diacritics), while
 preserving the original display name. No separate coordinates are needed. A failed
 forecast request shows the last successful forecast for the same query and units,
 with its age and an offline label.
+
+## Text templates
+
+Super+T opens rtemplate with Violet Night styling, filename search and text previews.
+Enter copies the selected template, Alt+E edits it in Neovim, Alt+O opens the folder
+in Superfile, and Escape cancels without changing the clipboard. Existing templates
+stay in `~/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/rtemplate list`.
+Subfolders are shown with relative paths so duplicate filenames remain distinct.
+The picker expands `$DATE`, `$TIME`, `$DATETIME`, and `$CLIPBOARD`, plus their
+`${NAME}` forms. Clipboard text is captured before the picker opens. Newlines and
+literal backslashes are preserved; template contents are never executed as code.

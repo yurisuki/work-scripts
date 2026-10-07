@@ -56,6 +56,7 @@ fi
 # Keep AUR review and package conflict prompts available.
 yay -S --needed "${AUR_PACKAGES[@]}"
 uv tool install 'calcure==3.4'
+bash "$source_dir/install/ticktick-tui.sh"
 [[ $mode != packages ]] || { echo 'All package dependencies installed.'; exit 0; }
 python3 "$source_dir/install/deploy.py" "$source_dir" "$HOME"
 sudo python3 "$source_dir/install/setup-profile.py" /etc/profile
