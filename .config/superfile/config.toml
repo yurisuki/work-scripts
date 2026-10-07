@@ -54,7 +54,7 @@ file_size_use_si = false
 #-- Default File Sort Type
 # (0: Name, 1: Size, 2: Date Modified, 3: Type, 4: Natural).
 # Natural sort treats numeric sequences as numbers (e.g., file2 before file10).
-default_sort_type = 0
+default_sort_type = 2
 
 #-- Sort Order Reversing
 # true: Descending.
