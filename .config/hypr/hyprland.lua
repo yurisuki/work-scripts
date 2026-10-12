@@ -185,7 +185,26 @@ end)
 function toggle_app(opts)
     assert(opts.name:match("^[%w_-]+$"), "toggle_app: invalid name")
     local workspace = "special:toggle-" .. opts.name
-    local class_pattern = "^" .. opts.class:gsub("([\\.^$|?*+()%[%]{}])", "\\%1") .. "$"
+    -- URL app identity stays stable across Chromium browsers and profiles.
+    -- webapp_class is the URL-derived part, e.g. "chatgpt.com__".
+    local identity = assert(opts.webapp_class or opts.class, "toggle_app: missing class")
+    local escaped = identity:gsub("([\\.^$|?*+()%[%]{}])", "\\%1")
+    local class_pattern = "^" .. escaped .. "$"
+    local function matches_class(class)
+        if type(class) ~= "string" then return false end
+        if not opts.webapp_class then return class == identity end
+        local literal = identity:gsub("(%W)", "%%%1")
+        return class == identity
+            or class:match("^" .. literal .. "%-.*$") ~= nil
+            or class:match("^.+%-" .. literal .. "$") ~= nil
+            or class:match("^.+%-" .. literal .. "%-.*$") ~= nil
+    end
+    if opts.webapp_class then
+        class_pattern = "^(.+-)?" .. escaped .. "(-.*)?$"
+    end
+    local function matches_window(window)
+        return matches_class(window.class) or matches_class(window.initial_class)
+    end
     local rule = {
         name = "toggle-" .. opts.name,
         match = { class = class_pattern },
@@ -208,7 +227,7 @@ function toggle_app(opts)
         end
     end
     hl.on("window.open", function(window)
-        if launch_time > 0 and (window.class == opts.class or window.initial_class == opts.class) then
+        if launch_time > 0 and matches_window(window) then
             launch_time = 0
             focus_if_visible(window)
         end
@@ -217,7 +236,7 @@ function toggle_app(opts)
         if opts.close_on_toggle then
             local closed = false
             for _, window in ipairs(hl.get_windows()) do
-                if window.mapped and (window.class == opts.class or window.initial_class == opts.class) then
+                if window.mapped and matches_window(window) then
                     hl.dispatch(hl.dsp.window.close({ window = "address:" .. window.address }))
                     closed = true
                 end
@@ -234,7 +253,7 @@ function toggle_app(opts)
         local found = false
         local target_window
         for _, window in ipairs(hl.get_windows()) do
-            if window.mapped and (window.class == opts.class or window.initial_class == opts.class) then
+            if window.mapped and matches_window(window) then
                 found = true
                 target_window = target_window or window
                 launch_time = 0

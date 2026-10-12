@@ -82,7 +82,7 @@ hl.bind(
 	"SUPER + period",
 	toggle_app({
 		name = "chatgpt",
-		class = "brave-chatgpt.com__-Default",
+		webapp_class = "chatgpt.com__",
 		command = scripts .. "webapp.sh 'https://chatgpt.com'",
 		size = "1200 850",
 	})
@@ -100,7 +100,7 @@ hl.bind(
 	"SUPER + P",
 	toggle_app({
 		name = "leaveflow",
-		class = "brave-leaveflow.ai__dashboard-Default",
+		webapp_class = "leaveflow.ai__dashboard",
 		command = scripts .. "webapp.sh 'https://leaveflow.ai/dashboard'",
 		size = "1000 700",
 	})
