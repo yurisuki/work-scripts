@@ -166,11 +166,11 @@ hl.window_rule({
 
 -- Compact weather panel below the right side of Waybar.
 hl.window_rule({
-    name = "weather-popup",
-    match = { class = "^weather-popup$" },
-    float = true,
-    size = "1040 740",
-    move = "(monitor_w-1060) 65",
+	name = "weather-popup",
+	match = { class = "^weather-popup$" },
+	float = true,
+	size = "1040 740",
+	move = "(monitor_w-1060) 65",
 })
 
 hl.on("hyprland.start", function()
@@ -183,112 +183,146 @@ end)
 -- Use tiled = true to use the special workspace's tiling layout instead.
 -- Use close_on_toggle = true to close running windows instead of hiding them.
 function toggle_app(opts)
-    assert(opts.name:match("^[%w_-]+$"), "toggle_app: invalid name")
-    local workspace = "special:toggle-" .. opts.name
-    -- URL app identity stays stable across Chromium browsers and profiles.
-    -- webapp_class is the URL-derived part, e.g. "chatgpt.com__".
-    local identity = assert(opts.webapp_class or opts.class, "toggle_app: missing class")
-    local escaped = identity:gsub("([\\.^$|?*+()%[%]{}])", "\\%1")
-    local class_pattern = "^" .. escaped .. "$"
-    local function matches_class(class)
-        if type(class) ~= "string" then return false end
-        if not opts.webapp_class then return class == identity end
-        local literal = identity:gsub("(%W)", "%%%1")
-        return class == identity
-            or class:match("^" .. literal .. "%-.*$") ~= nil
-            or class:match("^.+%-" .. literal .. "$") ~= nil
-            or class:match("^.+%-" .. literal .. "%-.*$") ~= nil
-    end
-    if opts.webapp_class then
-        class_pattern = "^(.+-)?" .. escaped .. "(-.*)?$"
-    end
-    local function matches_window(window)
-        return matches_class(window.class) or matches_class(window.initial_class)
-    end
-    local rule = {
-        name = "toggle-" .. opts.name,
-        match = { class = class_pattern },
-        workspace = workspace .. " silent",
-    }
-    if opts.tiled then
-        rule.tile = true
-    else
-        rule.float = true
-        rule.size = opts.size or "900 650"
-        rule.center = true
-    end
-    hl.window_rule(rule)
+	assert(opts.name:match("^[%w_-]+$"), "toggle_app: invalid name")
+	local workspace = "special:toggle-" .. opts.name
+	-- URL app identity stays stable across Chromium browsers and profiles.
+	-- webapp_class is the URL-derived part, e.g. "chatgpt.com__".
+	local identity = assert(opts.webapp_class or opts.class, "toggle_app: missing class")
+	local escaped = identity:gsub("([\\.^$|?*+()%[%]{}])", "\\%1")
+	local class_pattern = "^" .. escaped .. "$"
+	local function matches_class(class)
+		if type(class) ~= "string" then
+			return false
+		end
+		if not opts.webapp_class then
+			return class == identity
+		end
+		local literal = identity:gsub("(%W)", "%%%1")
+		return class == identity
+			or class:match("^" .. literal .. "%-.*$") ~= nil
+			or class:match("^.+%-" .. literal .. "$") ~= nil
+			or class:match("^.+%-" .. literal .. "%-.*$") ~= nil
+	end
+	if opts.webapp_class then
+		class_pattern = "^(.+-)?" .. escaped .. "(-.*)?$"
+	end
+	local function matches_window(window)
+		return matches_class(window.class) or matches_class(window.initial_class)
+	end
+	local rule = {
+		name = "toggle-" .. opts.name,
+		match = { class = class_pattern },
+		workspace = workspace .. " silent",
+	}
+	if opts.tiled then
+		rule.tile = true
+	else
+		rule.float = true
+		rule.size = opts.size or "900 650"
+		rule.center = true
+	end
+	hl.window_rule(rule)
 
-    local launch_time = 0
-    local function focus_if_visible(window)
-        local active = hl.get_active_special_workspace()
-        if active and active.name == workspace then
-            hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
-        end
-    end
-    hl.on("window.open", function(window)
-        if launch_time > 0 and matches_window(window) then
-            launch_time = 0
-            focus_if_visible(window)
-        end
-    end)
-    return function()
-        if opts.close_on_toggle then
-            local closed = false
-            for _, window in ipairs(hl.get_windows()) do
-                if window.mapped and matches_window(window) then
-                    hl.dispatch(hl.dsp.window.close({ window = "address:" .. window.address }))
-                    closed = true
-                end
-            end
-            if closed then
-                launch_time = 0
-                local active = hl.get_active_special_workspace()
-                if active and active.name == workspace then
-                    hl.dispatch(hl.dsp.workspace.toggle_special("toggle-" .. opts.name))
-                end
-                return
-            end
-        end
-        local found = false
-        local target_window
-        for _, window in ipairs(hl.get_windows()) do
-            if window.mapped and matches_window(window) then
-                found = true
-                target_window = target_window or window
-                launch_time = 0
-                if not window.workspace or window.workspace.name ~= workspace then
-                    hl.dispatch(hl.dsp.window.move({
-                        window = "address:" .. window.address,
-                        workspace = workspace,
-                        follow = false,
-                    }))
-                    hl.dispatch(hl.dsp.window.float({
-                        window = "address:" .. window.address,
-                        action = opts.tiled and "unset" or "set",
-                    }))
-                    if not opts.tiled then
-                        local width, height = (opts.size or "900 650"):match("^(%d+) (%d+)$")
-                        if width then
-                            hl.dispatch(hl.dsp.window.resize({
-                                window = "address:" .. window.address,
-                                x = tonumber(width), y = tonumber(height), relative = false,
-                            }))
-                        end
-                        hl.dispatch(hl.dsp.window.center({ window = "address:" .. window.address }))
-                    end
-                end
-            end
-        end
-        if not found then
-            -- Avoid duplicate launches while a slow application is starting.
-            if os.time() - launch_time < 10 then return end
-            launch_time = os.time()
-            hl.exec_cmd(opts.command)
-        end
-        hl.dispatch(hl.dsp.workspace.toggle_special("toggle-" .. opts.name))
-        if target_window then focus_if_visible(target_window) end
-    end
+	-- Keep unrelated windows off this app's special workspace.
+	hl.on("window.open", function(window)
+		if not window or not window.mapped then
+			return
+		end
+		if matches_window(window) then
+			return
+		end
+		if not window.workspace or window.workspace.name ~= workspace then
+			return
+		end
+
+		local active = hl.get_active_workspace()
+		if not active then
+			return
+		end
+
+		hl.dispatch(hl.dsp.window.move({
+			window = "address:" .. window.address,
+			workspace = tostring(active.id),
+			follow = false,
+		}))
+	end)
+
+	local launch_time = 0
+	local function focus_if_visible(window)
+		local active = hl.get_active_special_workspace()
+		if active and active.name == workspace then
+			hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
+		end
+	end
+	hl.on("window.open", function(window)
+		if launch_time > 0 and matches_window(window) then
+			launch_time = 0
+			focus_if_visible(window)
+		end
+	end)
+	return function()
+		if opts.close_on_toggle then
+			local closed = false
+			for _, window in ipairs(hl.get_windows()) do
+				if window.mapped and matches_window(window) then
+					hl.dispatch(hl.dsp.window.close({ window = "address:" .. window.address }))
+					closed = true
+				end
+			end
+			if closed then
+				launch_time = 0
+				local active = hl.get_active_special_workspace()
+				if active and active.name == workspace then
+					hl.dispatch(hl.dsp.workspace.toggle_special("toggle-" .. opts.name))
+				end
+				return
+			end
+		end
+		local found = false
+		local target_window
+		for _, window in ipairs(hl.get_windows()) do
+			if window.mapped and matches_window(window) then
+				found = true
+				target_window = target_window or window
+				launch_time = 0
+				if not window.workspace or window.workspace.name ~= workspace then
+					hl.dispatch(hl.dsp.window.move({
+						window = "address:" .. window.address,
+						workspace = workspace,
+						follow = false,
+					}))
+					hl.dispatch(hl.dsp.window.float({
+						window = "address:" .. window.address,
+						action = opts.tiled and "unset" or "set",
+					}))
+					if not opts.tiled then
+						local width, height = (opts.size or "900 650"):match("^(%d+) (%d+)$")
+						if width then
+							hl.dispatch(hl.dsp.window.resize({
+								window = "address:" .. window.address,
+								x = tonumber(width),
+								y = tonumber(height),
+								relative = false,
+							}))
+						end
+						hl.dispatch(hl.dsp.window.center({ window = "address:" .. window.address }))
+					end
+				end
+			end
+		end
+		if not found then
+			-- Avoid duplicate launches while a slow application is starting.
+			if os.time() - launch_time < 10 then
+				return
+			end
+			launch_time = os.time()
+			hl.exec_cmd(opts.command)
+		end
+		hl.dispatch(hl.dsp.workspace.toggle_special("toggle-" .. opts.name))
+		if target_window then
+			focus_if_visible(target_window)
+		end
+	end
 end
 
 dofile(home .. "/.config/hypr/keybinds.lua")
@@ -305,10 +339,10 @@ end
 
 -- Subtle glass surfaces for desktop panels and menus.
 for _, namespace in ipairs({ "rofi", "waybar", "swaync-control-center", "swaync-notification-window" }) do
-    hl.layer_rule({
-        name = "violet-glass-" .. namespace,
-        match = { namespace = "^" .. namespace .. "$" },
-        blur = true,
-        ignore_alpha = 0.1,
-    })
+	hl.layer_rule({
+		name = "violet-glass-" .. namespace,
+		match = { namespace = "^" .. namespace .. "$" },
+		blur = true,
+		ignore_alpha = 0.1,
+	})
 end
