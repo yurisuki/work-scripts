@@ -14,5 +14,6 @@ REPO_PACKAGES=(
     python-gobject python-pypdf python-openpyxl python-pandas python-numpy python-pyqt6
     ghostscript cups lua-language-server bash-language-server pyright
     vscode-json-languageserver yaml-language-server typescript-language-server prettier
+    exiftool zoxide
 )
 AUR_PACKAGES=(sioyek-appimage onlyoffice-bin brave-bin zapzap gotop-bin snappy-switcher ttf-apple-emoji hyprmod)
