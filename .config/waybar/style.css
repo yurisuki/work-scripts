@@ -3,6 +3,11 @@ window#waybar { background: rgba(23, 16, 32, 0.95); color: #ede3f5; border: 1px 
 button { border: none; box-shadow: none; text-shadow: none; }
 #custom-launcher { color: #b4a3c4; font-size: 18px; padding: 0 8px 0 16px; }
 #window { color: #b4a3c4; padding: 0 8px; }
+#custom-music, #custom-music-prev, #custom-music-next { color: #d2c1f3; background: #241a30; margin: 6px 0; padding: 0 7px; }
+#custom-music-prev { border-radius: 8px 0 0 8px; padding-left: 10px; }
+#custom-music-next { border-radius: 0 8px 8px 0; padding-right: 10px; }
+#custom-music.paused { color: #b4a3c4; }
+#custom-music:hover, #custom-music-prev:hover, #custom-music-next:hover { color: #cf5aff; background: #362442; }
 #clock { color: #ede3f5; font-weight: 600; padding: 0 12px; }
 #system-status { background: #241a30; border-radius: 8px; margin: 6px 2px; padding: 0 4px; }
 #network, #pulseaudio, #custom-brightness { color: #c8bcd6; padding: 0 9px; margin: 0; background: transparent; }

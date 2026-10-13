@@ -12,7 +12,8 @@
     "hyprland/window"
   ],
   "modules-center": [
-    "clock"
+    "clock",
+    "group/music"
   ],
   "modules-right": [
     "tray",
@@ -188,7 +189,7 @@
     "exec": "~/.scripts/bar-weather.py",
     "return-type": "json",
     "interval": 1800,
-    "on-click": "kitty --class weather-popup --title Forecast -o font_size=10 -e python3 ~/.scripts/weather-popup.py",
+    "on-click": "kitty --class weather-popup --title Počasí -o font_size=10 -e python3 ~/.scripts/weather-popup.py",
     "on-click-right": "kitty -e nvim ~/.config/waybar/weather.json"
   },
   "custom/workspace6": {
@@ -243,5 +244,38 @@
       "pulseaudio",
       "custom/brightness"
     ]
+  },
+  "group/music": {
+    "orientation": "horizontal",
+    "modules": [
+      "custom/music-prev",
+      "custom/music",
+      "custom/music-next"
+    ]
+  },
+  "custom/music-prev": {
+    "exec": "python3 ~/.scripts/bar-music.py watch previous",
+    "return-type": "json",
+    "format": "{}",
+    "restart-interval": 2,
+    "exec-on-event": false,
+    "on-click": "python3 ~/.scripts/bar-music.py previous"
+  },
+  "custom/music": {
+    "exec": "python3 ~/.scripts/bar-music.py watch title",
+    "return-type": "json",
+    "format": "{}",
+    "restart-interval": 2,
+    "exec-on-event": false,
+    "on-click": "python3 ~/.scripts/bar-music.py play-pause",
+    "max-length": 34
+  },
+  "custom/music-next": {
+    "exec": "python3 ~/.scripts/bar-music.py watch next",
+    "return-type": "json",
+    "format": "{}",
+    "restart-interval": 2,
+    "exec-on-event": false,
+    "on-click": "python3 ~/.scripts/bar-music.py next"
   }
 }
