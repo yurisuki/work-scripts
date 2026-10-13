@@ -201,6 +201,10 @@ hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ to
 hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(scripts .. "hypr-brightness.sh up"), { repeating = true })
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(scripts .. "hypr-brightness.sh down"), { repeating = true })
+hl.bind("XF86AudioPlay", hl.dsp.exec_cmd(scripts .. "bar-music.py play-pause"))
+hl.bind("XF86AudioNext", hl.dsp.exec_cmd(scripts .. "bar-music.py next"))
+hl.bind("XF86AudioPrev", hl.dsp.exec_cmd(scripts .. "bar-music.py previous"))
+
 
 -- Work mode and clipboard maintenance.
 hl.bind("SUPER + CTRL + F", hl.dsp.exec_cmd(scripts .. "hypr-focus.py toggle"))
