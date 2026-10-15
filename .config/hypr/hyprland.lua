@@ -177,6 +177,14 @@ hl.window_rule({
 	center = true,
 })
 
+-- Zenity and portal dialogs: float and center on screen.
+hl.window_rule({
+	name = "zenity-dialogs",
+	match = { class = "^(zenity|xdg-desktop-portal-gtk)$" },
+	float = true,
+	center = true,
+})
+
 hl.window_rule({
 	name = "dropdown-terminal",
 	match = {
