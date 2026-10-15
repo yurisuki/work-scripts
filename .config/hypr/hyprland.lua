@@ -66,6 +66,7 @@ hl.config({
 
 	input = {
 		kb_layout = "cz",
+		numlock_by_default = true,
 		follow_mouse = 1,
 		-- Allow focusing underlying apps outside scratchpad windows.
 		special_fallthrough = true,
