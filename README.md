@@ -128,6 +128,10 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
 Wiremix and the clock for Calcure. Clipboard is available through its shortcut; Shift+Delete in the picker deletes the selected entry.
 Work mode shows a brief notification when enabled or disabled, including while DND is on.
+
+In Sioyek, `p` opens the current PDF in a new Brave window. `u` crops the current
+DHL label to 4×6 inches and opens the result in Brave. Cropped PDFs are kept in
+the runtime directory so Brave can continue reading them.
 Turning it off restores the previous DND setting.
 It prevents idle locking and screen blanking, while manual locking and suspend remain available.
 Screenshots freeze the screen with hyprpicker before selection. Copy mode writes only
