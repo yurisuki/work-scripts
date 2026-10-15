@@ -107,6 +107,8 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+U                           | Open TickTick TUI in Kitty            |
 | Print / Super+S                   | Copy screenshot selection to clipboard |
 | Super+Print / Super+Shift+S       | Annotate screenshot in Swappy         |
+| Alt+Print / Super+Alt+S           | Click a window to copy its screenshot |
+| Super+Alt+Print / Super+Alt+Shift+S | Click a window to annotate in Swappy |
 | Super+Shift+E                     | Search emoji and copy to clipboard   |
 | Super+H/J/K/L or arrows           | Focus left/down/up/right             |
 | Super+Shift+H/J/K/L or arrows     | Move tiled window / floating by 30 px |
@@ -201,3 +203,8 @@ shapes; toggle transparency (`T`) for highlighting. `Ctrl+C` copies the edited
 image and closes the editor; `Ctrl+S` explicitly saves to the Pictures/Screenshots
 directory and closes it. Closing without either action discards the screenshot.
 Temporary captures are removed when the command finishes.
+
+For window screenshots, use `Alt+Print` or `Super+Alt+S` and click a window
+on a visible workspace. `Super+Alt+Print` or `Super+Alt+Shift+S` opens that
+selection in Swappy. Escape cancels the selection. These capture the screen
+rectangle occupied by the window, including anything overlapping it.
