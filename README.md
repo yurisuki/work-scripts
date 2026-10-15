@@ -105,7 +105,7 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+Ctrl+R                      | Reload Hyprland and refresh Waybar    |
 | Super+T                           | Open the text template picker         |
 | Super+U                           | Open TickTick TUI in Kitty            |
-| Print / Super+Print               | Save and copy screenshot / edit in Swappy |
+| Print / Super+Print               | Copy selection / annotate in Swappy |
 | Super+Shift+E                     | Search emoji and copy to clipboard   |
 | Super+H/J/K/L or arrows           | Focus left/down/up/right             |
 | Super+Shift+H/J/K/L or arrows     | Move tiled window / floating by 30 px |
@@ -193,3 +193,10 @@ Subfolders are shown with relative paths so duplicate filenames remain distinct.
 The picker expands `$DATE`, `$TIME`, `$DATETIME`, and `$CLIPBOARD`, plus their
 `${NAME}` forms. Clipboard text is captured before the picker opens. Newlines and
 literal backslashes are preserved; template contents are never executed as code.
+
+Screenshots: `Print` copies a selected area without saving a file. `Super+Print`
+opens the selection in Swappy with its tool panel visible. Draw arrows, text or
+shapes; toggle transparency (`T`) for highlighting. `Ctrl+C` copies the edited
+image and closes the editor; `Ctrl+S` explicitly saves to the Pictures/Screenshots
+directory and closes it. Closing without either action discards the screenshot.
+Temporary captures are removed when the command finishes.

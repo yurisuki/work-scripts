@@ -1,0 +1,9 @@
+[Default]
+save_dir=$SCREENSHOT_SAVE_DIR
+save_filename_format=Screenshot-%Y-%m-%d_%H-%M-%S.png
+show_panel=true
+paint_mode=arrow
+line_size=5
+text_size=20
+early_exit=true
+auto_save=false
