@@ -130,8 +130,9 @@ Wiremix and the clock for Calcure. Clipboard is available through its shortcut; 
 Work mode shows a brief notification when enabled or disabled, including while DND is on.
 Turning it off restores the previous DND setting.
 It prevents idle locking and screen blanking, while manual locking and suspend remain available.
-Screenshots are saved under the XDG Pictures directory in `Screenshots`, copied to the clipboard,
-and announced with an Open action. Cancelling region selection saves nothing.
+Screenshots freeze the screen with hyprpicker before selection. Copy mode writes only
+to the clipboard; editor mode saves to Pictures/Screenshots only on Ctrl+S.
+Cancelling selection removes the frozen overlay and leaves the clipboard unchanged.
 Kitty: `Ctrl+Shift+O` toggles full opacity and the configured 85% opacity.
 Neovim: `<leader>q` quits, `<leader>e` opens Neo-tree, `<leader>de` shows diagnostics,
 and `<leader>dq` fills the diagnostic location list.
@@ -213,3 +214,7 @@ HyprMod is installed from AUR by the installer. Hyprland loads its settings with
 `require("hyprland-gui")`; the installer preserves existing
 `~/.config/hypr/hyprland-gui.lua` settings and supplies an empty starter file
 on a fresh installation.
+
+Screenshot dependencies include `hyprpicker` for frozen selection in both area
+and window modes. The overlay is removed before opening Swappy and on cancellation
+or capture failure. Existing Print and Super+S shortcuts are unchanged.

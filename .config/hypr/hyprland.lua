@@ -129,6 +129,13 @@ hl.window_rule({
 	workspace = "6 silent",
 })
 
+-- Keep Steam and games exposing a Steam app ID on the gaming workspace.
+hl.window_rule({
+	name = "steam-workspace",
+	match = { class = "^(steam|Steam|steam_app_[0-9]+)$" },
+	workspace = "6 silent",
+})
+
 -- Keep RustDesk on its dedicated workspace.
 hl.window_rule({
 	name = "rustdesk-workspace",
@@ -350,6 +357,13 @@ if f then
 	f:close()
 	dofile(local_config)
 end
+
+-- Screenshot overlays must appear/disappear without fades in the captured image.
+hl.layer_rule({
+	name = "screenshot-no-animation",
+	match = { namespace = "^(selection|hyprpicker)$" },
+	no_anim = true,
+})
 
 -- Subtle glass surfaces for desktop panels and menus.
 for _, namespace in ipairs({ "rofi", "waybar", "swaync-control-center", "swaync-notification-window" }) do
