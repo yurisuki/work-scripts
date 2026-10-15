@@ -119,7 +119,8 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+C / Super+Shift+Escape      | Calculator / gotop                   |
 | Super+Escape                      | Session menu                         |
 | Super+Y                           | Open the last downloaded quote       |
-| Super+B                           | Toggle bar                           |
+| Super+B                           | Bluetooth settings (bluetui)          |
+| Super+Shift+B                     | Toggle bar                           |
 
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
 Wiremix and the clock for Calcure. Clipboard is available through its shortcut; Shift+Delete in the picker deletes the selected entry.

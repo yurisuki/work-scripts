@@ -58,7 +58,9 @@ open_network = settings_window("network-settings", "kitty --class network-settin
 open_audio = settings_window("audio-settings", "kitty --class audio-settings -e wiremix")
 hl.bind("SUPER + W", open_network)
 
-hl.bind("SUPER + B", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"))
+open_bluetooth = settings_window("bluetooth-settings", "kitty --class bluetooth-settings -e bluetui")
+hl.bind("SUPER + B", open_bluetooth)
+hl.bind("SUPER + SHIFT + B", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"))
 hl.bind("SUPER + D", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh apps"))
 hl.bind("SUPER + G", hl.dsp.exec_cmd(scripts .. "hypr-largest.sh"))
 hl.bind("SUPER + E", hl.dsp.exec_cmd(scripts .. "webapp.sh 'https://www.icloud.com/mail'"))

@@ -8,8 +8,10 @@
 - Clock: system locale from /etc/locale.conf, optionally overridden by
   ~/.config/locale.conf, rendered by ~/.scripts/bar-start.py at login.
   Hover for the built-in calendar; click for Calcure in Kitty. Install Calcure with `uv tool install calcure` or `yay -S calcure`.
-- Laptop battery: automatically hidden when absent. Bluetooth battery appears
-  only when a connected device reports a percentage through BlueZ.
+- Laptop battery: automatically hidden when absent. Bluetooth appears only while
+  a device is connected, showing its name and battery percentage when BlueZ reports it.
+  Hover to see all connected devices; click or press Super+B to open or focus bluetui.
+- Super+Shift+B toggles the bar.
 - Network, audio and brightness share one status group.
 - Super+Ctrl+R reloads Hyprland and refreshes Waybar configuration, locale and CSS.
 - Workspaces: 1–5 always visible; 6–10 appear only when selected or occupied.
@@ -38,7 +40,7 @@ monitors. Opening the forecast makes a separate request to wttr.in for the confi
 
 Restart the bar after locale changes with ~/.scripts/bar-start.py (first stop the
 existing Waybar), or log in again. Dependencies: waybar, kitty, networkmanager,
-wiremix, calcure, bluez, brightnessctl, ddcutil, python.
+wiremix, calcure, bluez, bluetui, brightnessctl, ddcutil, python.
 
 Clipboard image entries show cached 64 px previews in Rofi. Original image data is
 copied on Enter; Shift+Delete removes the selected entry and its preview. Thumbnails
