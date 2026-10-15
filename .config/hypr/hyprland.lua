@@ -122,6 +122,13 @@ hl.animation({
 	bezier = "violet",
 })
 
+-- Keep osu! on its dedicated workspace.
+hl.window_rule({
+	name = "osu-workspace",
+	match = { class = "^osu!$" },
+	workspace = "6 silent",
+})
+
 -- Normal terminals join the tiling layout; the dropdown keeps its own class.
 hl.window_rule({
 	name = "kitty-tiled",
