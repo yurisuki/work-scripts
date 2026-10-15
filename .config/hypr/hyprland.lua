@@ -129,6 +129,13 @@ hl.window_rule({
 	workspace = "6 silent",
 })
 
+-- Keep RustDesk on its dedicated workspace.
+hl.window_rule({
+	name = "rustdesk-workspace",
+	match = { class = "^rustdesk$" },
+	workspace = "7 silent",
+})
+
 -- Normal terminals join the tiling layout; the dropdown keeps its own class.
 hl.window_rule({
 	name = "kitty-tiled",
@@ -353,3 +360,6 @@ for _, namespace in ipairs({ "rofi", "waybar", "swaync-control-center", "swaync-
 		ignore_alpha = 0.1,
 	})
 end
+
+-- HyprMod managed settings
+require("hyprland-gui")

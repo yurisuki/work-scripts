@@ -1,0 +1,2 @@
+-- Managed by HyprMod. Local settings are preserved by the installer.
+-- Start HyprMod to configure this machine.

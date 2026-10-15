@@ -208,3 +208,8 @@ For window screenshots, use `Alt+Print` or `Super+Alt+S` and click a window
 on a visible workspace. `Super+Alt+Print` or `Super+Alt+Shift+S` opens that
 selection in Swappy. Escape cancels the selection. These capture the screen
 rectangle occupied by the window, including anything overlapping it.
+
+HyprMod is installed from AUR by the installer. Hyprland loads its settings with
+`require("hyprland-gui")`; the installer preserves existing
+`~/.config/hypr/hyprland-gui.lua` settings and supplies an empty starter file
+on a fresh installation.
