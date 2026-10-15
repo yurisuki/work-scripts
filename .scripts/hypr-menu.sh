@@ -41,9 +41,9 @@ case ${1:-apps} in
                 notify-send 'Suspend cancelled' 'The session did not confirm that it was locked.'
                 exit 1
                 ;;
-            'Log out') confirm 'Log out?' && hyprctl dispatch 'hl.dsp.exit()' ;;
-            Restart) confirm 'Restart?' && systemctl reboot ;;
-            'Shut down') confirm 'Shut down?' && systemctl poweroff ;;
+            'Log out') confirm 'Log out?' && exec "$HOME/.scripts/hypr-shutdown.sh" logout ;;
+            Restart) confirm 'Restart?' && exec "$HOME/.scripts/hypr-shutdown.sh" reboot ;;
+            'Shut down') confirm 'Shut down?' && exec "$HOME/.scripts/hypr-shutdown.sh" poweroff ;;
         esac
         ;;
     *) printf 'Unknown menu: %s\n' "$1" >&2; exit 2 ;;
