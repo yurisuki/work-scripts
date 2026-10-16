@@ -1,9 +1,43 @@
 #!/bin/sh
+set -eu
 
-while read -r file; do
+fail() {
+    notify-send 'sxiv' "$1" || :
+    exit 1
+}
+
+# Clipboard commands act on the current image, or the first marked thumbnail.
+case "$1" in
+    C-c|C-S-c|C-C|C-S-C)
+        IFS= read -r file || exit 0
+        file=$(realpath -- "$file")
+        case "$1" in
+            C-c)
+                png=$(mktemp --suffix=.png)
+                trap 'rm -f -- "$png"' EXIT HUP INT TERM
+                magick "${file}[0]" "png:$png" || fail 'Could not copy image.'
+                if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+                    wl-copy --type image/png < "$png" || fail 'Could not access clipboard.'
+                else
+                    xclip -selection clipboard -t image/png -i "$png" || fail 'Could not access clipboard.'
+                fi
+                ;;
+            *)
+                if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+                    printf '%s' "$file" | wl-copy --type text/plain || fail 'Could not access clipboard.'
+                else
+                    printf '%s' "$file" | xclip -selection clipboard || fail 'Could not access clipboard.'
+                fi
+                ;;
+        esac
+        exit 0
+        ;;
+esac
+
+while IFS= read -r file; do
     case "$1" in
-        d)
-            "$HOME/.scripts/set-wallpaper.sh" "$file"
-            ;;
+        d) "$HOME/.scripts/set-wallpaper.sh" "$file" ;;
+        o) gimp -- "$file" >/dev/null 2>&1 & ;;
+        S-Delete) gio trash -- "$file" || fail 'Could not move image to Trash.' ;;
     esac
 done

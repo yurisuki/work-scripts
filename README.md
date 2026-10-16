@@ -24,10 +24,26 @@ of `raccoon-overlord-dev/ticktick-tui` and installed to `~/.local/bin/ttui`.
 Super+U opens it in Kitty; use browser OAuth on first launch. The source build
 keeps its default `dev` version, which disables the app's release updater.
 
-In sxiv, press `m` to rotate the view 90° clockwise (replacing the default mark
-shortcut). Image files are unchanged. The local launcher builds a small keymap
+In sxiv, the local shortcuts are:
+
+| Shortcut | Action |
+| --- | --- |
+| `m` / `Shift+m` | Rotate the view 90° clockwise / counterclockwise |
+| `,` / `.` | Zoom out / in |
+| `Ctrl+0` | Fit the image to the window |
+| `Ctrl+c` | Copy the image as PNG to the clipboard |
+| `Ctrl+Shift+c` | Copy the absolute image path |
+| `o` | Open in GIMP |
+| `Shift+Delete` | Move to Trash |
+
+Rotation replaces the default `m` marking shortcut and changes only the view.
+Image copying uses the first frame of animated images. In thumbnail mode, clipboard
+commands use the first marked image; editor and Trash commands act on all marked
+images. `Ctrl+x`, then `d` still sets the wallpaper.
+ The local launcher builds a small keymap
 library on first use and after source changes, using `cc` from `base-devel` and
-the `libx11` headers. File-manager launches use the same launcher.
+the `libx11` headers. File-manager launches use the same launcher. Clipboard
+commands use `wl-copy` on Wayland and `xclip` on X11; image conversion uses ImageMagick.
 
 At the next login, choose **Hyprland (uwsm-managed)**. Without a display manager the installer
 configures greetd/tuigreet for the next boot. It starts `uwsm start -e -D Hyprland hyprland.desktop`.
