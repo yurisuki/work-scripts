@@ -55,6 +55,24 @@ weather location, wallpaper selection and existing work documents are preserved.
 The repository uses automatic monitor detection; no desktop-specific DP-1 mode is
 installed on your notebook. Kitty uses Zsh without changing your login shell.
 
+## Bluetooth headphones
+
+Configuration deployment includes a workaround for AULA-G7Pro headphones losing
+A2DP after reconnecting. It requires PipeWire and WirePlumber 0.5 or newer:
+
+- `51-aula-g7pro.conf` automatically reconnects A2DP for headset address
+  `B6:03:06:00:25:65` (the same headphones on either machine).
+- `52-bluetooth-codec-compat.conf` limits **all Bluetooth audio devices for this
+  user** to SBC/SBC-XQ, avoiding the AAC negotiation failure observed with this pair.
+
+On another machine, update this checkout and run `./install.sh --config-only`,
+then `systemctl --user restart wireplumber` and reconnect the headphones.
+Deployment backs up existing files. SBC stereo passed two software reconnect tests;
+headphone power-cycle and full reboot behavior have not been verified.
+To restore other codecs, remove
+`~/.config/wireplumber/wireplumber.conf.d/52-bluetooth-codec-compat.conf` and restart
+WirePlumber; also remove its repository copy to keep future deployments from restoring it.
+
 ## PDF viewer
 
 Sioyek opens PDFs in standard dark mode without custom theme overrides.
