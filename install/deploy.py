@@ -21,7 +21,8 @@ OBSOLETE = (
 
 def expected_content(src, relative, home):
     data = src.read_bytes()
-    if str(relative) in ('.config/qt5ct/qt5ct.conf', '.config/qt6ct/qt6ct.conf'):
+    if str(relative) in ('.config/qt5ct/qt5ct.conf', '.config/qt6ct/qt6ct.conf',
+                         '.config/sioyek/prefs_user.config'):
         data = data.replace(b'@HOME@', str(home).encode())
     if relative.suffix == '.desktop':
         desktop_home = str(home)
