@@ -24,6 +24,11 @@ of `raccoon-overlord-dev/ticktick-tui` and installed to `~/.local/bin/ttui`.
 Super+U opens it in Kitty; use browser OAuth on first launch. The source build
 keeps its default `dev` version, which disables the app's release updater.
 
+In sxiv, press `m` to rotate the view 90° clockwise (replacing the default mark
+shortcut). Image files are unchanged. The local launcher builds a small keymap
+library on first use and after source changes, using `cc` from `base-devel` and
+the `libx11` headers. File-manager launches use the same launcher.
+
 At the next login, choose **Hyprland (uwsm-managed)**. Without a display manager the installer
 configures greetd/tuigreet for the next boot. It starts `uwsm start -e -D Hyprland hyprland.desktop`.
 The full installation also adds the UWSM TTY login block to `/etc/profile`
