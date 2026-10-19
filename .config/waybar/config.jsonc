@@ -38,6 +38,11 @@
     "format": "{:L%a  %d %b  ·  %H:%M}",
     "tooltip-format": "<big>{:L%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
     "locale": "cs_CZ.UTF-8",
+    "calendar": {
+      "format": {
+        "today": "<span background='#cf5aff' foreground='#171020'><b>{}</b></span>"
+      }
+    },
     "on-click": "~/.scripts/bar-calendar.sh"
   },
   "tray": {
