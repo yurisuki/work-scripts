@@ -10,6 +10,7 @@ import tempfile
 PRESERVE = {
     '.config/hypr/local.lua', '.config/hypr/brightness.json', '.config/hypr/wallpaper',
     '.config/hypr/hyprland-gui.lua',
+    '.config/hypr/fingerprint.conf',
     '.config/waybar/weather.json', '.local/share/backgrounds/current-wallpaper.webp',
 }
 OBSOLETE = (

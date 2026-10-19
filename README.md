@@ -94,6 +94,38 @@ weather location, wallpaper selection and existing work documents are preserved.
 The repository uses automatic monitor detection; no desktop-specific DP-1 mode is
 installed on your notebook. Kitty uses Zsh without changing your login shell.
 
+## Fingerprint login and lock
+
+Fingerprint support is optional. Without a working reader, Hyprlock and login use
+passwords; the installer does not install fingerprint packages or change PAM.
+The full installer enables Hyprlock fingerprint support only when fprintd already
+reports a reader with enrolled fingerprints for the current user. Config-only
+deployment leaves the setting disabled on a new machine. Machine-local
+`~/.config/hypr/fingerprint.conf` is preserved on reinstall, including an explicit
+disable. Password entry remains available alongside fingerprints in Hyprlock.
+
+First install the driver appropriate for your reader and enroll/verify a finger.
+For standard libfprint-supported hardware on Arch, install `fprintd` and
+`python-dbus`, then run `fprintd-enroll` and `fprintd-verify`.
+Synaptics `06cb:009a` instead requires the alternative `python-validity`,
+`open-fprintd` and `fprintd-clients-git` AUR stack; it was verified on this notebook.
+Do not install both daemon stacks. Follow the
+[driver instructions](https://github.com/uunicorn/python-validity) for initialization
+and suspend support. Hardware drivers and services remain machine-specific.
+
+```sh
+~/.scripts/setup-fingerprint.py enable         # Enable lock after reader/enrollment checks
+~/.scripts/setup-fingerprint.py login          # Opt in to greetd PAM; uses sudo, creates backup
+~/.scripts/setup-fingerprint.py disable        # Return lock to password only
+~/.scripts/setup-fingerprint.py disable-login  # Remove only the managed greetd PAM rule
+```
+
+At greetd login, fingerprint authentication gets one attempt and at most 10 seconds
+before falling back to the password. No login service is restarted. Other login
+managers are not modified. If a reader later becomes unavailable, password
+authentication remains available. Fingerprints are never stored in this repository.
+The helper refuses unmanaged fingerprint PAM rules rather than overwriting them.
+
 ## ThinkPad keyboard backlight
 
 The full installation enables `restore-keyboard-backlight.service`. It remembers
