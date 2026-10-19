@@ -1,6 +1,7 @@
 -- Starter bindings; the final keymap is intentionally a separate follow-up.
 local scripts = os.getenv("HOME") .. "/.scripts/"
 hl.bind("SUPER + Return", hl.dsp.exec_cmd("kitty"))
+hl.bind("SUPER + KP_Enter", hl.dsp.exec_cmd("kitty"))
 hl.bind(
 	"SUPER + dead_acute",
 	toggle_app({
