@@ -81,7 +81,7 @@
     "smooth-scrolling-threshold": 1
   },
   "custom/notification": {
-    "exec": "swaync-client -swb",
+    "exec": "python3 ~/.scripts/bar-notifications.py",
     "return-type": "json",
     "format": "{icon} {text}",
     "format-icons": {
@@ -96,7 +96,9 @@
     },
     "on-click": "swaync-client -t -sw",
     "on-click-right": "swaync-client -d -sw",
-    "escape": true
+    "escape": true,
+    "restart-interval": 2,
+    "exec-on-event": false
   },
   "custom/power": {
     "format": "󰐥",
@@ -187,7 +189,13 @@
     "format-no-controller": "",
     "format-connected": " {device_alias}",
     "format-connected-battery": " {device_alias} · {device_battery_percentage}% {icon}",
-    "format-icons": ["󰁺", "󰁼", "󰁾", "󰂀", "󰁹"],
+    "format-icons": [
+      "󰁺",
+      "󰁼",
+      "󰁾",
+      "󰂀",
+      "󰁹"
+    ],
     "on-click": "hyprctl eval 'open_bluetooth()'",
     "tooltip-format-connected": "{device_enumerate}",
     "tooltip-format-connected-battery": "{device_enumerate}",

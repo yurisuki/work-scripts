@@ -2,7 +2,7 @@
 REPO_PACKAGES=(
     base-devel git go curl python uv zsh zsh-autosuggestions zsh-syntax-highlighting zsh-completions
     hyprland uwsm libnewt waybar swaync kitty rofi hyprlock hypridle hyprpolkitagent hyprshutdown
-    swaybg cliphist wl-clipboard brightnessctl ddcutil networkmanager network-manager-applet
+    hyprpaper cliphist wl-clipboard brightnessctl ddcutil networkmanager network-manager-applet
     pipewire wireplumber pipewire-pulse wiremix bluez bluez-utils bluetui upower
     xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-utils xdg-user-dirs desktop-file-utils
     qt5ct qt6ct qt5-wayland qt6-wayland breeze breeze-gtk breeze-icons

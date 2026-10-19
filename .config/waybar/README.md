@@ -20,7 +20,8 @@
   widgets read the cache only at startup and after workspace/window events.
 - Clipboard: Super+V; Shift+Delete removes a selected item; Super+Shift+V clears history.
 - Work mode: Super+Ctrl+F enables DND and prevents idle locking/blanking.
-  A brief notification confirms each change; no separate bar widget is shown.
+  The existing notification icon turns purple with an underline while work mode is active.
+  Hover it for focus status; its normal notification count and click actions remain available.
   Turning it off restores the earlier DND state.
 
 ## Weather
@@ -38,8 +39,10 @@ means no network request. `m` selects Celsius, `u` Fahrenheit. The configured
 bar reading is fetched every 30 minutes at most, with a shared cache across
 monitors. Opening the forecast makes a separate request to wttr.in for the configured location. A failed request keeps the previous reading marked offline.
 
-Restart the bar after locale changes with ~/.scripts/bar-start.py (first stop the
-existing Waybar), or log in again. Dependencies: waybar, kitty, networkmanager,
+Restart the bar after locale changes with Super+Ctrl+R, or log in again.
+Waybar restarts automatically after an exit; startup errors are saved to
+~/.local/state/waybar/session.log (or under $XDG_STATE_HOME).
+Dependencies: waybar, kitty, networkmanager,
 wiremix, calcure, bluez, bluetui, brightnessctl, ddcutil, python.
 
 Clipboard image entries show cached 64 px previews in Rofi. Original image data is

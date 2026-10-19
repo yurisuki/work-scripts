@@ -11,6 +11,21 @@ mkdir -p "$(dirname "$wallpaper_config")"
 printf '%s\n' "$image_path" > "$wallpaper_config"
 mkdir -p "$HOME/.local/share/backgrounds"
 ln -sfn -- "$image_path" "$HOME/.local/share/backgrounds/current-wallpaper.webp"
+if ! pgrep -u "$USER" -x hyprpaper >/dev/null; then
+    hyprctl eval 'hl.exec_cmd("hyprpaper")' >/dev/null
+fi
+# Allow a newly launched hyprpaper to open its IPC socket.
+applied=false
+for attempt in {1..20}; do
+    if hyprctl hyprpaper wallpaper ",$HOME/.local/share/backgrounds/current-wallpaper.webp,cover" >/dev/null 2>&1; then
+        applied=true
+        break
+    fi
+    sleep 0.1
+done
+if [[ "$applied" != true ]]; then
+    notify-send 'Wallpaper' 'Saved selection, but could not contact hyprpaper. Try logging out and back in.'
+    exit 1
+fi
 pkill -u "$USER" -x swaybg 2>/dev/null || true
-nohup swaybg -i "$image_path" -m fill -c '#171020' >/dev/null 2>&1 </dev/null &
 notify-send 'Wallpaper changed' "$(basename "$image_path")"

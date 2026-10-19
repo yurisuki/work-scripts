@@ -28,12 +28,14 @@ if command -v gsettings >/dev/null 2>&1; then
     gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Inter Bold 10'
 fi
 wallpaper_file="$HOME/.config/hypr/wallpaper"
+mkdir -p "$HOME/.local/share/backgrounds"
 if [[ -s "$wallpaper_file" && -f "$(<"$wallpaper_file")" ]]; then
-    start swaybg -i "$(<"$wallpaper_file")" -m fill -c '#171020'
+    ln -sfn -- "$(<"$wallpaper_file")" "$HOME/.local/share/backgrounds/current-wallpaper.webp"
 else
-    start swaybg -i "$HOME/.local/share/backgrounds/dark.jpg" -m fill -c '#171020'
+    ln -sfn -- "$HOME/.local/share/backgrounds/dark.jpg" "$HOME/.local/share/backgrounds/current-wallpaper.webp"
 fi
-start "$HOME/.scripts/bar-start.py"
+start hyprpaper
+start "$HOME/.scripts/bar-session.sh"
 start swaync
 start hypridle
 start udiskie

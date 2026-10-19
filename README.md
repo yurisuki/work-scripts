@@ -134,8 +134,9 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 - Weather: click its bar icon, edit `~/.config/waybar/weather.json`, set `location`
   to your town/address or coordinates. Empty location disables requests. Data comes
   from wttr.in, cached for 30 minutes; the location is sent to that service.
-- Bar: `~/.config/waybar/config.jsonc` and `style.css`. Restart Waybar after changes
-  (`pkill -x waybar; ~/.scripts/bar-start.py`) from a terminal inside Hyprland.
+- Bar: `~/.config/waybar/config.jsonc` and `style.css`. Press Super+Ctrl+R after changes.
+  Waybar restarts automatically if it exits during the Hyprland session. Startup
+  errors are saved to `~/.local/state/waybar/session.log` (or under `$XDG_STATE_HOME`).
 - Clock language: follows `/etc/locale.conf`, with optional user overrides in
   `~/.config/locale.conf`.
 - External-monitor brightness: enable DDC/CI in the monitor menu. Optional
