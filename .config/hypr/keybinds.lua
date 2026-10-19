@@ -2,15 +2,15 @@
 local scripts = os.getenv("HOME") .. "/.scripts/"
 hl.bind("SUPER + Return", hl.dsp.exec_cmd("kitty"))
 hl.bind("SUPER + KP_Enter", hl.dsp.exec_cmd("kitty"))
-hl.bind(
-	"SUPER + dead_acute",
-	toggle_app({
-		name = "dropdown-terminal",
-		class = "dropdown-terminal",
-		command = "kitty --class dropdown-terminal",
-		size = "80% 70%",
-	})
-)
+local dropdown_terminal = toggle_app({
+	name = "dropdown-terminal",
+	class = "dropdown-terminal",
+	command = "kitty --class dropdown-terminal",
+	size = "80% 70%",
+})
+hl.bind("SUPER + dead_acute", dropdown_terminal)
+hl.bind("SUPER + SHIFT + Return", dropdown_terminal)
+hl.bind("SUPER + SHIFT + KP_Enter", dropdown_terminal)
 hl.bind("SUPER + R", hl.dsp.exec_cmd("gtk-launch superfile"))
 hl.bind("SUPER + U", hl.dsp.exec_cmd('kitty -e "' .. os.getenv("HOME") .. '/.local/bin/ttui"'))
 hl.bind(

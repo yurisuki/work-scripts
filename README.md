@@ -135,7 +135,7 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 
 | Shortcut                          | Action                               |
 | --------------------------------- | ------------------------------------ |
-| Super+Enter / Super+Shift+Enter   | Kitty / dropdown terminal            |
+| Super+Enter / Super+Shift+Enter (also numpad Enter) | Kitty / dropdown terminal |
 | Super+D / Super+R                 | Launcher / Superfile                 |
 | Super+Shift+W / Super+W           | Brave / nmtui                        |
 | Super+V / Super+N                 | Clipboard / notifications            |
