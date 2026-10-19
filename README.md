@@ -62,6 +62,11 @@ The full installation also adds the UWSM TTY login block to `/etc/profile`
 (`uwsm check may-start` → `uwsm select` → `exec uwsm start default`).
 An existing block is preserved; repeated installation does not duplicate it.
 UWSM and libnewt (the session selector) are installed as dependencies.
+The full installation enables sudo password asterisks with `Defaults pwfeedback`
+in `/etc/sudoers.d/99-work-scripts-pwfeedback`. The helper validates the configuration
+with `visudo`, backs up an existing managed file, and restores it if validation fails.
+Remove that file to undo the installer setting. Tuigreet also shows password
+asterisks when configured by the installer.
 An existing display manager is kept. To explicitly switch it to greetd:
 
 ```sh
