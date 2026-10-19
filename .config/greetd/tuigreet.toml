@@ -1,0 +1,53 @@
+# Styled sign-in screen for tuigreet.
+[display]
+show_time = true
+time_format = "%A, %d %B %Y  ·  %H:%M"
+show_title = true
+custom_title = " S I G N   I N "
+greeting = "Welcome back"
+align_greeting = "center"
+issue = false
+
+[layout]
+width = 64
+window_padding = 2
+container_padding = 3
+prompt_padding = 1
+
+[layout.widgets]
+time_position = "top"
+status_position = "bottom"
+
+[layout.widgets.status_bar]
+show_command = false
+show_background = false
+show_caps_lock = true
+
+[remember]
+username = true
+
+[secret]
+mode = "characters"
+characters = "*"
+
+[session]
+command = "uwsm start -e -D Hyprland hyprland.desktop"
+
+[power]
+shutdown = "systemctl poweroff"
+reboot = "systemctl reboot"
+
+[theme]
+border = "#A69BFF"
+text = "#EDE3F5"
+time = "#A69BFF"
+container = "#171020"
+title = "#CF5AFF"
+greet = "#C7B6D4"
+prompt = "#CF5AFF"
+input = "#EDE3F5"
+action = "#A69BFF"
+button = "#CF5AFF"
+
+[background]
+kind = "none"

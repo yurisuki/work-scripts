@@ -66,7 +66,9 @@ The full installation enables sudo password asterisks with `Defaults pwfeedback`
 in `/etc/sudoers.d/99-work-scripts-pwfeedback`. The helper validates the configuration
 with `visudo`, backs up an existing managed file, and restores it if validation fails.
 Remove that file to undo the installer setting. Tuigreet also shows password
-asterisks when configured by the installer.
+asterisks when configured by the installer. Its styled `S I G N   I N` screen uses
+lavender borders, purple accents, and a dark panel. The theme is installed to
+`/etc/greetd/tuigreet.toml`, including clock formatting and power-menu commands.
 An existing display manager is kept. To explicitly switch it to greetd:
 
 ```sh

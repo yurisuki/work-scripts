@@ -9,11 +9,15 @@ esac
 command -v start-hyprland >/dev/null
 command -v uwsm >/dev/null
 [[ -f "$script_dir/../.config/greetd/config.toml" ]]
+[[ -f "$script_dir/../.config/greetd/tuigreet.toml" ]]
 # Back up login configuration and only change the next boot; never stop a session.
-if sudo test -f /etc/greetd/config.toml; then
-    backup=$(sudo mktemp /etc/greetd/config.toml.backup.XXXXXXXX)
-    sudo cp -a /etc/greetd/config.toml "$backup"
-fi
+for config in config.toml tuigreet.toml; do
+    if sudo test -f "/etc/greetd/$config"; then
+        backup=$(sudo mktemp "/etc/greetd/$config.backup.XXXXXXXX")
+        sudo cp -a "/etc/greetd/$config" "$backup"
+    fi
+done
+sudo install -Dm644 "$script_dir/../.config/greetd/tuigreet.toml" /etc/greetd/tuigreet.toml
 sudo install -Dm644 "$script_dir/../.config/greetd/config.toml" /etc/greetd/config.toml
 if [[ -L /etc/systemd/system/display-manager.service ]]; then
     previous=$(basename "$(readlink -f /etc/systemd/system/display-manager.service)")
