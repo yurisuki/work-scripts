@@ -94,6 +94,25 @@ weather location, wallpaper selection and existing work documents are preserved.
 The repository uses automatic monitor detection; no desktop-specific DP-1 mode is
 installed on your notebook. Kitty uses Zsh without changing your login shell.
 
+## ThinkPad keyboard backlight
+
+The full installation enables `restore-keyboard-backlight.service`. It remembers
+the current keyboard brightness (including manually switching it off) and restores
+it after opening the lid or resuming. It runs only on machines with
+`/sys/class/leds/tpacpi::kbd_backlight/brightness`; other machines skip the service.
+Dependencies are brightnessctl, UPower, python-dbus and python-gobject.
+
+For an existing installation, run `./install.sh --config-only`, then:
+
+```sh
+systemctl --user daemon-reload
+systemctl --user enable --now restore-keyboard-backlight.service
+```
+
+Install any missing dependencies first. Disable with
+`systemctl --user disable --now restore-keyboard-backlight.service`.
+Closing and reopening the lid was verified on the ThinkPad.
+
 ## Bluetooth headphones
 
 Configuration deployment includes a workaround for AULA-G7Pro headphones losing

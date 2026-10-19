@@ -68,6 +68,8 @@ sudo systemctl enable --now NetworkManager.service bluetooth.service cups.servic
 # usbmuxd is socket/udev activated by its distribution package.
 sudo modprobe i2c-dev || echo 'i2c-dev unavailable; laptop brightness still works.'
 systemctl --user enable --now pipewire.socket pipewire-pulse.socket wireplumber.service
+systemctl --user daemon-reload
+systemctl --user enable --now restore-keyboard-backlight.service
 bash "$HOME/.scripts/install-quote-download-watcher.sh"
 if (( force_greetd )) || [[ ! -e /etc/systemd/system/display-manager.service ]]; then
     bash "$HOME/.scripts/setup-greetd.sh" --configure-only

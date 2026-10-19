@@ -1,0 +1,11 @@
+[Unit]
+Description=Restore keyboard backlight after opening lid or resuming
+ConditionPathExists=/sys/class/leds/tpacpi::kbd_backlight/brightness
+
+[Service]
+ExecStart=/usr/bin/python %h/.local/bin/restore-keyboard-backlight.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
