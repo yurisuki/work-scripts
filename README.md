@@ -36,6 +36,17 @@ In sxiv, the local shortcuts are:
 | `o` | Open in GIMP |
 | `Shift+Delete` | Move to Trash |
 
+Opening one image from a file manager or with `sxiv FILE` loads the other images
+in the same directory, sorted by filename, and starts on the selected image.
+Running `sxiv` without arguments opens the current directory. Explicit file lists
+and commands with options are passed through unchanged. The launcher uses Python 3
+from the installed dependencies and `$HOME`, so it works for any user; desktop
+launcher paths are filled in by the installer.
+
+Superfile's editor action uses `spf-open`: images set the wallpaper through
+`~/.scripts/set-wallpaper.sh`, while other files open in `$EDITOR` (default `nvim`).
+The helper and `editor = "spf-open"` configuration are included in deployment.
+
 Rotation replaces the default `m` marking shortcut and changes only the view.
 Image copying uses the first frame of animated images. In thumbnail mode, clipboard
 commands use the first marked image; editor and Trash commands act on all marked
@@ -97,6 +108,8 @@ WirePlumber; also remove its repository copy to keep future deployments from res
 ## PDF viewer
 
 Sioyek opens PDFs in standard dark mode without custom theme overrides.
+Opening another PDF launches a separate window, keeping the previous PDF open.
+Dark mode is applied through `startup_commands` so additional windows use it too.
 Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 `~/.config/sioyek/keys_user.config`. Restart Sioyek after changing settings.
 
