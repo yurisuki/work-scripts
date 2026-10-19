@@ -13,6 +13,7 @@ PRESERVE = {
     '.config/waybar/weather.json', '.local/share/backgrounds/current-wallpaper.webp',
 }
 OBSOLETE = (
+    '.scripts/toggle-dropdown-terminal.sh', '.scripts/install-hyprland.sh',
     '.scripts/update-checker.sh', '.scripts/hypr-brightness-slider.py',
     '.scripts/postinstall.sh',
     '.config/autostart/update-checker.sh.desktop', '.config/autostart/update-checker.desktop',
