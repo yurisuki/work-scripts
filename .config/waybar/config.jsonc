@@ -21,7 +21,7 @@
     "custom/weather",
     "group/system-status",
     "battery",
-    "bluetooth",
+    "custom/bluetooth",
     "custom/notification",
     "custom/power"
   ],
@@ -202,26 +202,13 @@
     },
     "tooltip-format": "{capacity}% · {timeTo}"
   },
-  "bluetooth": {
-    "format": "",
-    "format-disabled": "",
-    "format-off": "",
-    "format-on": "",
-    "format-no-controller": "",
-    "format-connected": " {device_alias}",
-    "format-connected-battery": " {device_alias} · {device_battery_percentage}% {icon}",
-    "format-icons": [
-      "󰁺",
-      "󰁼",
-      "󰁾",
-      "󰂀",
-      "󰁹"
-    ],
-    "on-click": "hyprctl eval 'open_bluetooth()'",
-    "tooltip-format-connected": "{device_enumerate}",
-    "tooltip-format-connected-battery": "{device_enumerate}",
-    "tooltip-format-enumerate-connected": "{device_alias}",
-    "tooltip-format-enumerate-connected-battery": "{device_alias}: {device_battery_percentage}%"
+  "custom/bluetooth": {
+    "exec": "python3 ~/.scripts/bar-bluetooth.py",
+    "return-type": "json",
+    "format": "{text}",
+    "interval": 5,
+    "signal": 11,
+    "on-click": "hyprctl eval 'open_bluetooth()'"
   },
   "custom/weather": {
     "exec": "~/.scripts/bar-weather.py",
