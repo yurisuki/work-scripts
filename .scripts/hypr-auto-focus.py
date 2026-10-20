@@ -18,6 +18,10 @@ GAME_MARKERS = (
     'steam_app_', 'osu', 'minecraft', 'lutris', 'heroic', 'wine',
     'godot', 'unity', 'unreal', 'proton', 'gamescope',
 )
+RECORDER_MARKERS = (
+    'obs', 'wf-recorder', 'gpu-screen-recorder', 'simplescreenrecorder',
+    'kooha', 'peek', 'vokoscreen', 'kazam', 'recordmydesktop',
+)
 
 def request(enabled):
     subprocess.run([str(Path.home() / '.scripts/hypr-focus.py'),
@@ -38,6 +42,12 @@ def is_fullscreen(window):
         return True
     return any(marker in app for marker in GAME_MARKERS)
 
+def requires_focus(window):
+    app = str(window.get('class') or window.get('initialClass') or '').lower()
+    if any(marker in app for marker in RECORDER_MARKERS):
+        return True
+    return is_fullscreen(window)
+
 def main():
     runtime = Path(os.environ['XDG_RUNTIME_DIR'])
     with (runtime / 'violet-auto-focus.lock').open('w') as lock:
@@ -51,7 +61,7 @@ def main():
 
         def update():
             nonlocal previous
-            enabled = is_fullscreen(active_window())
+            enabled = requires_focus(active_window())
             if enabled != previous:
                 request(enabled)
                 previous = enabled
