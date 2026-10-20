@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Request focus mode while the active Hyprland window is fullscreen."""
+"""Request focus mode for fullscreen video and games."""
 import fcntl
 import json
 import os
@@ -8,6 +8,16 @@ import select
 import signal
 import socket
 import subprocess
+
+BROWSER_CLASSES = {
+    'brave', 'brave-browser', 'chromium', 'chromium-browser',
+    'google-chrome', 'google-chrome-stable', 'firefox', 'librewolf',
+    'vivaldi', 'microsoft-edge', 'floorp', 'zen',
+}
+GAME_MARKERS = (
+    'steam_app_', 'osu', 'minecraft', 'lutris', 'heroic', 'wine',
+    'godot', 'unity', 'unreal', 'proton', 'gamescope',
+)
 
 def request(enabled):
     subprocess.run([str(Path.home() / '.scripts/hypr-focus.py'),
@@ -21,7 +31,12 @@ def active_window():
         return {}
 
 def is_fullscreen(window):
-    return bool(window.get('address')) and bool(window.get('mapped', True)) and bool(window.get('fullscreen', 0))
+    if not (bool(window.get('address')) and bool(window.get('mapped', True)) and bool(window.get('fullscreen', 0))):
+        return False
+    app = str(window.get('class') or window.get('initialClass') or '').lower()
+    if app in BROWSER_CLASSES:
+        return True
+    return any(marker in app for marker in GAME_MARKERS)
 
 def main():
     runtime = Path(os.environ['XDG_RUNTIME_DIR'])

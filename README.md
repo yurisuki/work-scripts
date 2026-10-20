@@ -282,10 +282,9 @@ The bar uses a crossed bell while focus mode is on and a regular bell when off.
 The osu! focus command enables focus mode without showing an overlay. Manually
 enabled focus mode remains active, and the earlier DND setting is restored when
 focus mode fully ends.
-The active fullscreen window requests the same focus mode automatically. This
-covers fullscreen video, games, calls, presentations, and screen recordings
-without affecting other windows. The manual, osu!, and fullscreen requests are
-independent.
+Fullscreen focus is limited to video browsers and game windows, so a fullscreen
+terminal or editor does not trigger it. The manual, osu!, and automatic requests
+are independent.
 Notifications held back during focus then appear together as normal popups;
 the notification centre stays closed. A temporary user service keeps their
 original payloads in memory, preserving icons, actions, and history IDs.
