@@ -117,6 +117,7 @@ def daemon():
     header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
     title = Gtk.Label(xalign=0)
     title.set_max_width_chars(44)
+    title.set_width_chars(24)
     title.set_ellipsize(Pango.EllipsizeMode.END)
     number = Gtk.Label(xalign=1)
     header.pack_start(title, True, True, 0)
@@ -188,7 +189,7 @@ def daemon():
         if kind in ('focus', 'capslock', 'microphone', 'output'):
             bar.hide()
             number.hide()
-        window.resize(1, 1)
+        window.resize(window.get_preferred_width()[1], window.get_preferred_height()[1])
         # Keep the overlay passive: clicks go through to the underlying window.
         window.get_window().input_shape_combine_region(__import__('cairo').Region(), 0, 0)
         def hide():

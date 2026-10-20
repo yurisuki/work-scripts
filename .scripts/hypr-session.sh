@@ -38,6 +38,7 @@ start hyprpaper
 start "$HOME/.scripts/bar-session.sh"
 start swaync
 start "$HOME/.scripts/hypr-osd.py" --daemon
+start "$HOME/.scripts/hypr-game-focus.py"
 start "$HOME/.local/bin/device-notifications.py"
 start "$HOME/.local/bin/device-notifications.py" --preview session-start
 start hypridle

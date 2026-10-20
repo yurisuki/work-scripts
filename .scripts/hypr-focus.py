@@ -34,19 +34,28 @@ def main():
         print(json.dumps({'text': '󰒳' if enabled else '󰾰', 'class': 'active' if enabled else 'inactive',
                           'tooltip': 'Work mode: DND + keep screen awake' if enabled else 'Work mode off · click to enable'}))
         return
-    if action != 'toggle':
+    if action not in ('toggle', 'osu-on', 'osu-off'):
         raise ValueError(f'Unknown action: {action}')
     with (runtime / 'violet-focus.lock').open('w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        enabled = not active()
-        if not enabled:
+        was_active = active()
+        saved = json.loads(state.read_text()) if state.exists() else {}
+        # Older sessions have only the saved DND state; treat them as manual.
+        saved.setdefault('manual', was_active)
+        saved.setdefault('osu', False)
+        if action == 'toggle':
+            saved['manual'] = not saved['manual']
+        else:
+            saved['osu'] = action == 'osu-on'
+        enabled = saved['manual'] or saved['osu']
+        if not enabled and was_active:
             run('systemctl', '--user', 'stop', UNIT)
-            previous = json.loads(state.read_text())['dnd'] if state.exists() else False
+            previous = saved.get('dnd', False)
             run('swaync-client', '-dn' if previous else '-df', '-sw')
             state.unlink(missing_ok=True)
-        else:
+        elif enabled and not was_active:
             previous = run('swaync-client', '-D', '-sw').lower() == 'true'
-            state.write_text(json.dumps({'dnd': previous}))
+            saved['dnd'] = previous
             try:
                 run('systemd-run', '--user', '--collect', '--unit=violet-focus',
                     '--property=PartOf=graphical-session.target',
@@ -57,7 +66,12 @@ def main():
                 run('systemctl', '--user', 'stop', UNIT)
                 state.unlink(missing_ok=True)
                 raise
-        notify_state(enabled)
+        if enabled:
+            state.write_text(json.dumps(saved))
+        else:
+            state.unlink(missing_ok=True)
+        if action == 'toggle':
+            notify_state(enabled)
 
 
 if __name__ == '__main__':

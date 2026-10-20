@@ -258,6 +258,9 @@ Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click au
 Wiremix and the clock for Calcure. Clipboard is available through its shortcut; Shift+Delete in the picker deletes the selected entry.
 Work mode shows a brief overlay when enabled or disabled, including while DND is on.
 The bar uses a crossed bell while focus mode is on and a regular bell when off.
+Focusing osu! enables focus mode automatically; leaving its window releases
+that request without showing an overlay. Manually enabled focus mode remains
+active, and the earlier DND setting is restored when focus mode fully ends.
 
 Volume, display brightness, and ThinkPad keyboard backlight use a compact overlay
 with adaptive icons. Volume keys and Waybar scrolling unmute before adjusting.
