@@ -12,6 +12,7 @@ def decorate(payload, focus):
     if isinstance(classes, str):
         classes = [classes]
     result['class'] = [value for value in classes if value != 'focus']
+    result['alt'] = 'focus-on' if focus else 'focus-off'
     if focus:
         result['class'].append('focus')
         result['tooltip'] = 'Focus mode active · DND + keep screen awake\nSuper+Ctrl+F to disable'

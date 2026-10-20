@@ -160,6 +160,10 @@ def main():
             start_new_session=True,
         )
     notify_bar()
+    subprocess.Popen(
+        [str(Path.home() / '.scripts/hypr-osd.py'), 'brightness', str(state['target'])],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
 
 
 if __name__ == "__main__":

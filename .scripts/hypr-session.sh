@@ -37,6 +37,9 @@ fi
 start hyprpaper
 start "$HOME/.scripts/bar-session.sh"
 start swaync
+start "$HOME/.scripts/hypr-osd.py" --daemon
+start "$HOME/.local/bin/device-notifications.py"
+start "$HOME/.local/bin/device-notifications.py" --preview session-start
 start hypridle
 start udiskie
 start snappy-switcher --daemon

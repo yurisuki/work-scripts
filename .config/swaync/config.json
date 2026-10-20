@@ -17,6 +17,23 @@
   "keyboard-shortcuts": true,
   "notification-grouping": true,
   "hide-on-clear": false,
+  "notification-visibility": {
+    "device-status": {
+      "state": "transient",
+      "app-name": "^Devices$",
+      "summary": "^(USB device|Bluetooth device|Charger) (connected|disconnected)$"
+    },
+    "screenshot-confirmation": {
+      "state": "transient",
+      "app-name": "^Screenshot$",
+      "summary": "^Screenshot copied$"
+    },
+    "desktop-confirmations": {
+      "state": "transient",
+      "app-name": "^Violet Night$",
+      "summary": "^Configuration reloaded$"
+    }
+  },
   "widgets": [
     "title",
     "dnd",

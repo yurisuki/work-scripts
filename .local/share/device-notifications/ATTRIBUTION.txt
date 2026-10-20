@@ -1,0 +1,14 @@
+Session audio attribution
+=========================
+
+UI Menu Open 1.wav and UI Menu Close 1.wav by FiveBrosStopMosYT
+https://freesound.org/people/FiveBrosStopMosYT/sounds/537035/
+https://freesound.org/people/FiveBrosStopMosYT/sounds/537031/
+Licensed under Creative Commons Attribution 4.0 International:
+https://creativecommons.org/licenses/by/4.0/
+
+Adaptations: preview audio converted to PCM WAV, loudness reduced, leading
+silence trimmed. Distributed here as session-start.wav and session-end.wav.
+
+Other bundled audio is from Mixkit and is subject to the Mixkit Sound Effects
+Free License: https://mixkit.co/license/#sfxFree

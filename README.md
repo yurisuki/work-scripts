@@ -256,7 +256,21 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
 Wiremix and the clock for Calcure. Clipboard is available through its shortcut; Shift+Delete in the picker deletes the selected entry.
-Work mode shows a brief notification when enabled or disabled, including while DND is on.
+Work mode shows a brief overlay when enabled or disabled, including while DND is on.
+The bar uses a crossed bell while focus mode is on and a regular bell when off.
+
+Volume, display brightness, and ThinkPad keyboard backlight use a compact overlay
+with adaptive icons. Volume keys and Waybar scrolling unmute before adjusting.
+ThinkPad Fn+Space keeps its hardware behavior; the overlay follows backlight changes.
+The overlay starts with Hyprland and never adds entries to notification history.
+
+Quiet audio feedback covers device connections, maximum volume, screenshots,
+power events, and session start/exit. Focus mode silences this feedback while
+volume controls keep working. Maximum-volume feedback has a 1.5-second cooldown.
+Low-battery alerts trigger at 25% and 10% where system power sensors are available.
+Sign-out, shutdown, and restart finish playback before closing the session.
+Routine device, charger, screenshot, and reload popups do not remain in SwayNC
+history; errors and warnings do. USB, Bluetooth, and charger events use distinct icons.
 
 In Sioyek, `p` opens the current PDF in a new Brave window. `u` crops the current
 DHL label to 4×6 inches and opens the result in Brave. Cropped PDFs are kept in

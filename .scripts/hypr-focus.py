@@ -8,6 +8,7 @@ import subprocess
 import sys
 
 UNIT = 'violet-focus.service'
+ICONS = Path.home() / '.local/share/device-notifications/icons'
 
 
 def run(*args):
@@ -20,11 +21,7 @@ def active():
 
 def notify_state(enabled):
     subprocess.run([
-        'notify-send', '--app-name=Violet Night', '--expire-time=3000',
-        '--hint=boolean:SWAYNC_BYPASS_DND:true',
-        'Focus mode enabled' if enabled else 'Focus mode disabled',
-        'Do not disturb is on. The screen will stay awake.' if enabled
-        else 'Previous notification and idle settings restored.',
+        str(Path.home() / '.scripts/hypr-osd.py'), 'focus', '100' if enabled else '0',
     ], check=False, timeout=5)
 
 
@@ -67,5 +64,5 @@ if __name__ == '__main__':
     try:
         main()
     except (subprocess.SubprocessError, OSError, ValueError) as error:
-        subprocess.run(['notify-send', 'Work mode failed', str(error)], check=False)
+        subprocess.run(['notify-send', '--icon=' + str(ICONS / 'warning.svg'), 'Work mode failed', str(error)], check=False)
         raise SystemExit(1)

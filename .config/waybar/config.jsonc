@@ -68,7 +68,9 @@
       ]
     },
     "on-click": "hyprctl eval 'open_audio()'",
-    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "on-click-right": "~/.local/bin/device-notifications.py --volume-mute",
+    "on-scroll-up": "~/.local/bin/device-notifications.py --volume-up",
+    "on-scroll-down": "~/.local/bin/device-notifications.py --volume-down",
     "scroll-step": 5
   },
   "custom/brightness": {
@@ -85,6 +87,8 @@
     "return-type": "json",
     "format": "{icon} {text}",
     "format-icons": {
+      "focus-on": "󰂛",
+      "focus-off": "󰂚",
       "notification": "󱅫",
       "none": "󰂚",
       "dnd-notification": "󰂛",
