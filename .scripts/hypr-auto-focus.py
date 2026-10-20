@@ -46,7 +46,8 @@ def recording_screen():
     for node in nodes:
         props = (node.get('info') or {}).get('props') or {}
         if (props.get('media.class') == 'Stream/Input/Video' and
-                props.get('media.category') == 'Capture'):
+                props.get('media.category') == 'Capture' and
+                props.get('media.role') in ('Screen', 'Window')):
             return True
     return False
 
