@@ -106,6 +106,9 @@ def daemon():
     box.set_name('osd-content')
     icon = Gtk.Label()
     icon.set_name('osd-icon')
+    caps_icon = Gtk.Image()
+    caps_icon.set_pixel_size(32)
+    caps_icon.set_valign(Gtk.Align.CENTER)
     meter = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     meter.set_valign(Gtk.Align.CENTER)
     icon.set_valign(Gtk.Align.CENTER)
@@ -119,6 +122,7 @@ def daemon():
     meter.pack_start(header, False, False, 0)
     meter.pack_start(bar, False, False, 0)
     box.pack_start(icon, False, False, 0)
+    box.pack_start(caps_icon, False, False, 0)
     box.pack_start(meter, True, True, 0)
     window.add(box)
     css = Gtk.CssProvider()
@@ -169,6 +173,12 @@ def daemon():
         if hide_timer:
             GLib.source_remove(hide_timer)
         window.show_all()
+        if kind == 'capslock':
+            icon.hide()
+            caps_icon.set_from_file(str(Path.home() / '.local/share/device-notifications/icons' /
+                                        ('capslock-on.svg' if value else 'capslock-off.svg')))
+        else:
+            caps_icon.hide()
         if kind in ('focus', 'capslock', 'microphone'):
             bar.hide()
             number.hide()
