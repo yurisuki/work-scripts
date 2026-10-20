@@ -24,7 +24,7 @@ def render(tasks, stale=False):
     lines.extend('• ' + str(task.get('title', 'Untitled')).replace('\n', ' ') for task in tasks[:10])
     if len(tasks) > 10:
         lines.append(f'… and {len(tasks) - 10} more')
-    return {'text': f'✓  {len(tasks)}', 'tooltip': html.escape('\n'.join(lines)),
+    return {'text': f'  {len(tasks)}', 'tooltip': html.escape('\n'.join(lines)),
             'class': 'stale' if stale else 'inbox'}
 
 
