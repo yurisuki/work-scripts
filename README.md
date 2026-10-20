@@ -263,6 +263,9 @@ Volume, display brightness, and ThinkPad keyboard backlight use a compact overla
 with adaptive icons. Volume keys and Waybar scrolling unmute before adjusting.
 ThinkPad Fn+Space keeps its hardware behavior; the overlay follows backlight changes.
 The overlay starts with Hyprland and never adds entries to notification history.
+Caps Lock changes show a brief on/off overlay without changing the key's normal
+behavior. The XF86AudioMicMute key toggles the default microphone and displays
+whether it is muted or live. Num Lock does not show an overlay.
 
 Quiet audio feedback covers device connections, maximum volume, screenshots,
 power events, and session start/exit. Focus mode silences this feedback while

@@ -14,6 +14,10 @@ SOCKET = RUNTIME / 'violet-osd.sock'
 
 
 def level_icon(kind, value, muted=False):
+    if kind == 'microphone':
+        return '󰍬' if value else '󰍭'
+    if kind == 'capslock':
+        return '󰘲'
     if kind == 'focus':
         return '󰂛' if value else '󰂚'
     if kind == 'keyboard':
@@ -35,6 +39,25 @@ def keyboard_level(root=Path('/sys/class/leds')):
         except (OSError, ValueError):
             continue
     return None
+
+
+def caps_lock(root=Path('/sys/class/leds')):
+    states = []
+    for device in root.glob('*::capslock'):
+        try:
+            states.append(int((device / 'brightness').read_text()) > 0)
+        except (OSError, ValueError):
+            continue
+    return any(states) if states else None
+
+
+def toggle_microphone():
+    result = subprocess.run(['wpctl', 'set-mute', '@DEFAULT_AUDIO_SOURCE@', 'toggle'])
+    if result.returncode == 0:
+        status = subprocess.run(['wpctl', 'get-volume', '@DEFAULT_AUDIO_SOURCE@'],
+                                capture_output=True, text=True, timeout=2)
+        if status.returncode == 0:
+            show('microphone', 0 if '[MUTED]' in status.stdout else 100)
 
 
 def show(kind, value, muted=False):
@@ -126,12 +149,16 @@ def daemon():
             return True
         try:
             kind, value, muted = latest['kind'], int(latest['value']), latest.get('muted', False)
-            if kind not in ('volume', 'brightness', 'keyboard', 'focus'):
+            if kind not in ('volume', 'brightness', 'keyboard', 'focus', 'capslock', 'microphone'):
                 return True
         except (KeyError, TypeError, ValueError):
             return True
         title.set_text(('Focus mode · On' if value else 'Focus mode · Off') if kind == 'focus' else 'Keyboard backlight' if kind == 'keyboard' else (
             'Brightness' if kind == 'brightness' else ('Volume muted' if muted else 'Volume')))
+        if kind == 'capslock':
+            title.set_text('Caps Lock · On' if value else 'Caps Lock · Off')
+        elif kind == 'microphone':
+            title.set_text('Microphone · Live' if value else 'Microphone · Muted')
         number.set_text(('On' if value else 'Off') if kind == 'focus' else
                         ('Off' if value == 0 else ('Low' if value <= 50 else 'High'))
                         if kind == 'keyboard' else f'{value}%')
@@ -142,7 +169,7 @@ def daemon():
         if hide_timer:
             GLib.source_remove(hide_timer)
         window.show_all()
-        if kind == 'focus':
+        if kind in ('focus', 'capslock', 'microphone'):
             bar.hide()
             number.hide()
         window.resize(1, 1)
@@ -153,18 +180,23 @@ def daemon():
             window.hide()
             hide_timer = None
             return False
-        hide_timer = GLib.timeout_add(1800 if kind == 'focus' else 1200, hide)
+        hide_timer = GLib.timeout_add(1800 if kind in ('focus', 'capslock', 'microphone') else 1200, hide)
         return True
 
     GLib.io_add_watch(server.fileno(), GLib.IO_IN, receive)
     previous_keyboard = keyboard_level()
+    previous_caps = caps_lock()
 
     def watch_keyboard():
-        nonlocal previous_keyboard
+        nonlocal previous_keyboard, previous_caps
         current = keyboard_level()
         if current is not None and previous_keyboard is not None and current != previous_keyboard:
             show('keyboard', current)
         previous_keyboard = current
+        current_caps = caps_lock()
+        if current_caps is not None and previous_caps is not None and current_caps != previous_caps:
+            show('capslock', 100 if current_caps else 0)
+        previous_caps = current_caps
         return True
 
     GLib.timeout_add(100, watch_keyboard)
@@ -176,7 +208,9 @@ def daemon():
 
 
 if __name__ == '__main__':
-    if sys.argv[1:] == ['--daemon']:
+    if sys.argv[1:] == ['--mic-toggle']:
+        toggle_microphone()
+    elif sys.argv[1:] == ['--daemon']:
         daemon()
     else:
         show(sys.argv[1], sys.argv[2], len(sys.argv) > 3 and sys.argv[3] == 'muted')
