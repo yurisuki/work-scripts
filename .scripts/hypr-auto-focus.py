@@ -19,7 +19,7 @@ GAME_MARKERS = (
     'godot', 'unity', 'unreal', 'proton', 'gamescope',
 )
 RECORDER_MARKERS = (
-    'obs', 'wf-recorder', 'gpu-screen-recorder', 'simplescreenrecorder',
+    'wf-recorder', 'gpu-screen-recorder', 'simplescreenrecorder',
     'kooha', 'peek', 'vokoscreen', 'kazam', 'recordmydesktop',
 )
 
@@ -42,10 +42,23 @@ def is_fullscreen(window):
         return True
     return any(marker in app for marker in GAME_MARKERS)
 
+def recording_screen():
+    """Return true while a recorder process is actively capturing the screen."""
+    try:
+        processes = subprocess.check_output(['ps', '-eo', 'args='], text=True, timeout=2)
+    except (OSError, subprocess.SubprocessError):
+        return False
+    for command in processes.lower().splitlines():
+        if any(marker in command for marker in RECORDER_MARKERS):
+            return True
+        if 'obs' in command and '--startrecording' in command:
+            return True
+    return False
+
 def requires_focus(window):
-    app = str(window.get('class') or window.get('initialClass') or '').lower()
-    if any(marker in app for marker in RECORDER_MARKERS):
+    if recording_screen():
         return True
+    app = str(window.get('class') or window.get('initialClass') or '').lower()
     return is_fullscreen(window)
 
 def main():
@@ -90,6 +103,8 @@ def main():
                             event, pending = pending.split('\n', 1)
                             if event.startswith(('activewindow>>', 'activewindowv2>>', 'closewindow>>', 'fullscreen>>')):
                                 update()
+                    # Recorder processes can start or stop without a Hyprland event.
+                    update()
         finally:
             if previous:
                 request(False)
