@@ -39,6 +39,11 @@ means no network request. `m` selects Celsius, `u` Fahrenheit. The configured
 bar reading is fetched every 30 minutes at most, with a shared cache across
 monitors. Opening the forecast makes a separate request to wttr.in for the configured location. A failed request keeps the previous reading marked offline.
 
+Hyprlock displays the same temperature and conditions in the upper-right corner,
+with the configured location name, matching the bar and forecast. It checks
+the shared cache every minute and uses the same 30-minute fetch interval. Cached
+weather remains visible with an offline label if a refresh fails.
+
 Restart the bar after locale changes with Super+Ctrl+R, or log in again.
 Waybar restarts automatically after an exit; startup errors are saved to
 ~/.local/state/waybar/session.log (or under $XDG_STATE_HOME).

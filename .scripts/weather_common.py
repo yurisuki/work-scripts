@@ -5,6 +5,27 @@ import unicodedata
 from urllib.error import HTTPError, URLError
 
 
+def weather_icon(code):
+    """Map wttr.in's condition codes to shared weather symbols."""
+    code = str(code)
+    if code == '113':
+        return '☀'
+    if code == '116':
+        return '🌤'
+    if code in {'143', '248', '260'}:
+        return '🌫'
+    if code in {'200', '386', '389', '392', '395'}:
+        return '⛈'
+    if code in {'179', '182', '185', '227', '230', '281', '284', '311', '314',
+                '317', '320', '323', '326', '329', '332', '335', '338', '350',
+                '362', '365', '368', '371', '374', '377'}:
+        return '❄'
+    if code in {'176', '263', '266', '293', '296', '299', '302', '305', '308',
+                '353', '356', '359'}:
+        return '🌧'
+    return '☁'
+
+
 def read_settings():
     settings = json.loads((Path.home() / '.config/waybar/weather.json').read_text())
     location = settings.get('location', '').strip()
