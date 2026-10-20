@@ -17,6 +17,9 @@ cd work-scripts
 
 The installer installs desktop/work dependencies from your configured repositories,
 then asks yay to install the AUR applications. Review package/build prompts normally.
+Before installing packages, it enables pacman `Color` and `ILoveCandy` in
+`/etc/pacman.conf`, backing up the file when a change is needed. Repeated runs
+do not duplicate these options. Config-only installation leaves pacman untouched.
 Calcure 3.4 is installed in an isolated user environment with uv. Hyprland must be
 0.55 or newer; the installer checks this before deploying the Lua configuration.
 TickTick TUI is built with Go from reviewed commit `c1e5a5e1a03ca091a66994fb2f51e82bd3de32d1`

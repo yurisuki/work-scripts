@@ -39,6 +39,7 @@ command -v sudo >/dev/null || { echo 'Configure sudo access for your normal user
 source "$source_dir/install/packages.sh"
 printf '\nInstalling Violet Night + work tools. Package managers will show their transactions.\n'
 sudo -v
+sudo bash "$source_dir/install/setup-pacman-style.sh"
 if (( upgrade )); then
     sudo pacman -Syu --needed "${REPO_PACKAGES[@]}"
 else
