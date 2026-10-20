@@ -164,9 +164,28 @@ for key, delta in pairs({
 		{ repeating = true }
 	)
 end
--- Restore the default inner and outer gaps.
+-- Toggle gaps off and restore the previous sizes when enabled again.
+local saved_gaps = { gaps_in = 5, gaps_out = 12 }
 hl.bind("SUPER + SHIFT + G", function()
-	hl.config({ general = { gaps_in = 5, gaps_out = 12 } })
+	local current_gaps = {}
+	local enabled = false
+	for _, option in ipairs({ "gaps_in", "gaps_out" }) do
+		local current = hl.get_config("general." .. option)
+		current_gaps[option] = current
+		if type(current) == "number" then
+			enabled = enabled or current > 0
+		elseif type(current) == "table" then
+			for _, side in ipairs({ "top", "right", "bottom", "left" }) do
+				enabled = enabled or (current[side] or 0) > 0
+			end
+		end
+	end
+	if enabled then
+		saved_gaps = current_gaps
+		hl.config({ general = { gaps_in = 0, gaps_out = 0 } })
+	else
+		hl.config({ general = saved_gaps })
+	end
 end)
 -- Adjust inner and outer gaps by 2 pixels; clamp at zero and repeat while held.
 local function change_gaps(delta)
