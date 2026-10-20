@@ -219,6 +219,24 @@ def power_events(previous, current):
             play('battery-low')
 
 
+
+def bluetooth_battery_events(previous, current):
+    """Alert once per threshold crossing for each connected Bluetooth device."""
+    for address, (name, level) in current.items():
+        old = previous.get(address)
+        if any(level <= threshold and (old is None or old[1] > threshold)
+               for threshold in (20, 10)):
+            play('battery-low')
+            subprocess.Popen(
+                ['notify-send', '--app-name=Devices', '--expire-time=10000',
+                 '--urgency=' + ('critical' if level <= 10 else 'normal'),
+                 '--hint=boolean:suppress-sound:true',
+                 '--icon=' + str(ASSETS / 'icons' / 'bluetooth-connected.svg'),
+                 'Bluetooth battery low', f'{html.escape(name)} · {level}% remaining'],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            )
+
+
 def bluetooth_watch():
     try:
         import dbus
@@ -237,7 +255,31 @@ def bluetooth_watch():
         except dbus.DBusException:
             pass
 
+        previous_batteries = {}
+
+        def check_batteries():
+            nonlocal previous_batteries
+            try:
+                manager = dbus.Interface(bus.get_object('org.bluez', '/'),
+                                         'org.freedesktop.DBus.ObjectManager')
+                current = {}
+                for path, interfaces in manager.GetManagedObjects().items():
+                    device = interfaces.get('org.bluez.Device1', {})
+                    battery = interfaces.get('org.bluez.Battery1', {})
+                    if device.get('Connected') and 'Percentage' in battery:
+                        current[str(path)] = (
+                            str(device.get('Alias', device.get('Name', 'Bluetooth device'))),
+                            int(battery['Percentage']))
+                bluetooth_battery_events(previous_batteries, current)
+                previous_batteries = current
+            except dbus.DBusException:
+                pass
+            return True
+
         def changed(interface, properties, invalidated, path=None):
+            if interface == 'org.bluez.Battery1':
+                check_batteries()
+                return
             if interface != 'org.bluez.Device1':
                 return
             if 'Alias' in properties or 'Name' in properties:
@@ -250,6 +292,7 @@ def bluetooth_watch():
                     except dbus.DBusException:
                         pass
                 device_event('Bluetooth', names.get(str(path), 'Bluetooth device'), bool(properties['Connected']))
+                check_batteries()
 
         bus.add_signal_receiver(
             changed, signal_name='PropertiesChanged',
@@ -257,6 +300,9 @@ def bluetooth_watch():
             bus_name='org.bluez',
             path_keyword='path',
         )
+        check_batteries()
+        # Catch batteries first exposed after connection, and BlueZ restarts.
+        GLib.timeout_add_seconds(30, check_batteries)
         GLib.MainLoop().run()
     except Exception as error:
         print(f'Bluetooth sound monitoring unavailable: {error}', file=sys.stderr)
