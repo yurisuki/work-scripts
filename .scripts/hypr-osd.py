@@ -106,10 +106,13 @@ def daemon():
     GtkLayerShell.set_exclusive_zone(window, -1)
     box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=16)
     box.set_name('osd-content')
+    box.set_size_request(340, 86)
     icon = Gtk.Label()
     icon.set_name('osd-icon')
+    icon.set_size_request(48, -1)
     caps_icon = Gtk.Image()
     caps_icon.set_pixel_size(32)
+    caps_icon.set_size_request(48, -1)
     caps_icon.set_valign(Gtk.Align.CENTER)
     meter = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     meter.set_valign(Gtk.Align.CENTER)
@@ -117,7 +120,7 @@ def daemon():
     header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
     title = Gtk.Label(xalign=0)
     title.set_max_width_chars(44)
-    title.set_width_chars(24)
+    title.set_width_chars(1)
     title.set_ellipsize(Pango.EllipsizeMode.END)
     number = Gtk.Label(xalign=1)
     header.pack_start(title, True, True, 0)
@@ -189,7 +192,7 @@ def daemon():
         if kind in ('focus', 'capslock', 'microphone', 'output'):
             bar.hide()
             number.hide()
-        window.resize(window.get_preferred_width()[1], window.get_preferred_height()[1])
+        window.resize(1, window.get_preferred_height()[1])
         # Keep the overlay passive: clicks go through to the underlying window.
         window.get_window().input_shape_combine_region(__import__('cairo').Region(), 0, 0)
         def hide():
