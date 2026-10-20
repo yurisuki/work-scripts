@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+# Desktop launchers do not read the interactive shell PATH.
+export PATH="$HOME/.local/bin:$PATH"
+
 if [[ -n "$1" ]]; then
     cd -- "$1" || exit 1
 else
