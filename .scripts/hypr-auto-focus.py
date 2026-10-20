@@ -43,13 +43,21 @@ def recording_screen():
         nodes = json.loads(subprocess.check_output(['pw-dump'], text=True, timeout=2))
     except (OSError, subprocess.SubprocessError):
         return False
+    capture_ids = set()
     for node in nodes:
         props = (node.get('info') or {}).get('props') or {}
         if (props.get('media.class') == 'Stream/Input/Video' and
                 props.get('media.category') == 'Capture' and
                 props.get('media.role') in ('Screen', 'Window')):
-            return True
-    return False
+            capture_ids.add(node.get('id'))
+    if not capture_ids:
+        return False
+    return any(
+        item.get('type') == 'PipeWire:Interface:Link' and
+        (item.get('info') or {}).get('state') == 'active' and
+        (item.get('info') or {}).get('input-node-id') in capture_ids
+        for item in nodes
+    )
 
 def requires_focus(window):
     if recording_screen():
