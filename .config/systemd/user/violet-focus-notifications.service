@@ -1,0 +1,10 @@
+[Unit]
+Description=Queue notifications during focus mode for popup replay
+PartOf=graphical-session.target
+
+[Service]
+Type=dbus
+BusName=org.violet.FocusNotifications
+ExecStart=/usr/bin/python3 %h/.scripts/hypr-focus-notifications.py
+TimeoutStartSec=10
+TimeoutStopSec=5

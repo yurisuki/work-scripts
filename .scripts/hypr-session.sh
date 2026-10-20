@@ -41,7 +41,7 @@ start "$HOME/.scripts/bar-session.sh"
 start swaync
 start "$HOME/.scripts/ticktick-startup.py"
 start "$HOME/.scripts/hypr-osd.py" --daemon
-start "$HOME/.scripts/hypr-game-focus.py"
+start "$HOME/.scripts/hypr-auto-focus.py"
 start "$HOME/.local/bin/device-notifications.py"
 play_startup_sound() {
     # Wait for the default output, then let login-time device routing settle.
