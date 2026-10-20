@@ -257,6 +257,20 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
 Wiremix and the clock for Calcure. Clipboard is available through its shortcut; Shift+Delete in the picker deletes the selected entry.
 Work mode shows a brief overlay when enabled or disabled, including while DND is on.
+Super+Shift+D searches applications, home files/folders, and local Brave bookmarks
+and recent history in one launcher; Super+D remains the app-only launcher.
+The search opens with apps only. Typing reveals other sources; clearing the
+query hides them again. Results have APP, WINDOW, FILES, BOOKMARKS, HISTORY,
+CALC, WEB, or CMD labels. Window results focus an existing window. Arithmetic such
+as `125 * 1.21` shows a result that Enter copies; web search runs only when its
+result is selected and uses Brave's configured default search engine.
+Select CMD to run a background command using your shell, or start with `>` to
+show only the command action. No terminal opens; commands run only after
+selection. Ctrl+P pins/unpins the selected app. Pinned apps appear
+above recently opened apps; both lists are stored locally, not in the repo.
+File search skips hidden/build directories and lists names, not file contents.
+Brave data is read locally from installed profiles without copying browser data
+into the repository. Web results open in Brave; files use their default app.
 The bar uses a crossed bell while focus mode is on and a regular bell when off.
 Focusing osu! enables focus mode automatically; leaving its window releases
 that request without showing an overlay. Manually enabled focus mode remains

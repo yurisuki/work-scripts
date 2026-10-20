@@ -2,5 +2,7 @@ __pycache__/
 *.pyc
 /.config/ttui/auth.toml
 /.cache/ttui/
+/.local/state/desktop-search/
+/.config/BraveSoftware/
 /.scripts/tuigreet-preview.sh
 /Dokumenty/Ralakde/Our inquires/

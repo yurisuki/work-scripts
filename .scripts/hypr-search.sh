@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+set -euo pipefail
+exec python3 "$HOME/.scripts/desktop-search-window.py"

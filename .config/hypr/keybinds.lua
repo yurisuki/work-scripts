@@ -63,6 +63,7 @@ open_bluetooth = settings_window("bluetooth-settings", "kitty --class bluetooth-
 hl.bind("SUPER + B", open_bluetooth)
 hl.bind("SUPER + SHIFT + B", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"))
 hl.bind("SUPER + D", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh apps"))
+hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd(scripts .. "hypr-search.sh"))
 hl.bind("SUPER + G", hl.dsp.exec_cmd(scripts .. "hypr-largest.sh"))
 hl.bind("SUPER + E", hl.dsp.exec_cmd(scripts .. "webapp.sh 'https://www.icloud.com/mail'"))
 hl.bind("SUPER + SHIFT + E", hl.dsp.exec_cmd(scripts .. "rofi-emoji.py"))
