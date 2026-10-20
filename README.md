@@ -94,6 +94,24 @@ weather location, wallpaper selection and existing work documents are preserved.
 The repository uses automatic monitor detection; no desktop-specific DP-1 mode is
 installed on your notebook. Kitty uses Zsh without changing your login shell.
 
+## Power button and lock screen
+
+A short press of the power button opens the session menu in Hyprland. The full
+installer enables `power-button-menu.service`, which prevents systemd-logind's
+default power-button shutdown during the graphical session, including while
+Hyprlock is active. While locked, the menu shortcut is inactive, so a short press
+does nothing. Holding the button can still force a hardware shutdown.
+
+After a config-only deployment, enable the service yourself:
+
+```sh
+systemctl --user daemon-reload
+systemctl --user enable --now power-button-menu.service
+```
+
+Hyprlock shows “Caps Lock is on” below the password field only when Caps Lock is
+enabled. The indicator checks keyboard LEDs every 250 ms.
+
 ## Fingerprint login and lock
 
 Fingerprint support is optional. Without a working reader, Hyprlock and login use

@@ -71,6 +71,11 @@ sudo modprobe i2c-dev || echo 'i2c-dev unavailable; laptop brightness still work
 systemctl --user enable --now pipewire.socket pipewire-pulse.socket wireplumber.service
 systemctl --user daemon-reload
 systemctl --user enable --now restore-keyboard-backlight.service
+systemctl --user enable power-button-menu.service
+# Only acquire the power-key inhibitor while a graphical session is running.
+if systemctl --user is-active --quiet graphical-session.target; then
+    systemctl --user start power-button-menu.service
+fi
 bash "$HOME/.scripts/install-quote-download-watcher.sh"
 if (( force_greetd )) || [[ ! -e /etc/systemd/system/display-manager.service ]]; then
     bash "$HOME/.scripts/setup-greetd.sh" --configure-only

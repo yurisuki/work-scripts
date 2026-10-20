@@ -72,6 +72,8 @@ hl.bind("SUPER + Y", hl.dsp.exec_cmd(scripts .. "move_and_open.sh"))
 hl.bind("SUPER + X", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh lock"))
 hl.bind("SUPER + F", hl.dsp.window.fullscreen_state({ action = "toggle", internal = 2, client = 0 }))
 hl.bind("SUPER + Escape", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh session"))
+-- Let the physical power button open the same session menu.
+hl.bind("XF86PowerOff", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh session"))
 hl.bind(
 	"SUPER + SHIFT + Escape",
 	toggle_app({
