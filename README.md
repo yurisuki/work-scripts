@@ -291,6 +291,10 @@ counts incomplete tasks, hides at zero, lists task titles on hover, and opens
 TickTick TUI when clicked. It checks every minute using the TUI's existing
 sign-in; if unavailable, cached data is labeled in the tooltip. Authentication
 and task data stay in the user's existing TUI files and are not bundled here.
+After Hyprland login, a quiet TickTick popup summarizes incomplete tasks across
+all lists once per session. Empty lists show nothing. The check waits briefly
+for startup, retries network failures, and labels cached data if it must fall
+back to the TUI's snapshot. It respects DND and uses the same local sign-in.
 Audio output changes show the device name with a speaker, headphone, or Bluetooth
 icon, including wired headphone/speaker port switches. No output alert plays at login.
 
