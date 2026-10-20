@@ -21,8 +21,10 @@ export XDG_CURRENT_DESKTOP=Hyprland
 export XDG_SESSION_DESKTOP=Hyprland
 export XDG_SESSION_TYPE=wayland
 dbus-update-activation-environment --systemd PATH WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE HYPRLAND_INSTANCE_SIGNATURE
-# Keep portal/GSettings consumers consistent with the GTK and Qt font settings.
+# Keep portal/GSettings consumers consistent with the GTK theme and font settings.
 if command -v gsettings >/dev/null 2>&1; then
+    gsettings set org.gnome.desktop.interface gtk-theme 'VioletNight'
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
     gsettings set org.gnome.desktop.interface font-name 'Inter 10'
     gsettings set org.gnome.desktop.interface document-font-name 'Inter 10'
     gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Inter Bold 10'

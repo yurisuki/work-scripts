@@ -83,6 +83,10 @@ and the user audio services are enabled. The quote-download watcher watches your
 XDG Downloads folder and moves completed `QT-*.pdf` files into
 `~/Dokumenty/Ralakde/1!QUOTES`. There is **no automatic updater**.
 
+GTK 3/4 select the bundled VioletNight dark theme. Both Qt5ct and Qt6ct include
+the VioletNight color scheme and select it with the Fusion style. Hyprland session
+startup also sets the desktop GTK theme and dark-mode preference for portal consumers.
+
 ## Other modes
 
 ```sh
