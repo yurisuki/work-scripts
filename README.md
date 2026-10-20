@@ -257,8 +257,8 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
 Wiremix and the clock for Calcure. Clipboard is available through its shortcut; Shift+Delete in the picker deletes the selected entry.
 Work mode shows a brief overlay when enabled or disabled, including while DND is on.
-Super+Shift+D searches applications, home files/folders, and local Brave bookmarks
-and recent history in one launcher; Super+D remains the app-only launcher.
+Super+D searches applications, home files/folders, and local Brave bookmarks
+and recent history in one launcher.
 The search opens with apps only. Typing reveals other sources; clearing the
 query hides them again. Results have APP, WINDOW, FILES, BOOKMARKS, HISTORY,
 CALC, WEB, or CMD labels. Window results focus an existing window. Arithmetic such
