@@ -20,6 +20,10 @@ fi
 if ! pkill -USR2 -x waybar; then
     hyprctl eval 'hl.exec_cmd(os.getenv("HOME") .. "/.scripts/bar-start.py")'
 fi
+if ! swaync-client --reload-config || ! swaync-client --reload-css; then
+    notify-send --app-name 'Violet Night' --icon="$icons/warning.svg" 'Reload failed' 'Could not reload SwayNC configuration or styles.'
+    exit 1
+fi
 notify-send --app-name 'Violet Night' --expire-time=2000 \
     --icon="$icons/config-reloaded.svg" \
-    --hint=boolean:SWAYNC_BYPASS_DND:true 'Configuration reloaded' 'Hyprland and Waybar refreshed successfully.'
+    --hint=boolean:SWAYNC_BYPASS_DND:true 'Configuration reloaded' 'Hyprland, Waybar, and SwayNC refreshed successfully.'
