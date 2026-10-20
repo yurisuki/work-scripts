@@ -144,6 +144,14 @@ hl.window_rule({
 	name = "rustdesk-workspace",
 	match = { class = "^rustdesk$" },
 	workspace = "7 silent",
+	no_shortcuts_inhibit = true,
+})
+
+-- Open remote desktop sessions fullscreen.
+hl.window_rule({
+	name = "rustdesk-remote-fullscreen",
+	match = { class = "^rustdesk$", title = ".* - Remote Desktop - RustDesk$" },
+	fullscreen = true,
 })
 
 -- Normal terminals join the tiling layout; the dropdown keeps its own class.
