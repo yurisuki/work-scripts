@@ -266,6 +266,8 @@ The overlay starts with Hyprland and never adds entries to notification history.
 Caps Lock changes show a brief on/off overlay without changing the key's normal
 behavior. The XF86AudioMicMute key toggles the default microphone and displays
 whether it is muted or live. Num Lock does not show an overlay.
+Audio output changes show the device name with a speaker, headphone, or Bluetooth
+icon, including wired headphone/speaker port switches. No output alert plays at login.
 
 Quiet audio feedback covers device connections, maximum volume, screenshots,
 power events, and session start/exit. Focus mode silences this feedback while

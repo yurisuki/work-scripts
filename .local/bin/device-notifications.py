@@ -2,6 +2,7 @@
 """Desktop device notifications and volume sounds; run once per session."""
 import fcntl
 import html
+import json
 import os
 from pathlib import Path
 import re
@@ -24,6 +25,7 @@ EVENT_SOUNDS = {
 }
 last_played = {}
 play_lock = threading.Lock()
+last_output_change = 0.0
 
 
 def focus_active():
@@ -136,6 +138,52 @@ def show_volume(current):
         subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
+def audio_output():
+    try:
+        default = subprocess.check_output(['pactl', 'get-default-sink'], text=True, timeout=2).strip()
+        sinks = json.loads(subprocess.check_output(['pactl', '-f', 'json', 'list', 'sinks'], text=True, timeout=2))
+        for sink in sinks:
+            if sink['name'] != default:
+                continue
+            port = sink.get('active_port', '')
+            description = sink.get('description', default)
+            port_label = next((p.get('description', '') for p in sink.get('ports', []) if p['name'] == port), '')
+            if port_label:
+                description += ' · ' + port_label
+            icon = 2 if default.startswith('bluez') else (1 if 'headphone' in (port + port_label).lower() else 0)
+            return (default, port), description, icon
+    except (OSError, ValueError, KeyError, subprocess.SubprocessError):
+        pass
+    return None
+
+
+def output_watch():
+    global last_output_change
+    previous = None
+    while True:
+        try:
+            with subprocess.Popen(['pactl', 'subscribe'], stdout=subprocess.PIPE,
+                                  stderr=subprocess.DEVNULL, text=True) as events:
+                previous = audio_output()
+                for event in events.stdout:
+                    if not re.search(r" on (server|sink) #", event):
+                        continue
+                    current = audio_output()
+                    if current is None:
+                        continue
+                    if previous and current[0] != previous[0]:
+                        last_output_change = time.monotonic()
+                        subprocess.Popen(
+                            [str(Path.home() / '.scripts/hypr-osd.py'), '--output',
+                             str(current[2]), current[1]],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                        )
+                    previous = current
+        except (OSError, subprocess.SubprocessError):
+            pass
+        time.sleep(2)
+
+
 def power_state():
     batteries, adapters = {}, []
     for supply in Path('/sys/class/power_supply').glob('*'):
@@ -244,6 +292,7 @@ def main():
         except BlockingIOError:
             return
         threading.Thread(target=bluetooth_watch, daemon=True).start()
+        threading.Thread(target=output_watch, daemon=True).start()
         previous_usb, previous_volume = usb_devices(), volume()
         previous_power = power_state()
         while True:
@@ -257,7 +306,7 @@ def main():
             for device in previous_usb.keys() - current_usb.keys():
                 device_event('USB', previous_usb[device], False)
             if current_volume and previous_volume:
-                if current_volume != previous_volume:
+                if current_volume != previous_volume and time.monotonic() - last_output_change > 2.2:
                     show_volume(current_volume)
                 level, muted = current_volume
                 if level >= 0.995 and previous_volume[0] < 0.995 and not muted:

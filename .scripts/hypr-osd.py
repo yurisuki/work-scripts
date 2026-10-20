@@ -14,6 +14,8 @@ SOCKET = RUNTIME / 'violet-osd.sock'
 
 
 def level_icon(kind, value, muted=False):
+    if kind == 'output':
+        return '󰂯' if value == 2 else ('󰋋' if value == 1 else '󰓃')
     if kind == 'microphone':
         return '󰍬' if value else '󰍭'
     if kind == 'capslock':
@@ -60,9 +62,9 @@ def toggle_microphone():
             show('microphone', 0 if '[MUTED]' in status.stdout else 100)
 
 
-def show(kind, value, muted=False):
+def show(kind, value, muted=False, label=''):
     payload = json.dumps({'kind': kind, 'value': max(0, min(100, int(value))),
-                          'muted': bool(muted)}).encode()
+                          'muted': bool(muted), 'label': label}).encode()
     with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as client:
         for attempt in range(20):
             try:
@@ -80,7 +82,7 @@ def daemon():
     import gi
     gi.require_version('Gtk', '3.0')
     gi.require_version('GtkLayerShell', '0.1')
-    from gi.repository import Gtk, Gdk, GLib, GtkLayerShell
+    from gi.repository import Gtk, Gdk, GLib, GtkLayerShell, Pango
     lock = (RUNTIME / 'violet-osd.lock').open('w')
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -114,6 +116,8 @@ def daemon():
     icon.set_valign(Gtk.Align.CENTER)
     header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
     title = Gtk.Label(xalign=0)
+    title.set_max_width_chars(44)
+    title.set_ellipsize(Pango.EllipsizeMode.END)
     number = Gtk.Label(xalign=1)
     header.pack_start(title, True, True, 0)
     header.pack_end(number, False, False, 0)
@@ -153,7 +157,7 @@ def daemon():
             return True
         try:
             kind, value, muted = latest['kind'], int(latest['value']), latest.get('muted', False)
-            if kind not in ('volume', 'brightness', 'keyboard', 'focus', 'capslock', 'microphone'):
+            if kind not in ('volume', 'brightness', 'keyboard', 'focus', 'capslock', 'microphone', 'output'):
                 return True
         except (KeyError, TypeError, ValueError):
             return True
@@ -163,6 +167,8 @@ def daemon():
             title.set_text('Caps Lock · On' if value else 'Caps Lock · Off')
         elif kind == 'microphone':
             title.set_text('Microphone · Live' if value else 'Microphone · Muted')
+        elif kind == 'output':
+            title.set_text('Output · ' + str(latest.get('label', 'Audio device')))
         number.set_text(('On' if value else 'Off') if kind == 'focus' else
                         ('Off' if value == 0 else ('Low' if value <= 50 else 'High'))
                         if kind == 'keyboard' else f'{value}%')
@@ -179,7 +185,7 @@ def daemon():
                                         ('capslock-on.svg' if value else 'capslock-off.svg')))
         else:
             caps_icon.hide()
-        if kind in ('focus', 'capslock', 'microphone'):
+        if kind in ('focus', 'capslock', 'microphone', 'output'):
             bar.hide()
             number.hide()
         window.resize(1, 1)
@@ -190,7 +196,8 @@ def daemon():
             window.hide()
             hide_timer = None
             return False
-        hide_timer = GLib.timeout_add(1800 if kind in ('focus', 'capslock', 'microphone') else 1200, hide)
+        hide_timer = GLib.timeout_add(2200 if kind == 'output' else
+                                    1800 if kind in ('focus', 'capslock', 'microphone') else 1200, hide)
         return True
 
     GLib.io_add_watch(server.fileno(), GLib.IO_IN, receive)
@@ -218,7 +225,9 @@ def daemon():
 
 
 if __name__ == '__main__':
-    if sys.argv[1:] == ['--mic-toggle']:
+    if len(sys.argv) == 4 and sys.argv[1] == '--output':
+        show('output', sys.argv[2], label=sys.argv[3])
+    elif sys.argv[1:] == ['--mic-toggle']:
         toggle_microphone()
     elif sys.argv[1:] == ['--daemon']:
         daemon()
