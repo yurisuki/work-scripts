@@ -17,6 +17,7 @@
   ],
   "modules-right": [
     "tray",
+    "custom/ticktick",
     "custom/weather",
     "group/system-status",
     "battery",
@@ -28,6 +29,22 @@
     "format": "○",
     "tooltip-format": "Violet Night · Applications",
     "on-click": "~/.scripts/hypr-menu.sh apps"
+  },
+  "custom/capslock": {
+    "exec": "~/.scripts/bar-capslock.py",
+    "return-type": "json",
+    "format": "{text}",
+    "restart-interval": 2,
+    "exec-on-event": false
+  },
+  "custom/ticktick": {
+    "exec": "~/.scripts/bar-ticktick.py",
+    "return-type": "json",
+    "format": "{text}",
+    "interval": 60,
+    "signal": 10,
+    "on-click": "kitty -e ~/.local/bin/ttui",
+    "escape": false
   },
   "hyprland/window": {
     "format": "{}",
@@ -261,6 +278,7 @@
   "group/system-status": {
     "orientation": "horizontal",
     "modules": [
+      "custom/capslock",
       "network",
       "pulseaudio",
       "custom/brightness"

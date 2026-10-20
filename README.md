@@ -269,6 +269,11 @@ The overlay starts with Hyprland and never adds entries to notification history.
 Caps Lock changes show a brief on/off overlay without changing the key's normal
 behavior. The XF86AudioMicMute key toggles the default microphone and displays
 whether it is muted or live. Num Lock does not show an overlay.
+Waybar also shows Caps Lock only while enabled. Its TickTick Inbox indicator
+counts incomplete tasks, hides at zero, lists task titles on hover, and opens
+TickTick TUI when clicked. It checks every minute using the TUI's existing
+sign-in; if unavailable, cached data is labeled in the tooltip. Authentication
+and task data stay in the user's existing TUI files and are not bundled here.
 Audio output changes show the device name with a speaker, headphone, or Bluetooth
 icon, including wired headphone/speaker port switches. No output alert plays at login.
 

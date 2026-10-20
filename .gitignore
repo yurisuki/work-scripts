@@ -1,4 +1,6 @@
 __pycache__/
 *.pyc
+/.config/ttui/auth.toml
+/.cache/ttui/
 /.scripts/tuigreet-preview.sh
 /Dokumenty/Ralakde/Our inquires/
