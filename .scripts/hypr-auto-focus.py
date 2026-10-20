@@ -18,11 +18,6 @@ GAME_MARKERS = (
     'steam_app_', 'osu', 'minecraft', 'lutris', 'heroic', 'wine',
     'godot', 'unity', 'unreal', 'proton', 'gamescope',
 )
-RECORDER_MARKERS = (
-    'wf-recorder', 'gpu-screen-recorder', 'simplescreenrecorder',
-    'kooha', 'peek', 'vokoscreen', 'kazam', 'recordmydesktop',
-)
-
 def request(enabled):
     subprocess.run([str(Path.home() / '.scripts/hypr-focus.py'),
                     'fullscreen-on' if enabled else 'fullscreen-off'],
@@ -43,15 +38,15 @@ def is_fullscreen(window):
     return any(marker in app for marker in GAME_MARKERS)
 
 def recording_screen():
-    """Return true while a recorder process is actively capturing the screen."""
+    """Return true while PipeWire has an active screen-capture stream."""
     try:
-        processes = subprocess.check_output(['ps', '-eo', 'args='], text=True, timeout=2)
+        nodes = json.loads(subprocess.check_output(['pw-dump'], text=True, timeout=2))
     except (OSError, subprocess.SubprocessError):
         return False
-    for command in processes.lower().splitlines():
-        if any(marker in command for marker in RECORDER_MARKERS):
-            return True
-        if 'obs' in command and '--startrecording' in command:
+    for node in nodes:
+        props = (node.get('info') or {}).get('props') or {}
+        if (props.get('media.class') == 'Stream/Input/Video' and
+                props.get('media.category') == 'Capture'):
             return True
     return False
 
