@@ -43,7 +43,25 @@ start "$HOME/.scripts/ticktick-startup.py"
 start "$HOME/.scripts/hypr-osd.py" --daemon
 start "$HOME/.scripts/hypr-game-focus.py"
 start "$HOME/.local/bin/device-notifications.py"
-start "$HOME/.local/bin/device-notifications.py" --preview session-start
+play_startup_sound() {
+    # Wait for the default output, then let login-time device routing settle.
+    local attempt
+    for attempt in {1..20}; do
+        if timeout 2 wpctl get-volume @DEFAULT_AUDIO_SINK@ >/dev/null 2>&1; then
+            sleep 2
+            if ! timeout 2 wpctl get-volume @DEFAULT_AUDIO_SINK@ >/dev/null 2>&1; then
+                continue
+            fi
+            systemctl --user is-active --quiet violet-focus.service && return 0
+            timeout 5 pw-play --volume=0.25 "$HOME/.local/share/device-notifications/sounds/session-start.wav" ||
+                printf 'Startup sound: playback failed\n' >&2
+            return
+        fi
+        sleep 0.5
+    done
+    printf 'Startup sound: no audio output became available\n' >&2
+}
+start play_startup_sound
 start hypridle
 start udiskie
 start snappy-switcher --daemon
