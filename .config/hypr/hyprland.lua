@@ -72,6 +72,8 @@ hl.config({
 		special_fallthrough = true,
 
 		touchpad = {
+			tap_to_click = true,
+			clickfinger_behavior = true,
 			natural_scroll = true,
 		},
 	},
