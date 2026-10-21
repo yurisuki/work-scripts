@@ -6,6 +6,12 @@ and a working systemd user session. This is not an operating-system installer.
 
 ## Install
 
+If the ThinkPad pointer moves but clicking stops working, press **Super+Ctrl+F12**
+to run `~/.scripts/hypr-reset-pointer.sh`. It saves input diagnostics to
+`~/.local/state/hypr-pointer/last-reset.log` and disables then re-enables the
+Synaptics TM3381-002 touchpad and Elan TrackPoint without restarting Hyprland.
+This is a recovery workaround; other pointer models require different device names.
+
 Log in as your normal user (TTY or desktop), then:
 
 ```sh

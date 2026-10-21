@@ -217,6 +217,8 @@ for i = 1, 10 do
 end
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
+-- Recover stuck pointer buttons and preserve input diagnostics.
+hl.bind("SUPER + CTRL + F12", hl.dsp.exec_cmd(scripts .. "hypr-reset-pointer.sh"))
 hl.bind("Print", hl.dsp.exec_cmd(scripts .. "hypr-screenshot.sh copy"))
 hl.bind("SUPER + Print", hl.dsp.exec_cmd(scripts .. "hypr-screenshot.sh edit"))
 hl.bind("SUPER + S", hl.dsp.exec_cmd(scripts .. "hypr-screenshot.sh copy"))
