@@ -9,7 +9,7 @@ play_exit_sound() {
     for option in "$@"; do
         [[ $option != --dry-run ]] || return 0
     done
-    timeout 4 "$HOME/.local/bin/device-notifications.py" --play-and-wait session-end >/dev/null 2>&1 || true
+    timeout 4 "$HOME/.scripts/device-notifications.py" --play-and-wait session-end >/dev/null 2>&1 || true
 }
 
 case "$action" in

@@ -60,7 +60,7 @@ file=$(mktemp "$runtime/screenshot-XXXXXX.png")
 grim -g "$geometry" "$file"
 stop_freeze
 flock -u 9
-"$HOME/.local/bin/device-notifications.py" --preview screenshot 9>&- >/dev/null 2>&1 &
+"$HOME/.scripts/device-notifications.py" --preview screenshot 9>&- >/dev/null 2>&1 &
 if [[ $mode == edit ]]; then
     # Swappy saves only on request; Copy keeps the annotated image in the clipboard.
     export SCREENSHOT_SAVE_DIR="$(xdg-user-dir PICTURES)/Screenshots"

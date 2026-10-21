@@ -55,6 +55,9 @@ launcher paths are filled in by the installer.
 Superfile's editor action uses `spf-open`: images set the wallpaper through
 `~/.scripts/set-wallpaper.sh`, while other files open in `$EDITOR` (default `nvim`).
 The helper and `editor = "spf-open"` configuration are included in deployment.
+Custom scripts live in `~/.scripts/` with `.sh`, `.zsh`, or `.py` extensions.
+The `sxiv` and `spf-open` commands in `~/.local/bin/` are symlinks to
+`~/.scripts/sxiv.sh` and `~/.scripts/spf-open.sh`.
 
 Rotation replaces the default `m` marking shortcut and changes only the view.
 Image copying uses the first frame of animated images. In thumbnail mode, clipboard

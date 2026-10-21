@@ -1,0 +1,16 @@
+#!/bin/sh
+# Build the user keymap when first launched or after its source changes.
+set -eu
+source_file="$HOME/.local/src/sxiv-keymap/keymap.c"
+library="$HOME/.local/lib/sxiv/keymap.so"
+if [ ! -f "$library" ] || [ "$source_file" -nt "$library" ]; then
+    mkdir -p "${library%/*}"
+    staged=$(mktemp "${library%/*}/.keymap.XXXXXXXX")
+    trap 'rm -f -- "$staged"' EXIT HUP INT TERM
+    cc -shared -fPIC -Wall -Wextra -Werror -O2 "$source_file" -o "$staged" -ldl
+    chmod 755 "$staged"
+    mv -f -- "$staged" "$library"
+    trap - EXIT HUP INT TERM
+fi
+# Apply the user keymap only to sxiv.
+exec /usr/bin/python3 "$HOME/.scripts/sxiv-directory.py" "$library" "$@"

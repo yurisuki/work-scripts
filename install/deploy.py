@@ -17,6 +17,8 @@ OBSOLETE = (
     '.scripts/toggle-dropdown-terminal.sh', '.scripts/install-hyprland.sh',
     '.scripts/update-checker.sh', '.scripts/hypr-brightness-slider.py',
     '.scripts/postinstall.sh',
+    '.local/bin/device-notifications.py', '.local/bin/restore-keyboard-backlight.py',
+    '.local/bin/sxiv-directory.py', '.local/bin/superfile-open',
     '.config/autostart/update-checker.sh.desktop', '.config/autostart/update-checker.desktop',
     '.local/share/applications/update-checker.desktop',
 )
@@ -46,7 +48,11 @@ def report_drift(source, home):
         if not src.is_file() or '__pycache__' in relative.parts or str(relative) in PRESERVE:
             continue
         target = home / relative
-        if target.is_file() and target.read_bytes() != expected_content(src, relative, home):
+        if src.is_symlink():
+            if (target.exists() or target.is_symlink()) and (
+                    not target.is_symlink() or os.readlink(target) != os.readlink(src)):
+                changed.append(str(relative))
+        elif target.is_file() and target.read_bytes() != expected_content(src, relative, home):
             changed.append(str(relative))
     if changed:
         print('Local files differing from the repository (deployment will back them up and replace them):')
@@ -103,10 +109,14 @@ def deploy(source, home):
         os.close(fd)
         staged = Path(name)
         try:
-            shutil.copy2(src, staged)
-            if (relative.parts[0] == '.scripts' and src.suffix in ('.sh', '.py')) or relative.parts[:2] == ('.local', 'bin'):
-                staged.chmod(staged.stat().st_mode | 0o111)
-            staged.write_bytes(expected_content(src, relative, home))
+            if src.is_symlink():
+                staged.unlink()
+                staged.symlink_to(os.readlink(src))
+            else:
+                shutil.copy2(src, staged)
+                if (relative.parts[0] == '.scripts' and src.suffix in ('.sh', '.zsh', '.py')) or relative.parts[:2] == ('.local', 'bin'):
+                    staged.chmod(staged.stat().st_mode | 0o111)
+                staged.write_bytes(expected_content(src, relative, home))
             staged.replace(target)
         finally:
             staged.unlink(missing_ok=True)
