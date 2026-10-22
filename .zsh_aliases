@@ -48,6 +48,9 @@ alias install='sudo pacman -S'
 alias remove='sudo pacman -Rns'
 alias search='pacman -Ss'
 
+# Work scripts
+alias upd='~/.scripts/upd.sh'
+
 # Clear
 alias c='clear'
 
