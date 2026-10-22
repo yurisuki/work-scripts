@@ -59,6 +59,22 @@ Custom scripts live in `~/.scripts/` with `.sh`, `.zsh`, or `.py` extensions.
 The `sxiv` and `spf-open` commands in `~/.local/bin/` are symlinks to
 `~/.scripts/sxiv.sh` and `~/.scripts/spf-open.sh`.
 
+`check-for-updates.timer` runs `check-for-updates.py` shortly after login and every
+hour. It fetches only the upstream branch ref, compares it with `HEAD`, and sends
+one notification, using `icons/update-available.svg`, when new commits appear; it
+never pulls, deploys, or touches the working tree. The result is recorded in
+`~/.local/state/work-scripts/update-check.json`, so you are notified once per batch
+of upstream commits. While commits are pending, the Waybar indicator shows a
+download glyph with their count and the latest commit in its tooltip, then hides
+itself once the checkout is current. The checkout path is stored next to the state
+at deploy time; set `WORK_SCRIPTS_REPO` to override it.
+
+`upd` (alias for `upd.sh`) fast-forwards the checkout, redeploys it with
+`./install.sh --config-only`, reloads Hyprland/Waybar/SwayNC through
+`hypr-reload.sh`, and refreshes the indicator. Pass `--all` for the full installer,
+or any other `install.sh` option. It refuses to pull when the checkout cannot be
+fast-forwarded and tells you to commit, stash, or discard local changes first.
+
 Rotation replaces the default `m` marking shortcut and changes only the view.
 Image copying uses the first frame of animated images. In thumbnail mode, clipboard
 commands use the first marked image; editor and Trash commands act on all marked

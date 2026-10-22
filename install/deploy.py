@@ -86,6 +86,8 @@ def deploy(source, home):
     report_drift(source, home)
     state = home / '.local/state/work-scripts'
     state.mkdir(parents=True, exist_ok=True)
+    # Remember where this checkout lives so the update check can fetch from it.
+    (state / 'source').write_text(str(source) + '\n')
     backup = Path(tempfile.mkdtemp(prefix='install-backup.', dir=state))
     records = []
     def save(relative):

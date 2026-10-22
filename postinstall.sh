@@ -72,6 +72,7 @@ sudo modprobe i2c-dev || echo 'i2c-dev unavailable; laptop brightness still work
 systemctl --user enable --now pipewire.socket pipewire-pulse.socket wireplumber.service
 systemctl --user daemon-reload
 systemctl --user enable --now restore-keyboard-backlight.service
+systemctl --user enable --now check-for-updates.timer
 systemctl --user enable power-button-menu.service
 # Only acquire the power-key inhibitor while a graphical session is running.
 if systemctl --user is-active --quiet graphical-session.target; then

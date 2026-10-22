@@ -1,0 +1,11 @@
+[Unit]
+Description=Periodically check the work-scripts repository for upstream commits
+
+[Timer]
+OnStartupSec=2min
+OnUnitActiveSec=1h
+AccuracySec=1min
+Unit=check-for-updates.service
+
+[Install]
+WantedBy=timers.target

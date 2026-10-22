@@ -18,6 +18,8 @@ button { border: none; box-shadow: none; text-shadow: none; }
 #battery, #custom-bluetooth, #custom-weather, #custom-notification { color: #b4a3c4; padding: 0 9px; margin: 6px 2px; }
 #custom-notification:hover, #custom-weather:hover { color: #ede3f5; background: #241a30; border-radius: 8px; }
 #battery.critical, #custom-bluetooth.critical { color: #ff799d; }
+#custom-updates { color: #cf5aff; padding: 0 9px; margin: 6px 2px; }
+#custom-updates:hover { color: #ede3f5; background: #362442; border-radius: 8px; }
 #custom-power { color: #b4a3c4; font-size: 17px; padding: 0 16px 0 8px; }
 #custom-power:hover { color: #ff799d; }
 tooltip { background: #241a30; border: 1px solid #493455; border-radius: 8px; }

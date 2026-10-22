@@ -20,6 +20,7 @@
     "custom/ticktick",
     "custom/weather",
     "group/system-status",
+    "custom/updates",
     "battery",
     "custom/bluetooth",
     "custom/notification",
@@ -98,6 +99,14 @@
     "on-scroll-up": "~/.scripts/hypr-brightness.sh up",
     "on-scroll-down": "~/.scripts/hypr-brightness.sh down",
     "smooth-scrolling-threshold": 1
+  },
+  "custom/updates": {
+    "exec": "~/.scripts/bar-updates.py",
+    "return-type": "json",
+    "format": "{text}",
+    "hide-empty-text": true,
+    "interval": 30,
+    "on-click": "kitty --hold --title 'work-scripts update' -e ~/.scripts/upd.sh"
   },
   "custom/notification": {
     "exec": "python3 ~/.scripts/bar-notifications.py",

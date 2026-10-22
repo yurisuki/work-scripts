@@ -1,0 +1,6 @@
+[Unit]
+Description=Check the work-scripts repository for upstream commits
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/.scripts/check-for-updates.py
