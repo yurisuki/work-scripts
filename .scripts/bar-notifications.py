@@ -6,12 +6,20 @@ import subprocess
 import sys
 
 
+def notification_count(payload):
+    text = str(payload.get('text', ''))
+    digits = ''.join(value for value in text if value.isdigit())
+    return int(digits) if digits else 0
+
+
 def decorate(payload, focus):
     result = dict(payload)
     classes = result.get('class', [])
     if isinstance(classes, str):
         classes = [classes]
-    result['class'] = [value for value in classes if value != 'focus']
+    result['class'] = [value for value in classes if value not in ('focus', 'unread')]
+    if notification_count(result) >= 1:
+        result['class'].append('unread')
     result['alt'] = 'focus-on' if focus else 'focus-off'
     if focus:
         result['class'].append('focus')

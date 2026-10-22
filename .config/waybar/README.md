@@ -19,8 +19,10 @@
 - Workspace state is cached by one event-socket listener launched alongside Waybar;
   widgets read the cache only at startup and after workspace/window events.
 - Clipboard: Super+V; Shift+Delete removes a selected item; Super+Shift+V clears history.
+- Notifications: the bell and count turn purple as soon as one notification is
+  pending, and stay lavender when there are none.
 - Work mode: Super+Ctrl+F enables DND and prevents idle locking/blanking.
-  The existing notification icon turns purple with an underline while work mode is active.
+  It also adds an underline and panel behind the notification icon.
   Hover it for focus status; its normal notification count and click actions remain available.
   Turning it off restores the earlier DND state.
 
