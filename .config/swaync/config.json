@@ -18,10 +18,9 @@
   "notification-grouping": true,
   "hide-on-clear": false,
   "notification-visibility": {
-    "quote-moved": {
+    "quote-notifications": {
       "state": "transient",
-      "app-name": "^move_and_open$",
-      "summary": "^QUOTE moved$"
+      "app-name": "^move_and_open$"
     },
     "device-status": {
       "state": "transient",
