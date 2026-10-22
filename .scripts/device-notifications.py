@@ -138,6 +138,13 @@ def show_volume(current):
         subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
+def audio_label(*values):
+    for value in values:
+        if isinstance(value, str) and value.strip() and value.strip().lower() not in ('(null)', 'null', 'none'):
+            return value.strip()
+    return ''
+
+
 def audio_output():
     try:
         default = subprocess.check_output(['pactl', 'get-default-sink'], text=True, timeout=2).strip()
@@ -145,9 +152,18 @@ def audio_output():
         for sink in sinks:
             if sink['name'] != default:
                 continue
-            port = sink.get('active_port', '')
-            description = sink.get('description', default)
-            port_label = next((p.get('description', '') for p in sink.get('ports', []) if p['name'] == port), '')
+            port = sink.get('active_port') or ''
+            props = sink.get('properties') or {}
+            description = audio_label(sink.get('description'), props.get('node.nick'),
+                                      props.get('device.description'), props.get('device.product.name'), default)
+            active = next((p for p in (sink.get('ports') or []) if p.get('name') == port), {})
+            port_label = audio_label(active.get('description'))
+            if not port_label:
+                port_label = {'analog-output-headphones': 'Headphones',
+                              'analog-output-lineout': 'Line Out',
+                              'analog-output-speaker': 'Speakers'}.get(port, '')
+                if port.startswith('hdmi-output'):
+                    port_label = 'HDMI / DisplayPort'
             if port_label:
                 description += ' · ' + port_label
             icon = 2 if default.startswith('bluez') else (1 if 'headphone' in (port + port_label).lower() else 0)
