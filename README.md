@@ -224,6 +224,7 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Shortcut | Action |
 | --- | --- |
 | `y` / `Y` | Copy selected text (drag to select; double-click selects a word) |
+| `h` / `l` | Pan left / right |
 | `,` / `.` | Zoom out / in |
 | `Ctrl+Shift+N` / `Ctrl+Shift+M` | Zoom out / in, matching Kitty directions |
 | `w` / `W` | Fit text width without white margins / fit page height |
