@@ -118,6 +118,8 @@ hl.bind("SUPER + SHIFT + Tab", hl.dsp.focus({ workspace = "e-1" }))
 hl.bind("SUPER + Q", hl.dsp.window.close()) -- normal close
 hl.bind("SUPER + SHIFT + Q", hl.dsp.window.kill()) -- force kill
 hl.bind("SUPER + SHIFT + Space", hl.dsp.window.float({ action = "toggle" }))
+-- Rotate the focused tiled split clockwise by 90 degrees.
+hl.bind("SUPER + SHIFT + R", hl.dsp.layout("rotatesplit 90"))
 -- Move floating windows by 30 pixels; move tiled windows in the layout.
 local movement_delta = {
 	left = { -30, 0 }, right = { 30, 0 },
