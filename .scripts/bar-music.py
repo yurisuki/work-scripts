@@ -105,7 +105,7 @@ def render(player, role):
         text, hint = '󰒭', 'Další skladba'
     else:
         text = ('󰏤' if playing else '󰐊') + '  ' + ' '.join(track.split())
-        hint = 'Kliknutím pozastavit' if playing else 'Kliknutím pokračovat'
+        hint = ('Kliknutím pozastavit' if playing else 'Kliknutím pokračovat') + ' · Kolečkem ±5 s'
     return {'text': html.escape(text),
             'tooltip': html.escape(f'{track}\n{player.props.player_name}\n{hint}'),
             'class': 'playing' if playing else 'paused'}
@@ -179,6 +179,9 @@ def control(action):
             player.previous()
         elif action == 'next' and player.props.can_go_next:
             player.next()
+        elif action.startswith('seek:'):
+            # Playerctl seeks in microseconds; Waybar scroll steps are ±5 seconds.
+            player.seek(int(action.split(':', 1)[1]) * 1_000_000)
     except (OSError, ValueError, GLib.Error):
         return
 
@@ -187,9 +190,10 @@ if __name__ == '__main__':
     try:
         if len(sys.argv) == 3 and sys.argv[1] == 'watch' and sys.argv[2] in ('title', 'previous', 'next'):
             watch(sys.argv[2])
-        elif len(sys.argv) == 2 and sys.argv[1] in ('play-pause', 'previous', 'next'):
+        elif len(sys.argv) == 2 and (sys.argv[1] in ('play-pause', 'previous', 'next')
+                                     or sys.argv[1].startswith('seek:')):
             control(sys.argv[1])
         else:
-            raise SystemExit('Usage: bar-music.py watch title|previous|next OR play-pause|previous|next')
+            raise SystemExit('Usage: bar-music.py watch title|previous|next OR play-pause|previous|next|seek:SECONDS')
     except BrokenPipeError:
         pass

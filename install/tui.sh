@@ -36,27 +36,55 @@ plain_yesno() {
     [[ $reply == [Yy]* ]]
 }
 
+pause() {
+    printf '\nPress Enter to continue...'
+    read -r _ || true
+}
+
 if [[ -n $backend ]]; then
-    mode=$(ask --title "Installation mode" --radiolist \
-        "Choose what to install:" 18 68 3 \
+    mode=$(ask --title "Work-scripts installer" --radiolist \
+        "Choose an action:" 20 72 5 \
         full "Packages, configs and user services" ON \
         config "Dotfiles and scripts only" OFF \
-        packages "Dependencies only" OFF) || { printf 'Cancelled.\n'; exit 0; }
+        packages "Dependencies only" OFF \
+        check "Check local changes (read-only)" OFF \
+        restore "Restore last deployment from backup" OFF) || { printf 'Cancelled.\n'; exit 0; }
 else
-    printf '\nChoose what to install:\n'
+    printf '\nChoose an action:\n'
     printf '  1) full       Packages, configs and user services\n'
     printf '  2) config     Dotfiles and scripts only\n'
     printf '  3) packages   Dependencies only\n'
+    printf '  4) check      Check local changes (read-only)\n'
+    printf '  5) restore    Restore last deployment from backup\n'
     while :; do
-        read -r -p 'Choice [1-3, q to quit]: ' choice || { printf 'Cancelled.\n'; exit 0; }
+        read -r -p 'Choice [1-5, q to quit]: ' choice || { printf 'Cancelled.\n'; exit 0; }
         case $choice in
             1|full)    mode=full; break ;;
             2|config)  mode=config; break ;;
             3|packages) mode=packages; break ;;
+            4|check)   mode=check; break ;;
+            5|restore) mode=restore; break ;;
             q|Q|quit)  printf 'Cancelled.\n'; exit 0 ;;
             *)         printf 'Invalid choice.\n' ;;
         esac
     done
+fi
+
+if [[ $mode == check ]]; then
+    python3 "$source_dir/install/check-config.py" || true
+    pause
+    exit 0
+fi
+if [[ $mode == restore ]]; then
+    if [[ -n $backend ]]; then
+        ask --title "Restore deployment" --defaultno --yesno \
+            "Restore the most recent deployment backup?\n\nManaged files go back to their saved state, and files created by the last deployment are removed." 12 68 || { printf 'Cancelled.\n'; exit 0; }
+    else
+        plain_yesno 'Restore the last deployment? [y/N]' n || { printf 'Cancelled.\n'; exit 0; }
+    fi
+    python3 "$source_dir/install/restore.py"
+    pause
+    exit 0
 fi
 
 args=()

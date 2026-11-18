@@ -117,12 +117,12 @@ startup also sets the desktop GTK theme and dark-mode preference for portal cons
 
 ## Other modes
 
-Running `./install.sh` with no arguments opens the menu. Answering the prompts
-chooses one of full / config / packages installation, a database refresh, and the
-greetd switch, then shows a short summary before starting. whiptail is used when
-present, dialog is the alternative, and a terminal without either gets numbered
-text prompts. Flags are still accepted for scripts such as `upd` and for quick
-runs:
+Running `./install.sh` with no arguments opens the menu. It offers full / config /
+packages installation, a read-only check of local changes, and restoring the last
+deployment. The install actions ask about a database refresh and the greetd switch,
+then show a short summary before starting. whiptail is used when present, dialog is
+the alternative, and a terminal without either gets numbered text prompts. Flags are
+still accepted for scripts such as `upd` and for quick runs:
 
 ```sh
 ./install.sh --config-only    # Dotfiles and scripts only; requires Python 3
@@ -287,7 +287,7 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+Alt+H/J/K/L or arrows       | Resize window                        |
 | Super+Ctrl+H/K or ←/↑             | Decrease inner and outer gaps by 2 px |
 | Super+Ctrl+J/L or ↓/→             | Increase inner and outer gaps by 2 px |
-| Super+Shift+G                     | Reset gaps to defaults (5 / 12 px)    |
+| Super+Shift+G                     | Toggle gaps off/on (5 / 12 px)       |
 | Super+number / Super+Shift+number | Workspace / move window to workspace |
 | Super+X / Super+F / Super+Q       | Lock / fullscreen / close            |
 | Super+G                           | Make focused window largest          |
@@ -298,7 +298,10 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+Shift+B                     | Toggle bar                           |
 
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
-Wiremix and the clock for Calcure. Clipboard is available through its shortcut; Shift+Delete in the picker deletes the selected entry, Ctrl+Delete clears the whole history after confirmation.
+Wiremix and the clock for Calcure. The music module pauses on click; scrolling it
+seeks ±5 seconds in the current track. Clipboard is available through its shortcut;
+Shift+Delete in the picker deletes the selected entry, Ctrl+Delete clears the whole
+history after confirmation.
 Work mode shows a brief overlay when enabled or disabled, including while DND is on.
 Super+D searches applications, home files/folders, and local Brave bookmarks
 and recent history in one launcher.
@@ -387,8 +390,10 @@ language servers and formatters are supplied by the installer.
 ## Backups and checks
 
 Each configuration deployment creates `~/.local/state/work-scripts/install-backup.*`
-with `manifest.json` and `files/`. To undo, restore `replaced`/`removed` files from
-that backup and remove only files marked `created`. Do not delete shared directories.
+with `manifest.json` and `files/`. To undo, choose *Restore last deployment* in the
+installer menu, or run `python3 install/restore.py`. It restores `replaced`/`removed`
+files from the newest backup and deletes only files marked `created`. Do not delete
+shared directories.
 Profile changes are backed up in `/etc/profile.backup.*`.
 Login manager changes are backed up separately in `/etc/greetd/config.toml.backup.*`.
 Symlinked parent directories are rejected before deployment; existing individual

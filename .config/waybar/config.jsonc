@@ -312,6 +312,9 @@
     "restart-interval": 2,
     "exec-on-event": false,
     "on-click": "python3 ~/.scripts/bar-music.py play-pause",
+    "on-scroll-up": "python3 ~/.scripts/bar-music.py seek:5",
+    "on-scroll-down": "python3 ~/.scripts/bar-music.py seek:-5",
+    "smooth-scrolling-threshold": 1,
     "max-length": 34
   },
   "custom/music-next": {
