@@ -23,6 +23,9 @@ button { border: none; box-shadow: none; text-shadow: none; }
 #battery.critical, #custom-bluetooth.critical { color: #ff799d; }
 #custom-updates { color: #cf5aff; padding: 0 9px; margin: 6px 2px; }
 #custom-updates:hover { color: #ede3f5; background: #362442; border-radius: 8px; }
+/* Printer: visible only while a job is queued, same accent as other active indicators. */
+#custom-printer.active { color: #cf5aff; padding: 0 9px; margin: 6px 2px; background: #362442; border-radius: 8px; box-shadow: inset 0 -2px #cf5aff; }
+#custom-printer:hover { color: #ede3f5; background: #241a30; }
 #custom-power { color: #b4a3c4; font-size: 17px; padding: 0 16px 0 8px; }
 #custom-power:hover { color: #ff799d; }
 tooltip { background: #241a30; border: 1px solid #493455; border-radius: 8px; }

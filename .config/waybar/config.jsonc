@@ -21,6 +21,7 @@
     "custom/weather",
     "group/system-status",
     "custom/updates",
+    "custom/printer",
     "battery",
     "custom/bluetooth",
     "custom/notification",
@@ -107,6 +108,14 @@
     "hide-empty-text": true,
     "interval": 30,
     "on-click": "kitty --hold --title 'work-scripts update' -e ~/.scripts/upd.sh"
+  },
+  "custom/printer": {
+    "exec": "~/.scripts/bar-printer.py",
+    "return-type": "json",
+    "format": "{text}",
+    "hide-empty-text": true,
+    "interval": 5,
+    "on-click": "system-config-printer"
   },
   "custom/notification": {
     "exec": "python3 ~/.scripts/bar-notifications.py",

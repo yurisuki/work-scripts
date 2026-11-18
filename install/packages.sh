@@ -12,7 +12,7 @@ REPO_PACKAGES=(
     xournalpp libimobiledevice usbmuxd bc qalculate-qt xclip neovim nodejs npm
     ripgrep fd unzip stylua python-black shfmt clang konsole sxiv libx11 imagemagick gimp glib2 vlc superfile
     python-dbus python-gobject python-cairo gtk3 gtk-layer-shell python-pypdf python-openpyxl python-pandas python-numpy python-pyqt6
-    ghostscript cups lua-language-server bash-language-server pyright
+    ghostscript cups system-config-printer lua-language-server bash-language-server pyright
     vscode-json-languageserver yaml-language-server typescript-language-server prettier
     exiftool zoxide
 )
