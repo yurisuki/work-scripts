@@ -15,6 +15,9 @@ button { border: none; box-shadow: none; text-shadow: none; }
 #network:hover, #pulseaudio:hover, #custom-brightness:hover { color: #ede3f5; background: #362442; border-radius: 8px; }
 #custom-brightness.unavailable, #network.disconnected, #pulseaudio.muted { color: #776387; }
 #network.disconnected, #network.disabled, #pulseaudio.muted { color: #ff799d; background: #36202c; border-radius: 8px; box-shadow: inset 0 -2px #ff799d; }
+#custom-nightlight { color: #776387; padding: 0 9px; margin: 0; background: transparent; }
+#custom-nightlight.active { color: #cf5aff; }
+#custom-nightlight:hover { color: #ede3f5; background: #362442; border-radius: 8px; }
 #tray { padding: 0 8px; margin: 6px 2px; }
 #battery, #custom-bluetooth, #custom-weather, #custom-notification { color: #b4a3c4; padding: 0 9px; margin: 6px 2px; }
 #custom-notification:hover, #custom-weather:hover { color: #ede3f5; background: #241a30; border-radius: 8px; }

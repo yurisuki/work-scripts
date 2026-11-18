@@ -296,6 +296,7 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+Y                           | Open the last downloaded quote       |
 | Super+B                           | Bluetooth settings (bluetui)          |
 | Super+Shift+B                     | Toggle bar                           |
+| Super+Shift+N                     | Toggle night light (4000 K)          |
 
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
 Wiremix and the clock for Calcure. The music module pauses on click; scrolling it

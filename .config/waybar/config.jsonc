@@ -101,6 +101,15 @@
     "on-scroll-down": "~/.scripts/hypr-brightness.sh down",
     "smooth-scrolling-threshold": 1
   },
+  "custom/nightlight": {
+    "exec": "~/.scripts/hypr-nightlight.sh status",
+    "return-type": "json",
+    "format": "{text}",
+    "hide-empty-text": true,
+    "interval": 15,
+    "signal": 12,
+    "on-click": "~/.scripts/hypr-nightlight.sh toggle"
+  },
   "custom/updates": {
     "exec": "~/.scripts/bar-updates.py",
     "return-type": "json",
@@ -286,7 +295,8 @@
       "custom/capslock",
       "network",
       "pulseaudio",
-      "custom/brightness"
+      "custom/brightness",
+      "custom/nightlight"
     ]
   },
   "group/music": {

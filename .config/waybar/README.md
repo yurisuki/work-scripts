@@ -14,6 +14,9 @@
 - Super+Shift+B toggles the bar.
 - Printer: a purple printer icon with the job count appears only while CUPS has
   unfinished jobs. Click it to open Print Settings (system-config-printer).
+- Night light: the moon next to brightness is dim from 17:00 to 07:00, purple
+  whenever hyprsunset is warming the screen to 4000 K, and hidden during the day
+  when inactive. Click to toggle (Super+Shift+N).
 - Network, audio and brightness share one status group.
 - Super+Ctrl+R reloads Hyprland and refreshes Waybar configuration, locale and CSS.
 - Workspaces: 1–5 always visible; 6–10 appear only when selected or occupied.
