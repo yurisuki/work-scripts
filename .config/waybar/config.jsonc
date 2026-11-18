@@ -29,8 +29,8 @@
   ],
   "custom/launcher": {
     "format": "○",
-    "tooltip-format": "Violet Night · Applications",
-    "on-click": "~/.scripts/hypr-menu.sh apps"
+    "tooltip-format": "Violet Night · Search (Super+D)",
+    "on-click": "~/.scripts/hypr-search.sh"
   },
   "custom/capslock": {
     "exec": "~/.scripts/bar-capslock.py",
