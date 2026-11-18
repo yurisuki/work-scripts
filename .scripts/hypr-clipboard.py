@@ -39,6 +39,14 @@ def thumbnail(line, cache):
         return None
 
 
+def confirm_clear():
+    result = subprocess.run([
+        'rofi', '-no-config', '-theme', str(Path.home() / '.config/rofi/clipboard.rasi'),
+        '-dmenu', '-no-custom', '-p', 'Clear all clipboard history?',
+    ], input=b'Cancel\nClear all', stdout=subprocess.PIPE, check=False)
+    return result.returncode == 0 and result.stdout.strip() == b'Clear all'
+
+
 def main():
     cache = Path(os.environ['XDG_RUNTIME_DIR']) / 'violet-clipboard-thumbnails'
     cache.mkdir(mode=0o700, exist_ok=True)
@@ -71,10 +79,17 @@ def main():
     result = subprocess.run([
         'rofi', '-no-config', '-theme', str(Path.home() / '.config/rofi/clipboard.rasi'),
         '-dmenu', '-show-icons', '-no-custom', '-format', 'i', '-p', 'Clipboard',
-        '-kb-cancel', 'Escape,Control+g', '-kb-delete-entry', '', '-kb-custom-1', 'Shift+Delete',
-        '-mesg', 'Enter  Copy    ·    Shift+Delete  Remove    ·    Esc  Close',
+        '-kb-cancel', 'Escape,Control+g', '-kb-delete-entry', '',
+        '-kb-custom-1', 'Shift+Delete', '-kb-custom-2', 'Control+Delete',
+        '-mesg', 'Enter  Copy    ·    Shift+Delete  Remove    ·    Ctrl+Delete  Clear all    ·    Esc  Close',
     ], input=b'\n'.join(rows), stdout=subprocess.PIPE, check=False)
-    if result.returncode not in (0, 10):
+    if result.returncode not in (0, 10, 11):
+        return
+    if result.returncode == 11:
+        if confirm_clear():
+            subprocess.run(['cliphist', 'wipe'], check=True, timeout=5)
+            subprocess.run(['wl-copy', '--clear'], check=True, timeout=5)
+            subprocess.run(['notify-send', 'Clipboard history cleared'], check=False)
         return
     try:
         index = int(result.stdout.strip())

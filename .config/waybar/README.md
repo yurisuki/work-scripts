@@ -18,7 +18,7 @@
   Mouse wheel cycles persistent and existing workspaces.
 - Workspace state is cached by one event-socket listener launched alongside Waybar;
   widgets read the cache only at startup and after workspace/window events.
-- Clipboard: Super+V; Shift+Delete removes a selected item; Super+Shift+V clears history.
+- Clipboard: Super+V; Shift+Delete removes a selected item; Ctrl+Delete clears all history after confirmation (Super+Shift+V also works).
 - Notifications: the bell and count turn purple as soon as one notification is
   pending, and stay lavender when there are none.
 - Work mode: Super+Ctrl+F enables DND and prevents idle locking/blanking.
@@ -53,7 +53,7 @@ Dependencies: waybar, kitty, networkmanager,
 wiremix, calcure, bluez, bluetui, brightnessctl, ddcutil, python.
 
 Clipboard image entries show cached 64 px previews in Rofi. Original image data is
-copied on Enter; Shift+Delete removes the selected entry and its preview. Thumbnails
+copied on Enter; Shift+Delete removes the selected entry and its preview. Ctrl+Delete clears the whole history after confirmation. Thumbnails
 are kept only in the session runtime directory.
 
 Enter the place name normally, including Czech diacritics. Both the bar and forecast

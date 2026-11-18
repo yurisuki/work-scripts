@@ -298,7 +298,7 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
 | Super+Shift+B                     | Toggle bar                           |
 
 Workspaces 1–5 stay visible; 6–10 appear when selected or occupied. Click audio for
-Wiremix and the clock for Calcure. Clipboard is available through its shortcut; Shift+Delete in the picker deletes the selected entry.
+Wiremix and the clock for Calcure. Clipboard is available through its shortcut; Shift+Delete in the picker deletes the selected entry, Ctrl+Delete clears the whole history after confirmation.
 Work mode shows a brief overlay when enabled or disabled, including while DND is on.
 Super+D searches applications, home files/folders, and local Brave bookmarks
 and recent history in one launcher.
@@ -409,7 +409,7 @@ Package downloads and AUR builds can change or fail independently of this repo;
 installation stops on errors, and the same command can be rerun after fixing them.
 
 Clipboard image entries show cached 64 px previews in Rofi. Original image data is
-copied on Enter; Shift+Delete removes the selected entry and its preview. Thumbnails
+copied on Enter; Shift+Delete removes the selected entry and its preview. Ctrl+Delete clears the whole history after confirmation. Thumbnails
 are kept only in the session runtime directory.
 
 Enter the place name normally, including Czech diacritics. Both the bar and forecast
