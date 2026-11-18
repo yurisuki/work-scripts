@@ -421,8 +421,9 @@ with its age and an offline label.
 ## Text templates
 
 Super+T opens rtemplate with Violet Night styling, filename search and text previews.
-Enter copies the selected template, Alt+E edits it in Neovim, Alt+O opens the folder
-in Superfile, and Escape cancels without changing the clipboard. Existing templates
+Enter copies the selected template, Shift+Enter copies it with `$CLIPBOARD` expanded
+to an empty string, Alt+E edits it in Neovim, Alt+O opens the folder in Superfile,
+and Escape cancels without changing the clipboard. Existing templates
 stay in `~/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/rtemplate list`.
 Subfolders are shown with relative paths so duplicate filenames remain distinct.
 The picker expands `$DATE`, `$TIME`, `$DATETIME`, and `$CLIPBOARD`, plus their

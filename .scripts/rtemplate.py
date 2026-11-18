@@ -77,9 +77,11 @@ def main():
             *(['-no-custom'] if templates else []),
             '-p', 'Templates', '-selected-row', '0', '-kb-cancel', 'Escape,Control+g',
             '-kb-custom-1', 'Alt+o', '-kb-custom-2', 'Alt+e',
-            '-mesg', 'Enter  Copy    ·    Alt+E  Edit    ·    Alt+O  Folder    ·    Esc  Close',
+            # Rofi binds Shift+Return to kb-accept-alt by default (same as Enter).
+            '-kb-accept-alt', '', '-kb-custom-3', 'Shift+Return,Shift+KP_Enter',
+            '-mesg', 'Enter  Copy    ·    Shift+Enter  Copy without clipboard    ·    Alt+E  Edit    ·    Alt+O  Folder    ·    Esc  Close',
         ], input=menu_rows(templates, directory), stdout=subprocess.PIPE, check=False)
-        if result.returncode not in (0, 10, 11):
+        if result.returncode not in (0, 10, 11, 12):
             return
         if result.returncode == 10:
             subprocess.Popen(['kitty', '--title', 'superfile', '--directory', str(directory), '-e', 'spf'])
@@ -95,7 +97,9 @@ def main():
             subprocess.Popen(['kitty', '--title', 'Template editor', '-e', 'nvim', str(path)])
             return
         content = read_template(path)
-        processed = render_template(content, snapshot)
+        # Shift+Enter copies the template with $CLIPBOARD expanded to an empty string.
+        clipboard = '' if result.returncode == 12 else snapshot
+        processed = render_template(content, clipboard)
         subprocess.run(['wl-copy', '--type', 'text/plain;charset=utf-8'], input=processed.encode(), check=True, timeout=5)
         notify('Template copied', str(path.relative_to(directory)))
 
