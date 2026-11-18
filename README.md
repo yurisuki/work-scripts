@@ -21,6 +21,12 @@ cd work-scripts
 ./install.sh
 ```
 
+With no options, `./install.sh` opens a menu where you choose the install mode,
+whether to refresh the package databases, and whether to force greetd. It uses
+whiptail (or dialog) when available and falls back to plain text prompts
+otherwise. The installation output itself is unchanged. Options still work as
+arguments for scripts and quick runs; see [Other modes](#other-modes).
+
 The installer installs desktop/work dependencies from your configured repositories,
 then asks yay to install the AUR applications. Review package/build prompts normally.
 Before installing packages, it enables pacman `Color` and `ILoveCandy` in
@@ -97,11 +103,8 @@ Remove that file to undo the installer setting. Tuigreet also shows password
 asterisks when configured by the installer. Its styled `S I G N   I N` screen uses
 lavender borders, purple accents, and a dark panel. The theme is installed to
 `/etc/greetd/tuigreet.toml`, including clock formatting and power-menu commands.
-An existing display manager is kept. To explicitly switch it to greetd:
-
-```sh
-./install.sh --greetd
-```
+An existing display manager is kept. To explicitly switch it to greetd, choose
+"Force greetd" in the installer menu, or pass `--greetd` directly.
 
 No session is stopped and no reboot is performed. NetworkManager, Bluetooth, CUPS
 and the user audio services are enabled. The quote-download watcher watches your
@@ -114,14 +117,21 @@ startup also sets the desktop GTK theme and dark-mode preference for portal cons
 
 ## Other modes
 
+Running `./install.sh` with no arguments opens the menu. Answering the prompts
+chooses one of full / config / packages installation, a database refresh, and the
+greetd switch, then shows a short summary before starting. whiptail is used when
+present, dialog is the alternative, and a terminal without either gets numbered
+text prompts. Flags are still accepted for scripts such as `upd` and for quick
+runs:
+
 ```sh
 ./install.sh --config-only    # Dotfiles and scripts only; requires Python 3
 ./install.sh --packages-only  # Dependencies only
 ./install.sh --no-upgrade     # Only if the system/databases are already up to date
 ```
 
-`./postinstall.sh` accepts the same options. Rerunning is supported: modified files
-are backed up before replacement. Personal `local.lua`, brightness selection,
+`./postinstall.sh` is the underlying engine and accepts the same flags.
+Rerunning is supported: modified files are backed up before replacement. Personal `local.lua`, brightness selection,
 weather location, wallpaper selection and existing work documents are preserved.
 The repository uses automatic monitor detection; no desktop-specific DP-1 mode is
 installed on your notebook. Kitty uses Zsh without changing your login shell.
