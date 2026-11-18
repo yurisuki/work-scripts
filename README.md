@@ -384,9 +384,6 @@ gotop, Qalculate, Xournal++, VLC and the Python dependencies for work scripts.
 Neovim installs its pinned plugins on first launch (internet required); configured
 language servers and formatters are supplied by the installer.
 
-Zoho WorkDrive uses its [vendor installer](https://www.zoho.com/workdrive/desktop-sync.html)
-and requires your account. Sign in and sync your files .
-
 ## Backups and checks
 
 Each configuration deployment creates `~/.local/state/work-scripts/install-backup.*`
@@ -423,9 +420,9 @@ with its age and an offline label.
 Super+T opens rtemplate with Violet Night styling, filename search and text previews.
 Enter copies the selected template, Shift+Enter copies it with `$CLIPBOARD` expanded
 to an empty string, Alt+E edits it in Neovim, Alt+O opens the folder in Superfile,
-and Escape cancels without changing the clipboard. Existing templates
-stay in `~/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/rtemplate list`.
-Subfolders are shown with relative paths so duplicate filenames remain distinct.
+and Escape cancels without changing the clipboard. Existing templates live in the
+folder configured in `~/.scripts/rtemplate.py`; subfolders are shown with relative
+paths so duplicate filenames remain distinct.
 The picker expands `$DATE`, `$TIME`, `$DATETIME`, and `$CLIPBOARD`, plus their
 `${NAME}` forms. Clipboard text is captured before the picker opens. Newlines and
 literal backslashes are preserved; template contents are never executed as code.

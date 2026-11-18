@@ -84,5 +84,5 @@ if (( force_greetd )) || [[ ! -e /etc/systemd/system/display-manager.service ]];
 fi
 printf '\nInstallation complete. Select Hyprland (uwsm-managed) at your next login, or run uwsm start hyprland.desktop from a TTY.\n'
 printf 'Weather: ~/.config/waybar/weather.json; monitor/input overrides: ~/.config/hypr/local.lua\n'
-printf 'Configure your printer in CUPS and sign in to work applications. Zoho WorkDrive requires its vendor installer.\n'
+printf 'Configure your printer in CUPS and sign in to work applications.\n'
 printf 'No automatic update job is installed. No reboot or logout was performed.\n'
