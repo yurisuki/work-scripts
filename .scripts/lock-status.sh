@@ -1,5 +1,5 @@
 #!/bin/sh
-# Single-line lockscreen status: battery, Wi-Fi and brightness.
+# Single-line lockscreen status: battery, Wi-Fi, volume and brightness.
 # Pure /bin/sh (no Python) so hyprlock renders it immediately at lock time.
 
 parts=""
@@ -44,6 +44,24 @@ elif LC_ALL=C nmcli -t -f TYPE,STATE device 2>/dev/null | grep -q '^ethernet:con
 else
     add '󰖪'
 fi
+
+# Default audio output volume (uses the same glyphs as Waybar)
+vol=$(LC_ALL=C wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null)
+case "$vol" in
+    *'[MUTED]'*)
+        add '󰝟 muted'
+        ;;
+    Volume:*)
+        pct=$(printf '%s\n' "$vol" | awk '{ n = $2 * 100 + 0.5; print int(n) }')
+        if [ -n "$pct" ]; then
+            if [ "$pct" -le 33 ]; then icon='󰕿'
+            elif [ "$pct" -le 66 ]; then icon='󰖀'
+            else icon='󰕾'
+            fi
+            add "$icon $pct%"
+        fi
+        ;;
+esac
 
 # Brightness (omitted when there is no backlight device)
 for d in /sys/class/backlight/*; do
