@@ -31,9 +31,14 @@ choice=$(
 # Let rofi's closing animation finish before the capture/selection begins.
 sleep 1
 
-# rofi returns 12 for kb-custom-3 (Shift+Enter).
+# rofi returns 12 for kb-custom-3 (Shift+Enter). Keep the selected target.
 if [[ $status -eq 12 ]]; then
-    exec "$HOME/.scripts/hypr-screenshot.sh" edit
+    case "$choice" in
+        *'full screen') target=full ;;
+        *'window')      target=window ;;
+        *)              target=area ;;
+    esac
+    exec "$HOME/.scripts/hypr-screenshot.sh" edit "$target"
 fi
 [[ $status -eq 0 ]] || exit 0
 
