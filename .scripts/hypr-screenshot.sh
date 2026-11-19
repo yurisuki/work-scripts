@@ -23,7 +23,20 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
-if ! command -v hyprpicker >/dev/null; then
+
+# Desktop notification whose click opens a folder in superfile.
+notify_folder() {
+    local icon=$1 app=$2 title=$3 message=$4 folder=$5 action
+    [[ -n $folder ]] || return 0
+    mkdir -p -- "$folder" 2>/dev/null || true
+    (
+        action=$(notify-send --app-name "$app" --icon "$icon" \
+            --action 'default=Open folder' "$title" "$message" 2>/dev/null) || exit 0
+        [[ $action == default ]] || exit 0
+        exec kitty --title superfile -e spf "$folder"
+    ) >/dev/null 2>&1 &
+}
+if [[ $target != full ]] && ! command -v hyprpicker >/dev/null; then
     notify-send --app-name Screenshot 'Screenshot failed' 'Install hyprpicker to freeze the screen.' || true
     exit 1
 fi
@@ -41,13 +54,15 @@ if [[ $target == window ]]; then
     ' <<< "$clients")
     [[ -n $boxes ]] || exit 0
 fi
-# Keep the frozen surfaces alive until grim has captured the selection.
-hyprpicker -r -z -d 9>&- >/dev/null 2>&1 &
-freeze_pid=$!
-sleep 0.2
-if ! kill -0 "$freeze_pid" 2>/dev/null; then
-    notify-send --app-name Screenshot 'Screenshot failed' 'Could not freeze the screen.' || true
-    exit 1
+# Freeze only when a selection UI is involved; full-screen capture needs no picker.
+if [[ $target != full ]]; then
+    hyprpicker -r -z -d 9>&- >/dev/null 2>&1 &
+    freeze_pid=$!
+    sleep 0.2
+    if ! kill -0 "$freeze_pid" 2>/dev/null; then
+        notify-send --app-name Screenshot 'Screenshot failed' 'Could not freeze the screen.' || true
+        exit 1
+    fi
 fi
 if [[ $target == full ]]; then
     geometry=
@@ -74,5 +89,8 @@ if [[ $mode == edit ]]; then
     swappy -f "$file" 9>&-
 else
     wl-copy --type image/png < "$file" 9>&-
-    notify-send --app-name Screenshot --expire-time 2000 --icon="$HOME/.local/share/device-notifications/icons/screenshot-copied.svg" 'Screenshot copied' || true
+    notify_folder \
+        "$HOME/.local/share/device-notifications/icons/screenshot-copied.svg" \
+        'Screenshot' 'Screenshot copied' 'Copied to clipboard' \
+        "$(xdg-user-dir PICTURES)/Screenshots"
 fi
