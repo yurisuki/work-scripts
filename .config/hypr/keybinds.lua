@@ -231,6 +231,7 @@ hl.bind("ALT + Print", hl.dsp.exec_cmd(scripts .. "hypr-screenshot.sh copy windo
 hl.bind("SUPER + ALT + Print", hl.dsp.exec_cmd(scripts .. "hypr-screenshot.sh edit window"))
 hl.bind("SUPER + ALT + S", hl.dsp.exec_cmd(scripts .. "hypr-screenshot.sh copy window"))
 hl.bind("SUPER + ALT + SHIFT + S", hl.dsp.exec_cmd(scripts .. "hypr-screenshot.sh edit window"))
+hl.bind("SUPER + uacute", hl.dsp.exec_cmd(scripts .. "hypr-audio-menu.sh"))
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.scripts/device-notifications.py --volume-up"), { locked = true, repeating = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.scripts/device-notifications.py --volume-down"), { locked = true, repeating = true })
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.scripts/device-notifications.py --volume-mute"), { locked = true })
