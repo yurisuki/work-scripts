@@ -6,7 +6,9 @@ mode=${1:-full}
 [[ $mode == full || $mode == window || $mode == area || $mode == stop ]] || exit 2
 
 recorder="$HOME/.local/bin/wf-recorder"
-icon="$HOME/.local/share/device-notifications/icons/recording.svg"
+icon_dir="$HOME/.local/share/device-notifications/icons"
+icon="$icon_dir/recording.svg"
+icon_done="$icon_dir/recording-done.svg"
 
 if [[ $mode == stop ]]; then
     if pkill -INT -x wf-recorder 2>/dev/null; then
@@ -61,4 +63,4 @@ notify-send --app-name 'Recording' --icon="$icon" 'Recording started' 'Stop it w
 "$recorder" "${args[@]}" >/dev/null 2>&1 &
 pid=$!
 wait "$pid" || true
-notify-send --app-name 'Recording' --icon="$icon" 'Video saved' "$file" || true
+notify-send --app-name 'Recording' --icon="$icon_done" 'Video saved' "$file" || true
