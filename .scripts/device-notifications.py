@@ -216,23 +216,106 @@ def power_state():
                 adapters.append((supply / 'online').read_text().strip() == '1')
         except (OSError, ValueError):
             continue
-    online = any(adapters) if adapters else (
-        any(status in ('Charging', 'Full') for _, status in batteries.values())
-        if batteries else None)
+    # With a laptop battery, its status is the reliable plug signal: several
+    # adapters can stay "online" (e.g. a USB-C device) while AC is unplugged.
+    if batteries:
+        online = any(status in ('Charging', 'Full', 'Not charging')
+                     for _, status in batteries.values())
+    else:
+        online = any(adapters) if adapters else None
     return online, batteries
+
+
+def battery_time(field):
+    """Estimate time to full/empty from sysfs; UPower lags behind plug events."""
+    try:
+        supply = next(Path('/sys/class/power_supply').glob('BAT*'), None)
+        if not supply:
+            return None
+        if (supply / 'energy_now').exists():
+            now = int((supply / 'energy_now').read_text())
+            full = int((supply / 'energy_full').read_text())
+            rate = int((supply / 'power_now').read_text())
+        else:
+            now = int((supply / 'charge_now').read_text())
+            full = int((supply / 'charge_full').read_text())
+            rate = int((supply / 'current_now').read_text())
+        if rate <= 0:
+            return None
+        remaining = full - now if field == 'TimeToFull' else now
+        if remaining <= 0:
+            return None
+        minutes = max(1, round(remaining / rate * 60))
+        return f'~{minutes // 60} h {minutes % 60} min' if minutes >= 60 else f'~{minutes} min'
+    except (OSError, ValueError, StopIteration):
+        return None
+
+
+def debug_log(message):
+    try:
+        runtime = Path(os.environ.get('XDG_RUNTIME_DIR', f'/tmp/system-sounds-{os.getuid()}'))
+        with (runtime / 'device-notifications-debug.log').open('a') as log:
+            log.write(f'{time.strftime("%H:%M:%S")} {message}\n')
+    except OSError:
+        pass
+
+
+def charger_notification(online):
+    """Notify immediately, then replace the same notification with the estimate."""
+    field = 'TimeToFull' if online else 'TimeToEmpty'
+    state = 'External power' if online else 'Running on battery'
+    icon = ASSETS / 'icons' / ('charger-connected.svg' if online else 'charger-disconnected.svg')
+    title = 'Charger ' + ('connected' if online else 'disconnected')
+
+    def send(body, replace_id=None):
+        command = [
+            'notify-send', '--app-name=Devices', '--expire-time=5000', '--print-id',
+            '--hint=boolean:suppress-sound:true', '--icon=' + str(icon), title, body,
+        ]
+        if replace_id:
+            command.append('--replace-id=' + str(replace_id))
+        try:
+            output = subprocess.run(command, capture_output=True, text=True, timeout=3).stdout.strip()
+            return int(output) if output.isdigit() else None
+        except (OSError, ValueError, subprocess.SubprocessError):
+            return None
+
+    notice_id = send(state)
+    for attempt in range(20):
+        time.sleep(1)
+        estimate = battery_time(field)
+        debug_log(f'charger estimate {field} attempt {attempt + 1}: {estimate}')
+        if estimate:
+            send(f'{state} · {estimate} to {"full" if online else "empty"}', notice_id)
+            break
 
 
 def power_events(previous, current):
     old_online, old_batteries = previous
     online, batteries = current
     if old_online is not None and online is not None and old_online != online:
-        device_event('Charger', 'External power' if online else 'Running on battery', online)
+        debug_log(f'power transition {old_online} -> {online}, batteries={batteries}')
+        if online:
+            play('charger-connected')
+        threading.Thread(target=charger_notification, args=(online,), daemon=True).start()
     for name, (level, status) in batteries.items():
         old = old_batteries.get(name)
         if status == 'Discharging' and old and any(
                 level <= threshold and (old[0] > threshold or old[1] != 'Discharging')
                 for threshold in (25, 10)):
             play('battery-low')
+            estimate = battery_time('TimeToEmpty')
+            body = f'{level}% remaining'
+            if estimate:
+                body += f' · {estimate} to empty'
+            subprocess.Popen(
+                ['notify-send', '--app-name=Devices', '--expire-time=5000',
+                 '--urgency=' + ('critical' if level <= 10 else 'normal'),
+                 '--hint=boolean:suppress-sound:true',
+                 '--icon=' + str(ASSETS / 'icons' / 'warning.svg'),
+                 'Battery low', html.escape(body)],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            )
 
 
 
@@ -244,7 +327,7 @@ def bluetooth_battery_events(previous, current):
                for threshold in (20, 10)):
             play('battery-low')
             subprocess.Popen(
-                ['notify-send', '--app-name=Devices', '--expire-time=10000',
+                ['notify-send', '--app-name=Devices', '--expire-time=5000',
                  '--urgency=' + ('critical' if level <= 10 else 'normal'),
                  '--hint=boolean:suppress-sound:true',
                  '--icon=' + str(ASSETS / 'icons' / 'bluetooth-connected.svg'),
