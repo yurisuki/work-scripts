@@ -3,7 +3,7 @@ set -euo pipefail
 mode=${1:-copy}
 [[ $mode == copy || $mode == edit ]] || exit 2
 target=${2:-area}
-[[ $target == area || $target == window ]] || exit 2
+[[ $target == area || $target == window || $target == full ]] || exit 2
 runtime=${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}
 exec 9>"$runtime/screenshot-$UID.lock"
 flock -n 9 || exit 0
@@ -49,15 +49,21 @@ if ! kill -0 "$freeze_pid" 2>/dev/null; then
     notify-send --app-name Screenshot 'Screenshot failed' 'Could not freeze the screen.' || true
     exit 1
 fi
-if [[ $target == window ]]; then
+if [[ $target == full ]]; then
+    geometry=
+elif [[ $target == window ]]; then
     geometry=$(slurp -r -d <<< "$boxes") || exit 0
 else
     geometry=$(slurp -d) || exit 0
 fi
-[[ -n $geometry ]] || exit 0
+[[ $target == full || -n $geometry ]] || exit 0
 # Capture completely before touching the clipboard or opening the editor.
 file=$(mktemp "$runtime/screenshot-XXXXXX.png")
-grim -g "$geometry" "$file"
+if [[ -n $geometry ]]; then
+    grim -g "$geometry" "$file"
+else
+    grim "$file"
+fi
 stop_freeze
 flock -u 9
 "$HOME/.scripts/device-notifications.py" --preview screenshot 9>&- >/dev/null 2>&1 &
