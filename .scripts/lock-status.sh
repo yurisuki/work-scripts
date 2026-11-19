@@ -7,7 +7,7 @@ parts=""
 add() {
     [ -z "$1" ] && return
     if [ -n "$parts" ]; then
-        parts="$parts   $1"
+        parts="$parts  |  $1"
     else
         parts="$1"
     fi
