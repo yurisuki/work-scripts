@@ -8,6 +8,8 @@ state_file="${XDG_RUNTIME_DIR:-/tmp}/violet-nightlight-state"
 running() { pgrep -x hyprsunset >/dev/null 2>&1; }
 # Waybar signal 12 refreshes this module immediately (see config.jsonc).
 refresh() { pkill -RTMIN+12 -x waybar 2>/dev/null || true; }
+# Mirror the toggle in the OSD so it is visible from the keyboard too.
+notify() { python3 "$HOME/.scripts/hypr-osd.py" nightlight "$1" >/dev/null 2>&1 || true; }
 # The state file drives the bar: pgrep can still see the process for a moment
 # after SIGTERM, which would otherwise leave the icon purple after toggling off.
 is_on() {
@@ -25,11 +27,13 @@ case ${1:-toggle} in
         fi
         printf 'on\n' > "$state_file"
         refresh
+        notify 100
         ;;
     off)
         pkill -x hyprsunset 2>/dev/null || true
         printf 'off\n' > "$state_file"
         refresh
+        notify 0
         ;;
     toggle)
         if is_on; then "$0" off; else "$0" on; fi

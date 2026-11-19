@@ -20,6 +20,8 @@ def level_icon(kind, value, muted=False):
         return '󰍬' if value else '󰍭'
     if kind == 'capslock':
         return '󰘲'
+    if kind == 'nightlight':
+        return '󰖔'
     if kind == 'focus':
         return '󰂛' if value else '󰂚'
     if kind == 'keyboard':
@@ -161,12 +163,20 @@ def daemon():
             return True
         try:
             kind, value, muted = latest['kind'], int(latest['value']), latest.get('muted', False)
-            if kind not in ('volume', 'brightness', 'keyboard', 'focus', 'capslock', 'microphone', 'output'):
+            if kind not in ('volume', 'brightness', 'keyboard', 'focus', 'capslock', 'microphone', 'output', 'nightlight'):
                 return True
         except (KeyError, TypeError, ValueError):
             return True
-        title.set_text(('Focus mode · On' if value else 'Focus mode · Off') if kind == 'focus' else 'Keyboard backlight' if kind == 'keyboard' else (
-            'Brightness' if kind == 'brightness' else ('Volume muted' if muted else 'Volume')))
+        if kind == 'nightlight':
+            title.set_text('Night light · On' if value else 'Night light · Off')
+        elif kind == 'focus':
+            title.set_text('Focus mode · On' if value else 'Focus mode · Off')
+        elif kind == 'keyboard':
+            title.set_text('Keyboard backlight')
+        elif kind == 'brightness':
+            title.set_text('Brightness')
+        else:
+            title.set_text('Volume muted' if muted else 'Volume')
         if kind == 'capslock':
             title.set_text('Caps Lock · On' if value else 'Caps Lock · Off')
         elif kind == 'microphone':
@@ -178,7 +188,7 @@ def daemon():
                         if kind == 'keyboard' else f'{value}%')
         icon.set_text(level_icon(kind, value, muted))
         icon.set_opacity((0.4 if value == 0 else (0.7 if value <= 50 else 1.0))
-                         if kind == 'keyboard' else 1.0)
+                         if kind in ('keyboard', 'nightlight') else 1.0)
         bar.set_fraction(0 if muted else max(0, min(100, value)) / 100)
         if hide_timer:
             GLib.source_remove(hide_timer)
@@ -189,7 +199,7 @@ def daemon():
                                         ('capslock-on.svg' if value else 'capslock-off.svg')))
         else:
             caps_icon.hide()
-        if kind in ('focus', 'capslock', 'microphone', 'output'):
+        if kind in ('focus', 'capslock', 'microphone', 'output', 'nightlight'):
             bar.hide()
             number.hide()
         window.resize(1, window.get_preferred_height()[1])
@@ -201,7 +211,7 @@ def daemon():
             hide_timer = None
             return False
         hide_timer = GLib.timeout_add(2200 if kind == 'output' else
-                                    1800 if kind in ('focus', 'capslock', 'microphone') else 1200, hide)
+                                    1800 if kind in ('focus', 'capslock', 'microphone', 'nightlight') else 1200, hide)
         return True
 
     GLib.io_add_watch(server.fileno(), GLib.IO_IN, receive)
