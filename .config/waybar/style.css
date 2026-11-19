@@ -24,6 +24,7 @@ button { border: none; box-shadow: none; text-shadow: none; }
 /* Any pending notification: purple so the bar shows there is something waiting. */
 #custom-notification.unread { color: #cf5aff; }
 *:hover > #custom-notification.unread, box:hover > #custom-notification.unread, eventbox:hover > #custom-notification.unread, #custom-notification.unread:hover { color: #ede3f5; background: #241a30; border-radius: 8px; }
+#battery.charging, #battery.plugged { color: #9ee3b0; }
 #battery.critical, #custom-bluetooth.critical { color: #ff799d; }
 #custom-updates { color: #cf5aff; padding: 0 9px; margin: 6px 2px; }
 #custom-updates:hover { color: #ede3f5; background: #362442; border-radius: 8px; }
