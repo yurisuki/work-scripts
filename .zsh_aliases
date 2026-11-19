@@ -95,3 +95,4 @@ alias hid='sudo chmod 666 /dev/hidraw*'
 
 # Add your custom aliases below this line
 alias dsh='npx @deepseek-ai/dsh web'
+alias oc='opencode'
