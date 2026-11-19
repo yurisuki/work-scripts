@@ -6,23 +6,24 @@ mode=${1:-full}
 [[ $mode == full || $mode == window || $mode == area || $mode == stop ]] || exit 2
 
 recorder="$HOME/.local/bin/wf-recorder"
+icon="$HOME/.local/share/device-notifications/icons/recording.svg"
 
 if [[ $mode == stop ]]; then
     if pkill -INT -x wf-recorder 2>/dev/null; then
-        notify-send --app-name 'Recording' 'Stopping recording' 'The video is being finalized and saved to Videos.' || true
+        notify-send --app-name 'Recording' --icon="$icon" 'Stopping recording' 'The video is being finalized and saved to Videos.' || true
     else
-        notify-send --app-name 'Recording' 'No recording is running' || true
+        notify-send --app-name 'Recording' --icon="$icon" 'No recording is running' || true
     fi
     exit 0
 fi
 
 if pgrep -x wf-recorder >/dev/null 2>&1; then
-    notify-send --app-name 'Recording' 'A recording is already running' 'Stop it with Super+Shift+R.' || true
+    notify-send --app-name 'Recording' --icon="$icon" 'A recording is already running' 'Stop it with Super+Shift+S.' || true
     exit 1
 fi
 
 if [[ ! -x $recorder ]]; then
-    notify-send --app-name 'Recording' 'wf-recorder is missing' || true
+    notify-send --app-name 'Recording' --icon="$icon" 'wf-recorder is missing' || true
     exit 1
 fi
 
@@ -56,8 +57,8 @@ file="$videos/recording-$(date +%Y%m%d-%H%M%S).mp4"
 args=(-f "$file")
 [[ -n $geometry ]] && args+=(-g "$geometry")
 
-notify-send --app-name 'Recording' 'Recording started' 'Stop it with Super+Shift+R.' || true
+notify-send --app-name 'Recording' --icon="$icon" 'Recording started' 'Stop it with Super+Shift+S.' || true
 "$recorder" "${args[@]}" >/dev/null 2>&1 &
 pid=$!
 wait "$pid" || true
-notify-send --app-name 'Recording' 'Video saved' "$file" || true
+notify-send --app-name 'Recording' --icon="$icon" 'Video saved' "$file" || true
