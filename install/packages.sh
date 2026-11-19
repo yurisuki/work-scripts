@@ -3,7 +3,7 @@
 # These arrays are consumed by postinstall.sh when this file is sourced.
 # shellcheck disable=SC2034
 REPO_PACKAGES=(
-    base-devel git go curl python uv zsh zsh-autosuggestions zsh-syntax-highlighting zsh-completions
+    base-devel man-db git go curl python uv zsh zsh-autosuggestions zsh-syntax-highlighting zsh-completions
     hyprland hyprsunset uwsm libnewt waybar swaync kitty rofi hyprlock hypridle hyprpolkitagent hyprshutdown
     hyprpaper cliphist wl-clipboard brightnessctl ddcutil networkmanager network-manager-applet
     pipewire wireplumber pipewire-pulse wiremix bluez bluez-utils bluetui upower

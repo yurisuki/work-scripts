@@ -104,10 +104,23 @@ def label(data, field):
             'hint': 'Super+Ctrl  ← předchozí  ·  mezerník pauza  ·  → další'}.get(field, '')
 
 
+TEXT_FIELDS = ('title', 'artist', 'previous', 'play', 'next', 'hint')
+
+
 if __name__ == '__main__':
     field = sys.argv[1] if len(sys.argv) > 1 else 'title'
     try:
         data = snapshot()
-        print(artwork(data.get('art', '')) if field == 'art' else label(data, field))
+        if field == 'art':
+            print(artwork(data.get('art', '')))
+        else:
+            # Write every label at once so the other hyprlock widgets only
+            # need a cheap `cat` instead of another Python startup.
+            text_cache = runtime / 'violet-lock-music-text'
+            text_cache.mkdir(parents=True, exist_ok=True)
+            values = {name: label(data, name) for name in TEXT_FIELDS}
+            for name, value in values.items():
+                (text_cache / name).write_text(value)
+            print(values.get(field, ''))
     except (OSError, ValueError, music.GLib.Error):
         print(artwork('') if field == 'art' else '')
