@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # rsearch - Professional multi-engine search tool using rofi
-# Made by: yurisuki
 
 CONFIG_FILE="$HOME/Dokumenty/Ralakde/Zoho WorkDrive (Ralakde)/My Folders/rseach list"
 BROWSER=${BROWSER:-firefox}
@@ -13,11 +12,13 @@ function setup_config {
     fi
     
     if [ ! -f "$CONFIG_FILE" ]; then
-        echo "# rsearch configuration file" > "$CONFIG_FILE"
-        echo "# Format: ENGINE_NAME || https://search.engine.url?q=\$Q" >> "$CONFIG_FILE"
-        echo "⚙️ || manage_engines" >> "$CONFIG_FILE"
-        echo "💎 ZIA || https://search.zoho.eu/searchhome?q=$Q&s=all%20apps" >> "$CONFIG_FILE"
-        echo "🔍 GOOGLE || https://www.google.com/search?q=\$Q" >> "$CONFIG_FILE"
+        {
+            echo "# rsearch configuration file"
+            echo "# Format: ENGINE_NAME || https://search.engine.url?q=\$Q"
+            echo "⚙️ || manage_engines"
+            echo "💎 ZIA || https://search.zoho.eu/searchhome?q=\$Q&s=all%20apps"
+            echo "🔍 GOOGLE || https://www.google.com/search?q=\$Q"
+        } > "$CONFIG_FILE"
     fi
 }
 
@@ -29,7 +30,8 @@ function url_encode {
 # Function to manage engines (add/remove)
 function manage_engines {
     local options=("➕ Add new engine" "➖ Remove engine" "↩️ Back")
-    local choice=$(printf "%s\n" "${options[@]}" | rofi -dmenu -i -p "⚙️ Engine Management:")
+    local choice
+    choice=$(printf "%s\n" "${options[@]}" | rofi -dmenu -i -p "⚙️ Engine Management:")
     
     case "$choice" in
         "➕ Add new engine")
@@ -47,10 +49,12 @@ function manage_engines {
 
 # Function to add a new search engine
 function add_engine {
-    local engine_name=$(rofi -dmenu -p "✨ Engine name:")
+    local engine_name
+    engine_name=$(rofi -dmenu -p "✨ Engine name:")
     [ -z "$engine_name" ] && return
     
-    local engine_url=$(rofi -dmenu -p "🔗 URL (use \$Q for query):")
+    local engine_url
+    engine_url=$(rofi -dmenu -p "🔗 URL (use \$Q for query):")
     [ -z "$engine_url" ] && return
     
     echo "$engine_name || $engine_url" >> "$CONFIG_FILE"
@@ -64,7 +68,7 @@ function remove_engine {
     local engine_names=()
     while IFS= read -r line; do
         # Skip empty lines, comments, or the management entry
-        [[ -z "$line" || "$line" =~ ^# || "$line" =~ "⚙️ ||" ]] && continue
+        [[ -z "$line" || "$line" =~ ^# || "$line" == *"⚙️ ||"* ]] && continue
         
         # Get just the engine name (before the ||)
         engine_name="${line%% || *}"
@@ -73,7 +77,8 @@ function remove_engine {
     done < "$CONFIG_FILE"
     
     # Display just engine names in rofi for removal
-    local choice=$(printf "%s\n" "${engine_names[@]}" | rofi -dmenu -i -p "🗑️ Select engine to remove:")
+    local choice
+    choice=$(printf "%s\n" "${engine_names[@]}" | rofi -dmenu -i -p "🗑️ Select engine to remove:")
     
     # If no selection, return
     [ -z "$choice" ] && return
@@ -109,14 +114,15 @@ function remove_engine {
 # Function to perform search with all engines
 function search_all_engines {
     local query="$1"
-    local encoded_query=$(url_encode "$query")
+    local encoded_query
+    encoded_query=$(url_encode "$query")
     
     # Get all URLs from config file
     local all_urls=()
     
     while IFS= read -r line; do
         # Skip empty lines, comments, or the management entry
-        [[ -z "$line" || "$line" =~ ^# || "$line" =~ "⚙️ ||" ]] && continue
+        [[ -z "$line" || "$line" =~ ^# || "$line" == *"⚙️ ||"* ]] && continue
         
         # Get search URL
         search_url="${line#* || }"
@@ -181,7 +187,8 @@ function main {
     done < "$CONFIG_FILE"
     
     # Use rofi to get user selection
-    local selection=$(printf "%s\n" "${engines[@]}" | rofi -dmenu -i -p "🔎 Search:")
+    local selection
+    selection=$(printf "%s\n" "${engines[@]}" | rofi -dmenu -i -p "🔎 Search:")
     
     # Check if the user pressed ESC
     [ -z "$selection" ] && exit 0
@@ -226,13 +233,15 @@ function main {
     fi
     
     # Get the search query
-    local query=$(rofi -dmenu -p "🔎 Search $selection:")
+    local query
+    query=$(rofi -dmenu -p "🔎 Search $selection:")
     
     # Check if the user pressed ESC or provided empty input
     [ -z "$query" ] && exit 0
     
     # Encode the query
-    local encoded_query=$(url_encode "$query")
+    local encoded_query
+    encoded_query=$(url_encode "$query")
     
     # Replace $Q with the encoded query
     local search_url="${selected_url//\$Q/$encoded_query}"

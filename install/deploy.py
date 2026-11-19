@@ -12,11 +12,12 @@ PRESERVE = {
     '.config/hypr/hyprland-gui.lua',
     '.config/hypr/fingerprint.conf',
     '.config/waybar/weather.json', '.local/share/backgrounds/current-wallpaper.webp',
+    # Qalculate rewrites this on every run (version, geometry and calculation history).
+    '.config/qalculate/qalculate-qt.cfg',
 }
 OBSOLETE = (
     '.scripts/toggle-dropdown-terminal.sh', '.scripts/install-hyprland.sh',
     '.scripts/update-checker.sh', '.scripts/hypr-brightness-slider.py',
-    '.scripts/postinstall.sh',
     '.local/bin/device-notifications.py', '.local/bin/restore-keyboard-backlight.py',
     '.local/bin/sxiv-directory.py', '.local/bin/superfile-open',
     '.config/autostart/update-checker.sh.desktop', '.config/autostart/update-checker.desktop',

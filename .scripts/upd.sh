@@ -36,7 +36,7 @@ if ! git pull --ff-only --quiet; then
     exit 1
 fi
 after=$(git rev-parse HEAD)
-if [[ $before == $after ]]; then
+if [[ $before == "$after" ]]; then
     printf 'Already up to date: %s\n' "$(git log -1 --format='%h %s')"
 else
     printf 'Updated %s..%s\n' "${before:0:7}" "${after:0:7}"

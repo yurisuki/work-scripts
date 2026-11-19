@@ -16,7 +16,7 @@ if ! pgrep -u "$USER" -x hyprpaper >/dev/null; then
 fi
 # Allow a newly launched hyprpaper to open its IPC socket.
 applied=false
-for attempt in {1..20}; do
+for _ in {1..20}; do
     if hyprctl hyprpaper wallpaper ",$HOME/.local/share/backgrounds/current-wallpaper.webp,cover" >/dev/null 2>&1; then
         applied=true
         break

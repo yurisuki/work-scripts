@@ -1,5 +1,7 @@
 __pycache__/
 *.pyc
+# Qalculate owns this file; keep only the example template in the repo.
+/.config/qalculate/qalculate-qt.cfg
 /.config/ttui/auth.toml
 /.cache/ttui/
 /.local/state/desktop-search/

@@ -405,6 +405,14 @@ hyprctl configerrors
 python install/check-config.py  # Read-only comparison with your local files
 ```
 
+Lint the repository before committing with `bash install/lint.sh`; the `lint` GitHub
+Action runs the same checks. It runs ShellCheck over the shell scripts, compiles the
+Python helpers and checks patch whitespace. ShellCheck is installed by the package setup.
+
+Qalculate rewrites `~/.config/qalculate/qalculate-qt.cfg` on every run (version, window
+geometry and calculation history), so deployment preserves it. A starter copy is kept in
+`templates/qalculate-qt.cfg.example`.
+
 The comparison exits with status 1 when managed files differ. Deployment also lists these
 differences before replacing files, and keeps its existing backups and personal-setting exclusions.
 

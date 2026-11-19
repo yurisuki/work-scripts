@@ -45,8 +45,8 @@ start "$HOME/.scripts/hypr-auto-focus.py"
 start "$HOME/.scripts/device-notifications.py"
 play_startup_sound() {
     # Wait for the default output, then let login-time device routing settle.
-    local attempt
-    for attempt in {1..20}; do
+    local _
+    for _ in {1..20}; do
         if timeout 2 wpctl get-volume @DEFAULT_AUDIO_SINK@ >/dev/null 2>&1; then
             sleep 2
             if ! timeout 2 wpctl get-volume @DEFAULT_AUDIO_SINK@ >/dev/null 2>&1; then

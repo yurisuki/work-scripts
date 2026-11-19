@@ -75,7 +75,7 @@ zstyle ':completion:*' accept-exact false
 
 # Use distro-managed plugins; no network requests when opening a shell.
 fpath=(/usr/share/zsh/site-functions $fpath)
-compinit
+compinit -d "$HOME/.zcompdump"
 [[ ! -r /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] || source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 [[ ! -r /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] || source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 export PATH="$HOME/.local/bin:$PATH"
@@ -85,11 +85,11 @@ export EDITOR=nvim
 HISTFILE=$HOME/.zhistory
 HISTSIZE=10000
 SAVEHIST=10000
-setopt APPEND_HISTORY
-setopt INC_APPEND_HISTORY
+# SHARE_HISTORY implies incremental append; the lock protects concurrent shells (zsh 5.9+).
 setopt SHARE_HISTORY
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_REDUCE_BLANKS
+setopt HIST_FCNTL_LOCK
 
 # Source custom aliases
 if [[ -e ~/.zsh_aliases ]]; then

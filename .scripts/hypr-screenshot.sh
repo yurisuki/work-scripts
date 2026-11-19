@@ -63,7 +63,8 @@ flock -u 9
 "$HOME/.scripts/device-notifications.py" --preview screenshot 9>&- >/dev/null 2>&1 &
 if [[ $mode == edit ]]; then
     # Swappy saves only on request; Copy keeps the annotated image in the clipboard.
-    export SCREENSHOT_SAVE_DIR="$(xdg-user-dir PICTURES)/Screenshots"
+    SCREENSHOT_SAVE_DIR="$(xdg-user-dir PICTURES)/Screenshots"
+    export SCREENSHOT_SAVE_DIR
     swappy -f "$file" 9>&-
 else
     wl-copy --type image/png < "$file" 9>&-

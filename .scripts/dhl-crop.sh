@@ -19,7 +19,7 @@ fi
 output_pdf="$output_dir/output.pdf"
 
 # Use dhl-crop to crop and extract the first page with the custom crop box
-${HOME}/.scripts/dhl-crop.py "$file" -o "$output_pdf"
+"${HOME}/.scripts/dhl-crop.py" "$file" -o "$output_pdf"
 
 # Ensure the output is a valid PDF by checking if it's not empty
 if [ ! -s "$output_pdf" ]; then

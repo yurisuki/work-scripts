@@ -56,7 +56,7 @@ alias upd='~/.scripts/upd.sh'
 alias c='clear'
 
 # mkdir with cd
-alias mkcd='mkdir -pv && cd'
+mkcd() { mkdir -p -- "$1" && cd -- "$1"; }
 
 # Copy with progress
 alias cp='cp -iv'
@@ -68,11 +68,11 @@ alias df='df -h'
 alias du='du -h'
 
 # IP address
-alias ip='ip addr show'
+alias ipa='ip addr show'
 alias myip='curl ifconfig.me'
 
 # Process management
-alias ps='ps auxf'
+alias psa='ps auxf'
 alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
 
 # Quick edit configs
