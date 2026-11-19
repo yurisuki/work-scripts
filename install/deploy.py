@@ -18,6 +18,7 @@ PRESERVE = {
 OBSOLETE = (
     '.scripts/toggle-dropdown-terminal.sh', '.scripts/install-hyprland.sh',
     '.scripts/update-checker.sh', '.scripts/hypr-brightness-slider.py',
+    '.scripts/hypr-game-focus.py',  # Superseded by hypr-auto-focus.py
     '.local/bin/device-notifications.py', '.local/bin/restore-keyboard-backlight.py',
     '.local/bin/sxiv-directory.py', '.local/bin/superfile-open',
     '.config/autostart/update-checker.sh.desktop', '.config/autostart/update-checker.desktop',

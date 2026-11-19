@@ -35,7 +35,7 @@ def main():
         print(json.dumps({'text': '󰒳' if enabled else '󰾰', 'class': 'active' if enabled else 'inactive',
                           'tooltip': 'Work mode: DND + keep screen awake' if enabled else 'Work mode off · click to enable'}))
         return
-    if action not in ('toggle', 'osu-on', 'osu-off', 'fullscreen-on', 'fullscreen-off', 'inhibit-on', 'inhibit-off'):
+    if action not in ('toggle', 'fullscreen-on', 'fullscreen-off', 'inhibit-on', 'inhibit-off'):
         raise ValueError(f'Unknown action: {action}')
     with (runtime / 'violet-focus.lock').open('w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
@@ -43,19 +43,16 @@ def main():
         saved = json.loads(state.read_text()) if state.exists() else {}
         # Older sessions have only the saved DND state; treat them as manual.
         saved.setdefault('manual', was_active)
-        saved.setdefault('osu', False)
         saved.setdefault('fullscreen', False)
         saved.setdefault('inhibit', False)
         if action == 'toggle':
             saved['manual'] = not saved['manual']
         else:
-            if action.startswith('osu-'):
-                saved['osu'] = action == 'osu-on'
-            elif action.startswith('fullscreen-'):
+            if action.startswith('fullscreen-'):
                 saved['fullscreen'] = action == 'fullscreen-on'
             else:
                 saved['inhibit'] = action == 'inhibit-on'
-        enabled = saved['manual'] or saved['osu'] or saved['fullscreen'] or saved['inhibit']
+        enabled = saved['manual'] or saved['fullscreen'] or saved['inhibit']
         if not enabled and was_active:
             run('systemctl', '--user', 'stop', UNIT)
             previous = saved.get('dnd', False)

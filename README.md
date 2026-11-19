@@ -319,12 +319,11 @@ File search skips hidden/build directories and lists names, not file contents.
 Brave data is read locally from installed profiles without copying browser data
 into the repository. Web results open in Brave; files use their default app.
 The bar uses a crossed bell while focus mode is on and a regular bell when off.
-The osu! focus command enables focus mode without showing an overlay. Manually
-enabled focus mode remains active, and the earlier DND setting is restored when
-focus mode fully ends.
-Fullscreen focus is limited to game windows, so a fullscreen terminal, editor,
-or browser does not trigger it. The manual, osu!, and automatic requests are
-independent. Screen recording and sharing are handled globally through PipeWire:
+Manually enabled focus mode remains active, and the earlier DND setting is
+restored when focus mode fully ends. Fullscreen focus is limited to game windows,
+so a fullscreen terminal, editor, or browser does not trigger it. The manual and
+automatic requests are independent. Screen recording and sharing are handled
+globally through PipeWire:
 while any screen-capture stream is active, focus stays on even if another window
 is active.
 Notifications held back during focus then appear together as normal popups;
