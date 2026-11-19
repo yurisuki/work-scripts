@@ -47,6 +47,7 @@ alias upc='yay -Syu'
 alias install='sudo pacman -S'
 alias remove='sudo pacman -Rns'
 alias search='pacman -Ss'
+alias SS='sudo systemctl'
 
 # Work scripts
 alias upd='~/.scripts/upd.sh'
