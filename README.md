@@ -431,14 +431,18 @@ with its age and an offline label.
 ## Text templates
 
 Super+T opens rtemplate with Violet Night styling, filename search and text previews.
-Enter copies the selected template, Shift+Enter copies it with `$CLIPBOARD` expanded
-to an empty string, Alt+E edits it in Neovim, Alt+O opens the folder in Superfile,
-and Escape cancels without changing the clipboard. Existing templates live in the
+Enter copies the selected template with `$CLIPBOARD` taken from the system clipboard,
+Alt+Enter opens a second Rofi prompt to type that value manually, Shift+Enter copies
+it with `$CLIPBOARD` empty, Alt+E edits it in Neovim, Alt+O opens the folder in
+Superfile, and Escape cancels without changing the clipboard. Existing templates live in the
 folder configured in `~/.scripts/rtemplate.py`; subfolders are shown with relative
 paths so duplicate filenames remain distinct.
 The picker expands `$DATE`, `$TIME`, `$DATETIME`, and `$CLIPBOARD`, plus their
-`${NAME}` forms. Clipboard text is captured before the picker opens. Newlines and
-literal backslashes are preserved; template contents are never executed as code.
+`${NAME}` forms. The clipboard is captured before the picker opens; the manual prompt
+only appears for templates containing `$CLIPBOARD`, and Esc there leaves it empty.
+Manually entered text is inserted verbatim. The copy notification names the source
+(system clipboard, typed text, or empty). Newlines and literal backslashes are
+preserved; template contents are never executed as code.
 
 Screenshots: `Print` or `Super+S` copies a selected area without saving a file. `Super+Print` or `Super+Shift+S`
 opens the selection in Swappy with its tool panel visible. Draw arrows, text or

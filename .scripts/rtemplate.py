@@ -57,6 +57,18 @@ def notify(summary, body):
                     '--expire-time=2500', summary, body], check=False)
 
 
+def ask_clipboard_text():
+    """Ask for the $CLIPBOARD value instead of reading the X clipboard."""
+    result = subprocess.run([
+        'rofi', '-no-config', '-theme', str(Path.home() / '.config/rofi/templates.rasi'),
+        '-dmenu', '-i', '-p', 'Clipboard text',
+        '-mesg', 'Type text for $CLIPBOARD    ·    Esc  leave empty',
+    ], stdout=subprocess.PIPE, check=False)
+    if result.returncode != 0:
+        return ''
+    return result.stdout.decode('utf-8', errors='replace').rstrip('\n')
+
+
 def main():
     runtime = Path(os.environ['XDG_RUNTIME_DIR'])
     with (runtime / 'violet-rtemplate.lock').open('w') as lock:
@@ -77,11 +89,13 @@ def main():
             *(['-no-custom'] if templates else []),
             '-p', 'Templates', '-selected-row', '0', '-kb-cancel', 'Escape,Control+g',
             '-kb-custom-1', 'Alt+o', '-kb-custom-2', 'Alt+e',
-            # Rofi binds Shift+Return to kb-accept-alt by default (same as Enter).
-            '-kb-accept-alt', '', '-kb-custom-3', 'Shift+Return,Shift+KP_Enter',
-            '-mesg', 'Enter  Copy    ·    Shift+Enter  Copy without clipboard    ·    Alt+E  Edit    ·    Alt+O  Folder    ·    Esc  Close',
+            # Rofi binds Shift+Return / Alt+Return to accept-alts (both exit as Enter).
+            '-kb-accept-alt', '', '-kb-accept-custom', '',
+            '-kb-custom-3', 'Shift+Return,Shift+KP_Enter',
+            '-kb-custom-4', 'Alt+Return,Alt+KP_Enter',
+            '-mesg', 'Enter  Copy (system clipboard)    ·    Alt+Enter  Type $CLIPBOARD manually    ·    Shift+Enter  Copy empty    ·    Alt+E  Edit    ·    Alt+O  Folder    ·    Esc  Close',
         ], input=menu_rows(templates, directory), stdout=subprocess.PIPE, check=False)
-        if result.returncode not in (0, 10, 11, 12):
+        if result.returncode not in (0, 10, 11, 12, 13):
             return
         if result.returncode == 10:
             subprocess.Popen(['kitty', '--title', 'superfile', '--directory', str(directory), '-e', 'spf'])
@@ -97,11 +111,21 @@ def main():
             subprocess.Popen(['kitty', '--title', 'Template editor', '-e', 'nvim', str(path)])
             return
         content = read_template(path)
-        # Shift+Enter copies the template with $CLIPBOARD expanded to an empty string.
-        clipboard = '' if result.returncode == 12 else snapshot
+        # Enter uses the system clipboard, Alt+Enter asks manually, Shift+Enter is empty.
+        if result.returncode == 13 and '$CLIPBOARD' in content:
+            clipboard = ask_clipboard_text()
+            source = 'via typed $CLIPBOARD' if clipboard else 'with empty $CLIPBOARD'
+        elif result.returncode == 12:
+            clipboard = ''
+            source = 'with empty $CLIPBOARD'
+        else:
+            clipboard = snapshot
+            source = 'via system clipboard'
         processed = render_template(content, clipboard)
         subprocess.run(['wl-copy', '--type', 'text/plain;charset=utf-8'], input=processed.encode(), check=True, timeout=5)
-        notify('Template copied', str(path.relative_to(directory)))
+        label = str(path.relative_to(directory))
+        body = f'{label} · {source}' if '$CLIPBOARD' in content else label
+        notify('Template copied', body)
 
 
 if __name__ == '__main__':
