@@ -5,7 +5,7 @@ set -euo pipefail
 rofi_menu() { rofi -no-config -theme "$HOME/.config/rofi/violet-night.rasi" "$@"; }
 
 sinks_json=$(pactl -f json list sinks 2>/dev/null) || exit 0
-mapfile -t labels < <(jq -r '.[] | (.description // .name)' <<< "$sinks_json")
+mapfile -t labels < <(jq -r '.[] | ((.description | select(type=="string" and . != "" and . != "(null)")) // (.properties["device.description"] | select(type=="string" and . != "" and . != "(null)")) // .name // "Unknown output")' <<< "$sinks_json")
 [[ ${#labels[@]} -gt 0 ]] || exit 0
 
 index=$(printf '%s\n' "${labels[@]}" | rofi_menu -dmenu -i -format i -p 'Audio output') || exit 0

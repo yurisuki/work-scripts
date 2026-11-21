@@ -49,7 +49,7 @@ def snapshot():
         if player:
             metadata = player.props.metadata.unpack()
             data.update(player=player.props.player_instance,
-                        title=player.get_title() or 'Přehrávané médium',
+                        title=player.get_title() or 'Playing media',
                         artist=player.get_artist() or '',
                         playing=player.props.playback_status == music.Playerctl.PlaybackStatus.PLAYING,
                         art=metadata.get('mpris:artUrl', ''))
@@ -101,7 +101,7 @@ def label(data, field):
         return html.escape(text if len(text) <= limit else text[:limit - 1] + '…')
     return {'previous': '󰒮', 'next': '󰒭',
             'play': '󰏤' if data.get('playing') else '󰐊',
-            'hint': 'Super+Ctrl  ← předchozí  ·  mezerník pauza  ·  → další'}.get(field, '')
+            'hint': ''}.get(field, '')
 
 
 TEXT_FIELDS = ('title', 'artist', 'previous', 'play', 'next', 'hint')
