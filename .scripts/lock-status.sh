@@ -63,7 +63,7 @@ case "$vol" in
         ;;
 esac
 
-# Brightness (omitted when there is no backlight device)
+# Brightness: sysfs backlight first, then waybar's cached DDC state.
 for d in /sys/class/backlight/*; do
     [ -r "$d/brightness" ] || continue
     cur=$(cat "$d/brightness" 2>/dev/null) || continue
@@ -73,5 +73,10 @@ for d in /sys/class/backlight/*; do
     add "󰃠 $pct%"
     break
 done
+if ! ls /sys/class/backlight/* >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+    cached=$(jq -r 'select(.error == null) | .target // empty' \
+        "${XDG_RUNTIME_DIR:-/tmp}/violet-brightness.json" 2>/dev/null)
+    [ -n "$cached" ] && add "󰃠 ${cached}%"
+fi
 
 [ -n "$parts" ] && printf '%s\n' "$parts"
