@@ -135,7 +135,7 @@ def main():
             print(
                 json.dumps(
                     {
-                        "text": "󰃠  —" if failed else f'󰃠  {state["target"]}%',
+                        "text": "—" if failed else f'{state["target"]}%',
                         "tooltip": failed or "Brightness · Change with mouse wheel",
                         "class": "unavailable" if failed else "available",
                         "percentage": state["target"],
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     ) as exc:
         if len(sys.argv) < 2 or sys.argv[1] == "status":
             print(
-                json.dumps({"text": "󰃠 —", "tooltip": str(exc), "class": "unavailable"})
+                json.dumps({"text": "—", "tooltip": str(exc), "class": "unavailable"})
             )
         else:
             subprocess.run(
