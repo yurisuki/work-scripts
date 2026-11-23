@@ -36,6 +36,10 @@
       "state": "transient",
       "app-name": "^Violet Night$",
       "summary": "^Configuration reloaded$"
+    },
+    "clipboard-notifications": {
+      "state": "transient",
+      "app-name": "^Clipboard$"
     }
   },
   "widgets": [
