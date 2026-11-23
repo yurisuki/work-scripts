@@ -51,6 +51,14 @@ def main():
     cache = Path(os.environ['XDG_RUNTIME_DIR']) / 'violet-clipboard-thumbnails'
     cache.mkdir(mode=0o700, exist_ok=True)
     lines = subprocess.check_output(['cliphist', 'list'], text=True, timeout=5).splitlines()
+    if not lines:
+        subprocess.run([
+            'notify-send', '--app-name=Clipboard',
+            '--icon=' + str(Path.home() / '.local/share/device-notifications/icons/clipboard.svg'),
+            '--expire-time=3000', '--hint=boolean:suppress-sound:true',
+            'Clipboard is empty', 'Nothing copied yet.'
+        ], check=False)
+        return
     rows = []
     used = set()
     for line in lines:
