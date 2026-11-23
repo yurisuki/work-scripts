@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Clipboard picker with cached image thumbnails and entry deletion."""
+import base64
 import hashlib
 import os
 from pathlib import Path
@@ -14,6 +15,8 @@ from gi.repository import GdkPixbuf
 
 IMAGE = re.compile(r'^\[\[ binary data .*\b(?:png|jpe?g|gif|webp|bmp|tiff?|svg)\b', re.IGNORECASE)
 ICON = Path.home() / '.local/share/device-notifications/icons/clipboard.svg'
+# cliphist stores rich text as: plain text + MARKER + base64(text/html)
+MARKER = b'\x1e[[ rich:text/html ]]\x1e'
 
 
 def notify(summary, body):
@@ -73,8 +76,8 @@ def main():
             icon = thumbnail(line, cache)
             if icon:
                 used.add(icon.name)
-        # Strip Rofi metadata delimiters from text without altering the stored entry.
-        label = preview.replace('\0', '').replace('\x1f', ' ')
+        # Strip Rofi metadata delimiters and the rich-text payload from the label.
+        label = preview.split('\x1e')[0].replace('\0', '').replace('\x1f', ' ')
         if icon:
             details = re.search(r'\b(png|jpe?g|gif|webp|bmp|tiff?|svg)\b(?:\s+(\d+)x(\d+))?', preview, re.IGNORECASE)
             if details:
@@ -91,10 +94,12 @@ def main():
         'rofi', '-no-config', '-theme', str(Path.home() / '.config/rofi/clipboard.rasi'),
         '-dmenu', '-show-icons', '-no-custom', '-format', 'i', '-p', 'Clipboard',
         '-kb-cancel', 'Escape,Control+g', '-kb-delete-entry', '',
+        '-kb-accept-alt', '', '-kb-accept-custom', '',
         '-kb-custom-1', 'Shift+Delete', '-kb-custom-2', 'Control+Delete',
-        '-mesg', 'Enter  Copy    ·    Shift+Delete  Remove    ·    Ctrl+Delete  Clear all    ·    Esc  Close',
+        '-kb-custom-3', 'Shift+Return,Shift+KP_Enter',
+        '-mesg', 'Enter  Copy (formatted)    ·    Shift+Enter  Copy as plain text    ·    Shift+Delete  Remove    ·    Ctrl+Delete  Clear all    ·    Esc  Close',
     ], input=b'\n'.join(rows), stdout=subprocess.PIPE, check=False)
-    if result.returncode not in (0, 10, 11):
+    if result.returncode not in (0, 10, 11, 12):
         return
     if result.returncode == 11:
         if confirm_clear():
@@ -116,7 +121,18 @@ def main():
         notify('Clipboard entry removed', entry or 'One copied item removed.')
     else:
         data = subprocess.check_output(['cliphist', 'decode'], input=line.encode(), timeout=5)
-        subprocess.run(['wl-copy'], input=data, check=True, timeout=5)
+        if MARKER in data:
+            # Enter serves the original HTML; Shift+Enter serves the plain text.
+            plain, _, encoded = data.partition(MARKER)
+            if result.returncode == 12:
+                subprocess.run(['wl-copy', '--type', 'text/plain;charset=utf-8', '--trim-newline'],
+                               input=plain, check=True, timeout=5)
+            else:
+                html = base64.b64decode(encoded)
+                subprocess.run(['wl-copy', '--type', 'text/html', '--trim-newline'],
+                               input=html, check=True, timeout=5)
+        else:
+            subprocess.run(['wl-copy'], input=data, check=True, timeout=5)
 
 
 if __name__ == '__main__':

@@ -66,7 +66,7 @@ start hypridle
 start udiskie
 start snappy-switcher --daemon
 start /usr/lib/hyprpolkitagent/hyprpolkitagent
-start wl-paste --type text --watch cliphist store
+start wl-paste --type text --watch "$HOME/.scripts/cliphist-rich-store.py"
 start wl-paste --type image --watch cliphist store
 # Preserve the existing work utilities in this session too.
 if [[ -x "$HOME/.scripts/quote-download-watcher.sh" ]]; then
