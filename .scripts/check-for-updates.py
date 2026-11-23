@@ -10,6 +10,7 @@ import time
 
 REMOTE = 'origin'
 TIMEOUT = 30
+WAYBAR_SIGNAL = 13  # Keep in sync with "signal" in the custom/updates Waybar module.
 ICON = Path.home() / '.local/share/device-notifications/icons/update-available.svg'
 
 
@@ -57,9 +58,17 @@ def read_state(path):
 
 
 def write_state(path, state):
+    """Store the snapshot and make Waybar re-read it right away."""
     try:
         path.write_text(json.dumps(state, indent=2, sort_keys=True) + '\n')
     except OSError:
+        return
+    # Waybar polls the module only every 30 s; the signal refreshes it now.
+    try:
+        subprocess.run(['pkill', f'-RTMIN+{WAYBAR_SIGNAL}', '-x', 'waybar'],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                       timeout=5, check=False)
+    except (OSError, subprocess.SubprocessError):
         pass
 
 
@@ -78,7 +87,7 @@ def notify(summary, body):
         return False
 
 
-def check(state_file):
+def check(state_file, fetch=True):
     repository_path = repository()
     if repository_path is None:
         print('No work-scripts checkout found; set WORK_SCRIPTS_REPO.', file=sys.stderr)
@@ -88,11 +97,12 @@ def check(state_file):
     if not local:
         print(f'{repository_path} is not a usable git checkout.', file=sys.stderr)
         return 0
-    # Refresh only the remote-tracking ref; the working tree and HEAD stay untouched.
-    refspec = f'+refs/heads/{tracking}:refs/remotes/{REMOTE}/{tracking}'
-    if git(repository_path, 'fetch', '--quiet', '--no-tags', REMOTE, refspec) is None:
-        print(f'Could not reach {REMOTE}/{tracking}; trying again on the next run.', file=sys.stderr)
-        return 0
+    if fetch:
+        # Refresh only the remote-tracking ref; the working tree and HEAD stay untouched.
+        refspec = f'+refs/heads/{tracking}:refs/remotes/{REMOTE}/{tracking}'
+        if git(repository_path, 'fetch', '--quiet', '--no-tags', REMOTE, refspec) is None:
+            print(f'Could not reach {REMOTE}/{tracking}; trying again on the next run.', file=sys.stderr)
+            return 0
     upstream = git(repository_path, 'rev-parse', f'{REMOTE}/{tracking}')
     if not upstream:
         return 0
@@ -124,6 +134,8 @@ def check(state_file):
 
 
 def main():
+    # --local reuses the refs git pull just fetched, so upd.sh needs no network here.
+    local_only = '--local' in sys.argv[1:]
     directory = state_dir()
     try:
         directory.mkdir(parents=True, exist_ok=True)
@@ -135,7 +147,7 @@ def main():
     except BlockingIOError:
         return 0
     try:
-        return check(directory / 'update-check.json')
+        return check(directory / 'update-check.json', fetch=not local_only)
     finally:
         lock.close()
 

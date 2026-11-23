@@ -46,10 +46,14 @@ fi
 (( $# )) || set -- --config-only
 bash "$repo/install.sh" "$@"
 
+# Recompute the indicator from the refs git pull just fetched, before reloading
+# the bar. --local avoids a second network round trip and cannot leave a stale
+# count behind if the network drops right after the pull.
+"$HOME/.scripts/check-for-updates.py" --local || true
+
 if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
     "$HOME/.scripts/hypr-reload.sh" || printf 'Reload reported errors; check the notifications.\n' >&2
 else
     printf 'Reload skipped: not running inside Hyprland.\n'
 fi
-"$HOME/.scripts/check-for-updates.py" || true
 printf 'Update complete.\n'

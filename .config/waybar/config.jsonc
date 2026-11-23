@@ -118,6 +118,7 @@
     "format": "{text}",
     "hide-empty-text": true,
     "interval": 30,
+    "signal": 13,
     "on-click": "kitty --hold --title 'work-scripts update' -e ~/.scripts/upd.sh"
   },
   "custom/printer": {

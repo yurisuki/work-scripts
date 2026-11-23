@@ -72,12 +72,15 @@ never pulls, deploys, or touches the working tree. The result is recorded in
 `~/.local/state/work-scripts/update-check.json`, so you are notified once per batch
 of upstream commits. While commits are pending, the Waybar indicator shows a
 download glyph with their count and the latest commit in its tooltip, then hides
-itself once the checkout is current. The checkout path is stored next to the state
-at deploy time; set `WORK_SCRIPTS_REPO` to override it.
+itself once the checkout is current. Every state write signals Waybar (module
+signal 13), so the count changes immediately instead of waiting for the 30-second
+poll. The checkout path is stored next to the state at deploy time; set
+`WORK_SCRIPTS_REPO` to override it.
 
 `upd` (alias for `upd.sh`) fast-forwards the checkout, redeploys it with
-`./install.sh --config-only`, reloads Hyprland/Waybar/SwayNC through
-`hypr-reload.sh`, and refreshes the indicator. Pass `--all` for the full installer,
+`./install.sh --config-only`, recomputes the count from the refs `git pull` just
+fetched (`check-for-updates.py --local`, no extra network request), then reloads
+Hyprland/Waybar/SwayNC through `hypr-reload.sh`. Pass `--all` for the full installer,
 or any other `install.sh` option. It refuses to pull when the checkout cannot be
 fast-forwarded and tells you to commit, stash, or discard local changes first.
 
