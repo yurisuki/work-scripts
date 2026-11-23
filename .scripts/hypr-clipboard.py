@@ -89,7 +89,11 @@ def main():
         if confirm_clear():
             subprocess.run(['cliphist', 'wipe'], check=True, timeout=5)
             subprocess.run(['wl-copy', '--clear'], check=True, timeout=5)
-            subprocess.run(['notify-send', '--app-name=Clipboard', '--icon=edit-clear', 'Clipboard history cleared'], check=False)
+            subprocess.run([
+                'notify-send', '--app-name=Clipboard', '--icon=edit-clear',
+                '--expire-time=3000', '--hint=boolean:suppress-sound:true',
+                'Clipboard history cleared', 'All copied items have been removed.'
+            ], check=False)
         return
     try:
         index = int(result.stdout.strip())
