@@ -13,6 +13,14 @@ gi.require_version('GdkPixbuf', '2.0')
 from gi.repository import GdkPixbuf
 
 IMAGE = re.compile(r'^\[\[ binary data .*\b(?:png|jpe?g|gif|webp|bmp|tiff?|svg)\b', re.IGNORECASE)
+ICON = Path.home() / '.local/share/device-notifications/icons/clipboard.svg'
+
+
+def notify(summary, body):
+    subprocess.run([
+        'notify-send', '--app-name=Clipboard', '--icon=' + str(ICON),
+        '--expire-time=3000', '--hint=boolean:suppress-sound:true', summary, body,
+    ], check=False)
 
 
 def thumbnail(line, cache):
@@ -52,12 +60,7 @@ def main():
     cache.mkdir(mode=0o700, exist_ok=True)
     lines = subprocess.check_output(['cliphist', 'list'], text=True, timeout=5).splitlines()
     if not lines:
-        subprocess.run([
-            'notify-send', '--app-name=Clipboard',
-            '--icon=' + str(Path.home() / '.local/share/device-notifications/icons/clipboard.svg'),
-            '--expire-time=3000', '--hint=boolean:suppress-sound:true',
-            'Clipboard is empty', 'Nothing copied yet.'
-        ], check=False)
+        notify('Clipboard is empty', 'Nothing copied yet.')
         return
     rows = []
     used = set()
@@ -97,12 +100,7 @@ def main():
         if confirm_clear():
             subprocess.run(['cliphist', 'wipe'], check=True, timeout=5)
             subprocess.run(['wl-copy', '--clear'], check=True, timeout=5)
-            subprocess.run([
-                'notify-send', '--app-name=Clipboard',
-                '--icon=' + str(Path.home() / '.local/share/device-notifications/icons/clipboard.svg'),
-                '--expire-time=3000', '--hint=boolean:suppress-sound:true',
-                'Clipboard history cleared', 'All copied items have been removed.'
-            ], check=False)
+            notify('Clipboard history cleared', 'All copied items have been removed.')
         return
     try:
         index = int(result.stdout.strip())
@@ -114,6 +112,8 @@ def main():
     if result.returncode == 10:
         subprocess.run(['cliphist', 'delete'], input=line.encode(), check=True, timeout=5)
         (cache / (hashlib.sha256(line.encode()).hexdigest() + '.png')).unlink(missing_ok=True)
+        entry = label if len(label) <= 80 else label[:77] + '…'
+        notify('Clipboard entry removed', entry or 'One copied item removed.')
     else:
         data = subprocess.check_output(['cliphist', 'decode'], input=line.encode(), timeout=5)
         subprocess.run(['wl-copy'], input=data, check=True, timeout=5)

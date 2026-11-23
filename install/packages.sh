@@ -11,10 +11,10 @@ REPO_PACKAGES=(
     qt5ct qt6ct qt5-wayland qt6-wayland breeze breeze-gtk breeze-icons
     plasma-browser-integration
     inter-font ttf-jetbrains-mono-nerd noto-fonts udisks2 udiskie
-    grim slurp hyprpicker swappy libnotify util-linux jq zenity greetd greetd-tuigreet
+    grim slurp hyprpicker swappy wtype libnotify util-linux jq zenity greetd greetd-tuigreet
     xournalpp libimobiledevice usbmuxd bc qalculate-qt xclip neovim nodejs npm
     ripgrep fd unzip stylua python-black shfmt shellcheck clang konsole sxiv libx11 imagemagick gimp glib2 vlc vlc-plugin-ffmpeg wf-recorder superfile
-    python-dbus python-gobject python-cairo gtk3 gtk-layer-shell python-pypdf python-openpyxl python-pandas python-numpy python-pyqt6
+    python-dbus python-gobject python-cairo gtk3 gtk4 gtk-layer-shell python-pypdf python-openpyxl python-pandas python-numpy python-pyqt6
     ghostscript cups system-config-printer lua-language-server bash-language-server pyright
     vscode-json-languageserver yaml-language-server typescript-language-server prettier
     exiftool zoxide

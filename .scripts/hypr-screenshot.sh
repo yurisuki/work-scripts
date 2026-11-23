@@ -24,17 +24,48 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-# Desktop notification whose click opens a folder in superfile.
-notify_folder() {
-    local icon=$1 app=$2 title=$3 message=$4 folder=$5 action
-    [[ -n $folder ]] || return 0
+# Notification with an inline preview and Edit / Save actions.
+notify_screenshot() {
+    local preview=$1 folder=$2 action saved_action dest_dir dest card body
+    local icon="$HOME/.local/share/device-notifications/icons/screenshot-copied.svg"
     mkdir -p -- "$folder" 2>/dev/null || true
+    # SwayNC renders <img src="file://…"> in the body as a large preview;
+    # the image-path hint would shrink it into the top-left icon instead.
+    card=${preview%.png}-card.png
+    if ! python3 - "$preview" "$card" 2>/dev/null <<'PY'
+from PIL import Image, ImageOps
+import sys
+with Image.open(sys.argv[1]) as image:
+    ImageOps.fit(image.convert('RGB'), (700, 380), method=Image.Resampling.LANCZOS).save(sys.argv[2], 'PNG')
+PY
+    then
+        card=$preview
+    fi
+    body="Copied to clipboard <img src=\"file://$card\" width=\"350\" height=\"190\"/>"
     (
-        action=$(notify-send --app-name "$app" --icon "$icon" \
-            --action 'default=Open folder' "$title" "$message" 2>/dev/null) || exit 0
-        [[ $action == default ]] || exit 0
-        exec kitty --title superfile -e spf "$folder"
-    ) >/dev/null 2>&1 &
+        action=$(notify-send --app-name Screenshot --icon "$icon" \
+            --expire-time=20000 \
+            --action 'edit=Edit' --action 'save=Save' --action 'default=Open folder' \
+            'Screenshot copied' "$body" 2>/dev/null) || exit 0
+        case $action in
+            edit)
+                exec swappy -f "$preview"
+                ;;
+            save)
+                dest_dir="$(xdg-user-dir PICTURES)/Screenshots"
+                mkdir -p -- "$dest_dir" 2>/dev/null || exit 0
+                dest="$dest_dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+                cp -- "$preview" "$dest" 2>/dev/null || exit 0
+                saved_action=$(notify-send --app-name Screenshot --icon "$icon" \
+                    --action 'default=Open folder' 'Screenshot saved' "$dest" \
+                    2>/dev/null) || true
+                [[ $saved_action == default ]] && exec kitty --title superfile -e spf "$dest_dir"
+                ;;
+            default)
+                exec kitty --title superfile -e spf "$folder"
+                ;;
+        esac
+    ) 9>&- >/dev/null 2>&1 &
 }
 if [[ $target != full ]] && ! command -v hyprpicker >/dev/null; then
     notify-send --app-name Screenshot 'Screenshot failed' 'Install hyprpicker to freeze the screen.' || true
@@ -80,17 +111,17 @@ else
     grim "$file"
 fi
 stop_freeze
+# Keep a stable copy for the notification preview and its Edit / Save actions.
+preview="$runtime/violet-screenshot-preview.png"
+cp -f -- "$file" "$preview"
 flock -u 9
 "$HOME/.scripts/device-notifications.py" --preview screenshot 9>&- >/dev/null 2>&1 &
+# Swappy saves only on request; Copy keeps the annotated image in the clipboard.
+SCREENSHOT_SAVE_DIR="$(xdg-user-dir PICTURES)/Screenshots"
+export SCREENSHOT_SAVE_DIR
 if [[ $mode == edit ]]; then
-    # Swappy saves only on request; Copy keeps the annotated image in the clipboard.
-    SCREENSHOT_SAVE_DIR="$(xdg-user-dir PICTURES)/Screenshots"
-    export SCREENSHOT_SAVE_DIR
     swappy -f "$file" 9>&-
 else
     wl-copy --type image/png < "$file" 9>&-
-    notify_folder \
-        "$HOME/.local/share/device-notifications/icons/screenshot-copied.svg" \
-        'Screenshot' 'Screenshot copied' 'Copied to clipboard' \
-        "$(xdg-user-dir PICTURES)/Screenshots"
+    notify_screenshot "$preview" "$(xdg-user-dir PICTURES)/Screenshots"
 fi

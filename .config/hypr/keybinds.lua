@@ -77,15 +77,6 @@ hl.bind("SUPER + Escape", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh session"))
 -- Let the physical power button open the same session menu.
 hl.bind("XF86PowerOff", hl.dsp.exec_cmd(scripts .. "hypr-menu.sh session"))
 hl.bind(
-	"SUPER + SHIFT + Escape",
-	toggle_app({
-		name = "gotop",
-		class = "gotop",
-		command = "kitty --class gotop -e gotop",
-		size = "1100 750",
-	})
-)
-hl.bind(
 	"SUPER + period",
 	toggle_app({
 		name = "chatgpt",

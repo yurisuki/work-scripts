@@ -9,6 +9,7 @@ import re
 import subprocess
 
 VARIABLE = re.compile(r'\$\{(DATETIME|DATE|TIME|CLIPBOARD)\}|\$(DATETIME|DATE|TIME|CLIPBOARD)\b')
+ICONS = Path.home() / '.local/share/device-notifications/icons'
 
 
 def render_template(content, clipboard, now=None):
@@ -52,8 +53,9 @@ def menu_rows(templates, directory):
     return b'\n'.join(rows)
 
 
-def notify(summary, body):
-    subprocess.run(['notify-send', '--app-name=rtemplate', '--icon=edit-copy',
+def notify(summary, body, icon='template-copied.svg'):
+    subprocess.run(['notify-send', '--app-name=rtemplate',
+                    '--icon=' + str(ICONS / icon),
                     '--expire-time=2500', summary, body], check=False)
 
 
@@ -132,5 +134,5 @@ if __name__ == '__main__':
     try:
         main()
     except (OSError, ValueError, subprocess.SubprocessError) as error:
-        notify('Templates unavailable', str(error))
+        notify('Templates unavailable', str(error), 'warning.svg')
         raise SystemExit(1)

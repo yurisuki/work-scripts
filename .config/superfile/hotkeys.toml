@@ -28,7 +28,7 @@ compress_file = ['ctrl+a', '']
 extract_file = ['ctrl+e', '']
 open_current_directory_with_editor = ['E', '']
 # Images: set wallpaper. Other files: open in editor.
-open_file_with_editor = ['e', 'W']
+open_file_with_editor = ['f12', '']
 change_panel_mode = ['v', '']
 copy_path = ['Y']
 copy_present_working_directory = ['c', '']

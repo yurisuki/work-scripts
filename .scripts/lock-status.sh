@@ -63,20 +63,32 @@ case "$vol" in
         ;;
 esac
 
-# Brightness: sysfs backlight first, then waybar's cached DDC state.
+# Brightness: sysfs backlight first, then the same cached DDC state Waybar uses.
+# The icon tiers match Waybar's custom/brightness format-icons (1 / 4 / 7).
+add_brightness() {
+    case $1 in
+        ''|*[!0-9]*) return ;;
+    esac
+    if [ "$1" -le 33 ]; then icon='󰃚'
+    elif [ "$1" -le 66 ]; then icon='󰃝'
+    else icon='󰃠'
+    fi
+    add "$icon $1%"
+}
 for d in /sys/class/backlight/*; do
     [ -r "$d/brightness" ] || continue
     cur=$(cat "$d/brightness" 2>/dev/null) || continue
     max=$(cat "$d/max_brightness" 2>/dev/null) || continue
     [ "$max" -gt 0 ] || continue
-    pct=$(((cur * 100 + max / 2) / max))
-    add "󰃠 $pct%"
+    add_brightness $(((cur * 100 + max / 2) / max))
     break
 done
 if ! ls /sys/class/backlight/* >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
-    cached=$(jq -r 'select(.error == null) | .target // empty' \
-        "${XDG_RUNTIME_DIR:-/tmp}/violet-brightness.json" 2>/dev/null)
-    [ -n "$cached" ] && add "󰃠 ${cached}%"
+    runtime=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
+    # hypr-brightness.py writes an empty error string on success.
+    cached=$(jq -r 'select((.error // "") == "") | .target // empty' \
+        "$runtime/violet-brightness.json" 2>/dev/null)
+    add_brightness "$cached"
 fi
 
 [ -n "$parts" ] && printf '%s\n' "$parts"
