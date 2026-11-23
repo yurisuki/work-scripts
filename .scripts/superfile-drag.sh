@@ -11,12 +11,10 @@ notify() {
         --hint=boolean:suppress-sound:true "$1" "$2" 2>/dev/null || true
 }
 
-# Called directly by superfile as its "editor": $1 is the selected path.
-# Directories still open in the real editor (needed by E / open_current_directory_with_editor).
+# Optional direct path mode (manual/testing use only; not bound as Superfile's editor).
 if (( $# > 0 )); then
     if [[ -d ${1:-} ]]; then
-        # Match superfile's previous default dir_editor (vi on Linux).
-        exec vi "$@"
+        exec nvim "$@"
     fi
     printf '%s\n' "$@" | nohup python3 "$helper" >/dev/null 2>&1 &
     exit 0

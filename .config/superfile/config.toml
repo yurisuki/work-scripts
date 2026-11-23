@@ -13,11 +13,11 @@
 
 #-- File Editor
 # Default: $EDITOR
-editor = "/home/adamn/.scripts/superfile-drag.sh"
+editor = "spf-open"
 
 #-- Directory Editor
-# 
-dir_editor = ""
+# Open directories from Superfile with E in Neovim instead of the vi default.
+dir_editor = "nvim"
 
 #-- Auto check for update
 auto_check_update = true
