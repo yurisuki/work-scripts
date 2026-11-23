@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Event-driven Waybar media controls using MPRIS."""
-import fcntl
 import html
 import json
 import os
@@ -113,60 +112,55 @@ def render(player, role):
 
 
 def watch(role):
-    # A Waybar config reload spawns a new watcher without killing this one.
-    # One instance per role; the heartbeat below notices the closed stdout pipe.
-    runtime = Path(os.environ['XDG_RUNTIME_DIR'])
-    with (runtime / f'violet-bar-music-{role}.lock').open('w') as lock:
+    # One watcher per role per output. Waybar spawns a separate process for
+    # each module on each output, so no cross-output lock is needed; doing so
+    # would prevent prev/next buttons from appearing on secondary monitors.
+    manager = Playerctl.PlayerManager()
+    seen = set()
+    last = None
+
+    def update(*_):
+        nonlocal last
+        player = select_player(manager.props.players, seen)
+        if role == 'title':
+            data = {'player': player.props.player_instance if player else None}
+            temp = STATE.with_name(f'{STATE.name}.{os.getpid()}.tmp')
+            temp.write_text(json.dumps(data))
+            temp.replace(STATE)
         try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            return
-        manager = Playerctl.PlayerManager()
-        seen = set()
-        last = None
+            data = render(player, role)
+        except GLib.Error:
+            data = render(None, role)
+        line = json.dumps(data, ensure_ascii=False)
+        if line != last:
+            print(line, flush=True)
+            last = line
 
-        def update(*_):
-            nonlocal last
-            player = select_player(manager.props.players, seen)
-            if role == 'title':
-                data = {'player': player.props.player_instance if player else None}
-                temp = STATE.with_name(f'{STATE.name}.{os.getpid()}.tmp')
-                temp.write_text(json.dumps(data))
-                temp.replace(STATE)
-            try:
-                data = render(player, role)
-            except GLib.Error:
-                data = render(None, role)
-            line = json.dumps(data, ensure_ascii=False)
-            if line != last:
-                print(line, flush=True)
-                last = line
-
-        def heartbeat():
-            update()
-            return True
-
-        def add(_manager, name):
-            try:
-                player = Playerctl.Player.new_from_name(name)
-                player.connect('playback-status', update)
-                player.connect('metadata', update)
-                manager.manage_player(player)
-                update()
-            except GLib.Error:
-                pass
-
-        def remove(_manager, player):
-            seen.discard(player.props.player_instance)
-            update()
-
-        manager.connect('name-appeared', add)
-        manager.connect('player-vanished', remove)
-        for name in manager.props.player_names:
-            add(manager, name)
+    def heartbeat():
         update()
-        GLib.timeout_add_seconds(2, heartbeat)
-        GLib.MainLoop().run()
+        return True
+
+    def add(_manager, name):
+        try:
+            player = Playerctl.Player.new_from_name(name)
+            player.connect('playback-status', update)
+            player.connect('metadata', update)
+            manager.manage_player(player)
+            update()
+        except GLib.Error:
+            pass
+
+    def remove(_manager, player):
+        seen.discard(player.props.player_instance)
+        update()
+
+    manager.connect('name-appeared', add)
+    manager.connect('player-vanished', remove)
+    for name in manager.props.player_names:
+        add(manager, name)
+    update()
+    GLib.timeout_add_seconds(2, heartbeat)
+    GLib.MainLoop().run()
 
 
 def control(action):
