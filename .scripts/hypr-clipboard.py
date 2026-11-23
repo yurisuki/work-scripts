@@ -90,7 +90,8 @@ def main():
             subprocess.run(['cliphist', 'wipe'], check=True, timeout=5)
             subprocess.run(['wl-copy', '--clear'], check=True, timeout=5)
             subprocess.run([
-                'notify-send', '--app-name=Clipboard', '--icon=edit-clear',
+                'notify-send', '--app-name=Clipboard',
+                '--icon=' + str(Path.home() / '.local/share/device-notifications/icons/clipboard.svg'),
                 '--expire-time=3000', '--hint=boolean:suppress-sound:true',
                 'Clipboard history cleared', 'All copied items have been removed.'
             ], check=False)
