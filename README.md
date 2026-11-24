@@ -83,6 +83,9 @@ fetched (`check-for-updates.py --local`, no extra network request), then reloads
 Hyprland/Waybar/SwayNC through `hypr-reload.sh`. Pass `--all` for the full installer,
 or any other `install.sh` option. It refuses to pull when the checkout cannot be
 fast-forwarded and tells you to commit, stash, or discard local changes first.
+After deployment it rechecks fingerprint availability with `setup-fingerprint.py auto`
+so a config-only update does not drop the Hyprlock fingerprint option on a machine
+with a reader. An existing explicit enable/disable preference is preserved.
 
 Rotation replaces the default `m` marking shortcut and changes only the view.
 Image copying uses the first frame of animated images. In thumbnail mode, clipboard
@@ -162,8 +165,9 @@ enabled. The indicator checks keyboard LEDs every 250 ms.
 Fingerprint support is optional. Without a working reader, Hyprlock and login use
 passwords; the installer does not install fingerprint packages or change PAM.
 The full installer enables Hyprlock fingerprint support only when fprintd already
-reports a reader with enrolled fingerprints for the current user. Config-only
-deployment leaves the setting disabled on a new machine. Machine-local
+reports a reader with enrolled fingerprints for the current user; `upd` repeats
+this availability check after every redeploy, including config-only updates.
+Config-only deployment leaves the setting disabled on a new machine. Machine-local
 `~/.config/hypr/fingerprint.conf` is preserved on reinstall, including an explicit
 disable. Password entry remains available alongside fingerprints in Hyprlock.
 

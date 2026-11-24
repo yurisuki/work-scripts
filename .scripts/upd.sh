@@ -46,6 +46,12 @@ fi
 (( $# )) || set -- --config-only
 bash "$repo/install.sh" "$@"
 
+# Config-only redeploys skip postinstall.sh, so recheck the local fingerprint
+# setting here. auto keeps an existing preference and only enables Hyprlock
+# fingerprint auth when this machine reports a usable reader.
+python3 "$HOME/.scripts/setup-fingerprint.py" auto ||
+    printf 'Fingerprint availability check failed; Hyprlock setting left unchanged.\n' >&2
+
 # Recompute the indicator from the refs git pull just fetched, before reloading
 # the bar. --local avoids a second network round trip and cannot leave a stale
 # count behind if the network drops right after the pull.

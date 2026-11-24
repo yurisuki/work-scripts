@@ -14,6 +14,7 @@ PAM_MARKER = '# work-scripts: optional fingerprint login'
 
 
 def reader_ready(user):
+    """True when a usable reader is present for user, including open-fprintd stacks."""
     try:
         import dbus
         bus = dbus.SystemBus()
@@ -21,10 +22,21 @@ def reader_ready(user):
             bus.get_object('net.reactivated.Fprint', '/net/reactivated/Fprint/Manager'),
             'net.reactivated.Fprint.Manager',
         )
-        for path in manager.GetDevices(timeout=5):
+        devices = manager.GetDevices(timeout=5)
+        if not devices:
+            return False
+        for path in devices:
             device = dbus.Interface(bus.get_object('net.reactivated.Fprint', path),
                                     'net.reactivated.Fprint.Device')
-            if device.ListEnrolledFingers(user, timeout=5):
+            try:
+                enrolled = device.ListEnrolledFingers(user, timeout=5)
+            except Exception as error:
+                # open-fprintd defers this call while its backend is suspended
+                # (common after resume on the validity stack). A reported device
+                # is still a usable fingerprint option, so keep password fallback.
+                print(f'Enrollment check unavailable for {path}: {error}', file=sys.stderr)
+                return True
+            if enrolled:
                 return True
     except Exception as error:
         print(f'Fingerprint unavailable: {error}', file=sys.stderr)
