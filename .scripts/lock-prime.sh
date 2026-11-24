@@ -10,7 +10,6 @@ mkdir -p -- "$dir"
 rm -f -- "$dir/ready"
 
 date +'%A, %d %B' > "$dir/date" &
-"$scripts/lock-status.sh" > "$dir/status" &
 python3 "$scripts/lock-weather.py" > "$dir/weather" &
 python3 "$scripts/lock-music.py" art > "$dir/art" &
 "$scripts/lock-capslock.sh" > "$dir/capslock" &

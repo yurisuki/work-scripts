@@ -158,7 +158,9 @@ systemctl --user enable --now power-button-menu.service
 ```
 
 Hyprlock shows “Caps Lock is on” below the password field only when Caps Lock is
-enabled. The indicator checks keyboard LEDs every 250 ms.
+enabled. The indicator checks keyboard LEDs every 250 ms. The top-left status
+line (battery, Wi-Fi, volume and brightness) is refreshed every five seconds
+while locked, so charging state and levels do not freeze at lock time.
 
 ## Fingerprint login and lock
 
