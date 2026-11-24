@@ -95,6 +95,7 @@
   "custom/brightness": {
     "exec": "~/.scripts/hypr-brightness.sh status",
     "return-type": "json",
+    "hide-empty-text": true,
     "format": "{icon}  {text}",
     "format-icons": ["󰃚", "󰃝", "󰃠"],
     "interval": 30,

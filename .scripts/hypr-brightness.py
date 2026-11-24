@@ -135,8 +135,8 @@ def main():
             print(
                 json.dumps(
                     {
-                        "text": "—" if failed else f'{state["target"]}%',
-                        "tooltip": failed or "Brightness · Change with mouse wheel",
+                        "text": "" if failed else f'{state["target"]}%',
+                        "tooltip": "" if failed else "Brightness · Change with mouse wheel",
                         "class": "unavailable" if failed else "available",
                         "percentage": state["target"],
                     }
@@ -179,9 +179,8 @@ if __name__ == "__main__":
         ZeroDivisionError,
     ) as exc:
         if len(sys.argv) < 2 or sys.argv[1] == "status":
-            print(
-                json.dumps({"text": "—", "tooltip": str(exc), "class": "unavailable"})
-            )
+            # Empty output lets waybar hide the module (hide-empty-text).
+            print(json.dumps({"text": "", "tooltip": "", "class": "unavailable"}))
         else:
             subprocess.run(
                 ["notify-send", "Brightness unavailable", str(exc)], check=False
