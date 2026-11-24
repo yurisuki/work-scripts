@@ -266,6 +266,11 @@ Settings are in `~/.config/sioyek/prefs_user.config`; shortcuts are in
   detected automatically. Wheel events are combined; DDC hardware still has latency.
 - Battery widgets are hidden when absent. Bluetooth battery needs a device/BlueZ
   connection that reports a battery percentage.
+- Secret service (keyring): `~/.local/share/dbus-1/services/org.freedesktop.secrets.service`
+  starts KDE's `ksecretd` on demand, so libsecret clients such as IC-SYNC can store
+  credentials. The first store request opens a dialog to create the default wallet;
+  set a password you know there, and keep the wallet unlocked while signing in.
+  Optional management GUI: `sudo pacman -S kwalletmanager`.
 
 ## Shortcuts
 

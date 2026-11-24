@@ -8,6 +8,7 @@ REPO_PACKAGES=(
     hyprpaper cliphist wl-clipboard brightnessctl ddcutil networkmanager network-manager-applet
     pipewire wireplumber pipewire-pulse wiremix bluez bluez-utils bluetui upower
     xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-utils xdg-user-dirs desktop-file-utils
+    kwallet libsecret
     qt5ct qt6ct qt5-wayland qt6-wayland breeze breeze-gtk breeze-icons
     plasma-browser-integration
     inter-font ttf-jetbrains-mono-nerd noto-fonts udisks2 udiskie
