@@ -2,6 +2,7 @@
 """Clipboard picker with cached image thumbnails and entry deletion."""
 import base64
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -61,7 +62,8 @@ def confirm_clear():
 def main():
     cache = Path(os.environ['XDG_RUNTIME_DIR']) / 'violet-clipboard-thumbnails'
     cache.mkdir(mode=0o700, exist_ok=True)
-    lines = subprocess.check_output(['cliphist', 'list'], text=True, timeout=5).splitlines()
+    # split('\n') rather than splitlines(): \x1e in rich entries is a line separator to Python.
+    lines = [line for line in subprocess.check_output(['cliphist', 'list'], text=True, timeout=5).split('\n') if line]
     if not lines:
         notify('Clipboard is empty', 'Nothing copied yet.')
         return
@@ -128,9 +130,19 @@ def main():
                 subprocess.run(['wl-copy', '--type', 'text/plain;charset=utf-8', '--trim-newline'],
                                input=plain, check=True, timeout=5)
             else:
+                # Offer HTML and clean text as separate payloads in one selection.
                 html = base64.b64decode(encoded)
-                subprocess.run(['wl-copy', '--type', 'text/html', '--trim-newline'],
-                               input=html, check=True, timeout=5)
+                payload = json.dumps({
+                    'plain': base64.b64encode(plain).decode(),
+                    'html': base64.b64encode(html).decode(),
+                }).encode()
+                helper = subprocess.Popen(
+                    [str(Path.home() / '.scripts/clipboard-set-rich.py')],
+                    stdin=subprocess.PIPE, stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL, start_new_session=True,
+                )
+                helper.stdin.write(payload)
+                helper.stdin.close()
         else:
             subprocess.run(['wl-copy'], input=data, check=True, timeout=5)
 
