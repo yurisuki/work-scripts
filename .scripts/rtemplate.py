@@ -110,7 +110,7 @@ def main():
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             return
-        directory = Path.home() / "iCloudDrive/Workdrive/My Folders/rtemplate list"
+        directory = Path.home() / "Nextcloud/Work/My Folders/rtemplate list"
         directory.mkdir(parents=True, exist_ok=True)
         templates = list_templates(directory)
         # Snapshot text before Rofi takes focus; binary clipboard data stays untouched.
