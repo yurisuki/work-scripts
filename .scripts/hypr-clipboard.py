@@ -16,13 +16,14 @@ from gi.repository import GdkPixbuf
 
 IMAGE = re.compile(r'^\[\[ binary data .*\b(?:png|jpe?g|gif|webp|bmp|tiff?|svg)\b', re.IGNORECASE)
 ICON = Path.home() / '.local/share/device-notifications/icons/clipboard.svg'
+TRASH = Path.home() / '.local/share/device-notifications/icons/clipboard-deleted.svg'
 # cliphist stores rich text as: plain text + MARKER + base64(text/html)
 MARKER = b'\x1e[[ rich:text/html ]]\x1e'
 
 
-def notify(summary, body):
+def notify(summary, body, icon=ICON):
     subprocess.run([
-        'notify-send', '--app-name=Clipboard', '--icon=' + str(ICON),
+        'notify-send', '--app-name=Clipboard', '--icon=' + str(icon),
         '--expire-time=3000', '--hint=boolean:suppress-sound:true', summary, body,
     ], check=False)
 
@@ -107,7 +108,7 @@ def main():
         if confirm_clear():
             subprocess.run(['cliphist', 'wipe'], check=True, timeout=5)
             subprocess.run(['wl-copy', '--clear'], check=True, timeout=5)
-            notify('Clipboard history cleared', 'All copied items have been removed.')
+            notify('Clipboard history cleared', 'All copied items have been removed.', TRASH)
         return
     try:
         index = int(result.stdout.strip())
@@ -120,7 +121,7 @@ def main():
         subprocess.run(['cliphist', 'delete'], input=line.encode(), check=True, timeout=5)
         (cache / (hashlib.sha256(line.encode()).hexdigest() + '.png')).unlink(missing_ok=True)
         entry = label if len(label) <= 80 else label[:77] + '…'
-        notify('Clipboard entry removed', entry or 'One copied item removed.')
+        notify('Clipboard entry removed', entry or 'One copied item removed.', TRASH)
     else:
         data = subprocess.check_output(['cliphist', 'decode'], input=line.encode(), timeout=5)
         if MARKER in data:
