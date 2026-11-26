@@ -1,7 +1,7 @@
 [Desktop Entry]
 Categories=Network;WebBrowser;
 Comment=Search across multiple engines with a single query
-Exec="@HOME@/.scripts/rsearch.sh"
+Exec=@HOME@/.scripts/rsearch.sh
 GenericName=Multi-engine Search Tool
 Icon=system-search
 Keywords=search;engine;web;query;rofi;

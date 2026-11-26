@@ -1,7 +1,7 @@
 [Desktop Entry]
 Categories=Office;Finance;
 Comment=Stock search tool for Ralakde
-Exec="@HOME@/.scripts/search-stock.sh"
+Exec=@HOME@/.scripts/search-stock.sh
 Icon=baloo
 Keywords=stock;search;inventory;ralakde;
 Name=Stock Search Tool

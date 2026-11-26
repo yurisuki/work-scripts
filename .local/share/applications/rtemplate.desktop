@@ -1,7 +1,7 @@
 [Desktop Entry]
 Categories=Utility;
 Comment=Template management tool using rofi
-Exec="@HOME@/.scripts/rtemplate.sh"
+Exec=@HOME@/.scripts/rtemplate.sh
 GenericName=Template Management tool
 Icon=accessories-text-editor
 Keywords=template;clipboard;text;rofi;
