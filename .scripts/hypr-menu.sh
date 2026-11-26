@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
-rofi_menu() { rofi -no-config -theme "$HOME/.config/rofi/violet-night.rasi" "$@"; }
+rofi_menu() {
+    local theme="$HOME/.config/rofi/violet-night.rasi" arg
+    for arg in "$@"; do
+        [[ $arg == -dmenu ]] && { theme="$HOME/.config/rofi/violet-night-dmenu.rasi"; break; }
+    done
+    rofi -no-config -theme "$theme" "$@"
+}
 confirm() {
     local answer
     answer=$(printf 'Cancel\nConfirm\n' | rofi_menu -dmenu -p "$1") || return 1
