@@ -55,10 +55,10 @@ def menu_rows(templates, directory):
     rows = []
     for path, content in templates:
         name = str(path.relative_to(directory)).replace("\n", " ")
-        preview = " ".join(content.split())[:95] or "Empty template"
+        preview = " ".join(content.split())[:120] or "Empty template"
         label = (
             html.escape(name)
-            + '&#10;<span size="9000" foreground="#b4a3c4">'
+            + '  <span size="10000" foreground="#b4a3c4">'
             + html.escape(preview)
             + "</span>"
         )

@@ -1,20 +1,20 @@
 @import "violet-night.rasi"
-window { width: 760px; }
+window { width: 800px; }
 mainbox { padding: 16px; spacing: 10px; children: [inputbar, listview, message]; }
 inputbar { padding: 10px 12px; }
 entry { placeholder: "Search clipboard…"; }
-listview { lines: 6; columns: 1; spacing: 5px; fixed-height: true; }
+listview { lines: 5; columns: 1; spacing: 5px; fixed-height: true; }
 element {
     children: [element-icon, element-text];
-    padding: 6px 10px;
-    spacing: 14px;
+    padding: 8px 12px;
+    spacing: 16px;
     border: 1px;
     border-color: transparent;
     border-radius: 8px;
     background-color: @surface;
 }
 element selected.normal { border-color: @accent; background-color: @selected; }
-element-icon { size: 40px; vertical-align: 0.5; }
+element-icon { size: 84px; vertical-align: 0.5; }
 element-text { vertical-align: 0.5; }
 message { padding: 6px 2px 0; }
 textbox { font: "Inter 9"; text-color: @muted; }

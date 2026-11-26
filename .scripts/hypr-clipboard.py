@@ -2,6 +2,7 @@
 """Clipboard picker with cached image thumbnails and entry deletion."""
 import base64
 import hashlib
+import html as html_lib
 import json
 import os
 from pathlib import Path
@@ -14,11 +15,48 @@ import gi
 gi.require_version('GdkPixbuf', '2.0')
 from gi.repository import GdkPixbuf
 
-IMAGE = re.compile(r'^\[\[ binary data .*\b(?:png|jpe?g|gif|webp|bmp|tiff?|svg)\b', re.IGNORECASE)
+IMAGE = re.compile(rb'^\[\[ binary data .*\b(?:png|jpe?g|gif|webp|bmp|tiff?|svg)\b', re.IGNORECASE)
 ICON = Path.home() / '.local/share/device-notifications/icons/clipboard.svg'
 TRASH = Path.home() / '.local/share/device-notifications/icons/clipboard-deleted.svg'
 # cliphist stores rich text as: plain text + MARKER + base64(text/html)
 MARKER = b'\x1e[[ rich:text/html ]]\x1e'
+
+
+def rich_preview(preview, line=None):
+    """Plain text from cliphist rows that contain only an HTML payload."""
+    def clean(payload):
+        payload = re.sub(rb'[^A-Za-z0-9+/=]', b'', payload)
+        payload = payload[:len(payload) // 4 * 4]
+        try:
+            source = base64.b64decode(payload).decode('utf-8', errors='replace')
+        except Exception:
+            return ''
+        source = re.sub(r'(?is)<(script|style)[^>]*>.*?</\1>', ' ', source)
+        source = re.sub(r'(?s)<[^>]+>', ' ', source)
+        source = re.sub(r'<[^>]*$', '', source)
+        return ' '.join(html_lib.unescape(source).split())
+
+    parts = preview.split(b'\x1e')
+    if len(parts) >= 3 and parts[1] == b'[[ rich:text/html ]]':
+        # cliphist list truncates the payload to ~80 chars and appends an ellipsis.
+        text = clean(parts[2])
+        if text:
+            return text
+    if line:
+        try:
+            proc = subprocess.Popen(
+                ['cliphist', 'decode'], stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+            proc.stdin.write(line)
+            proc.stdin.close()
+            data = proc.stdout.read(32768)
+            proc.stdout.close()
+            proc.kill()
+            proc.wait()
+            return clean(data.split(b'\x1e')[-1])
+        except Exception:
+            return ''
+    return ''
 
 
 def notify(summary, body, icon=ICON):
@@ -29,16 +67,16 @@ def notify(summary, body, icon=ICON):
 
 
 def thumbnail(line, cache):
-    key = hashlib.sha256(line.encode()).hexdigest()
+    key = hashlib.sha256(line).hexdigest()
     target = cache / (key + '.png')
     if target.exists():
         return target
     try:
-        data = subprocess.check_output(['cliphist', 'decode'], input=line.encode(), timeout=5)
+        data = subprocess.check_output(['cliphist', 'decode'], input=line, timeout=5)
         with tempfile.NamedTemporaryFile(dir=cache, suffix='.image') as raw:
             raw.write(data)
             raw.flush()
-            image = GdkPixbuf.Pixbuf.new_from_file_at_scale(raw.name, 192, 144, True)
+            image = GdkPixbuf.Pixbuf.new_from_file_at_scale(raw.name, 320, 240, True)
             # Atomic replacement keeps parallel pickers from seeing partial PNGs.
             with tempfile.NamedTemporaryFile(dir=cache, suffix='.png', delete=False) as staged:
                 staged_path = Path(staged.name)
@@ -64,14 +102,19 @@ def main():
     cache = Path(os.environ['XDG_RUNTIME_DIR']) / 'violet-clipboard-thumbnails'
     cache.mkdir(mode=0o700, exist_ok=True)
     # split('\n') rather than splitlines(): \x1e in rich entries is a line separator to Python.
-    lines = [line for line in subprocess.check_output(['cliphist', 'list'], text=True, timeout=5).split('\n') if line]
+    lines = [line for line in subprocess.check_output(['cliphist', 'list'], timeout=5).split(b'\n') if line]
     if not lines:
         notify('Clipboard is empty', 'Nothing copied yet.')
         return
     rows = []
     used = set()
+    empty_icon = cache / 'empty.png'
+    if not empty_icon.exists():
+        empty_icon.write_bytes(base64.b64decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAAO0lEQVR4nO3BMQEAAADCoPVPbQhfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgNcAkGAAAR9NKNUAAAAASUVORK5CYII='))
+    used.add(empty_icon.name)
     for line in lines:
-        _, separator, preview = line.partition('\t')
+        _, separator, preview = line.partition(b'\t')
         if not separator:
             preview = line
         icon = None
@@ -80,18 +123,20 @@ def main():
             if icon:
                 used.add(icon.name)
         # Strip Rofi metadata delimiters and the rich-text payload from the label.
-        label = preview.split('\x1e')[0].replace('\0', '').replace('\x1f', ' ')
+        label = preview.split(b'\x1e')[0].decode('utf-8', errors='replace').replace('\0', '').replace('\x1f', ' ')
+        if not label.strip():
+            label = rich_preview(preview, line) or '[Rich text]'
         if icon:
-            details = re.search(r'\b(png|jpe?g|gif|webp|bmp|tiff?|svg)\b(?:\s+(\d+)x(\d+))?', preview, re.IGNORECASE)
+            details = re.search(rb'\b(png|jpe?g|gif|webp|bmp|tiff?|svg)\b(?:\s+(\d+)x(\d+))?', preview, re.IGNORECASE)
             if details:
-                label = 'Image · ' + details[1].upper()
+                label = 'Image · ' + details[1].decode(errors='replace').upper()
                 if details[2] and details[3]:
-                    label += f' · {details[2]} × {details[3]}'
+                    label += f' · {details[2].decode()} × {details[3].decode()}'
         label = " ".join(label.split())
         if len(label) > 70:
             label = label[:69] + "…"
         row = label.encode()
-        row += b'\0icon\x1f' + (str(icon).encode() if icon else b'text-x-generic')
+        row += b'\0icon\x1f' + (str(icon).encode() if icon else str(empty_icon).encode())
         rows.append(row)
     for path in cache.glob('*.png'):
         if path.name not in used:
@@ -121,12 +166,12 @@ def main():
         return
     line = lines[index]
     if result.returncode == 10:
-        subprocess.run(['cliphist', 'delete'], input=line.encode(), check=True, timeout=5)
-        (cache / (hashlib.sha256(line.encode()).hexdigest() + '.png')).unlink(missing_ok=True)
+        subprocess.run(['cliphist', 'delete'], input=line, check=True, timeout=5)
+        (cache / (hashlib.sha256(line).hexdigest() + '.png')).unlink(missing_ok=True)
         entry = label if len(label) <= 80 else label[:77] + '…'
         notify('Clipboard entry removed', entry or 'One copied item removed.', TRASH)
     else:
-        data = subprocess.check_output(['cliphist', 'decode'], input=line.encode(), timeout=5)
+        data = subprocess.check_output(['cliphist', 'decode'], input=line, timeout=5)
         if MARKER in data:
             # Enter serves the original HTML; Shift+Enter serves the plain text.
             plain, _, encoded = data.partition(MARKER)
