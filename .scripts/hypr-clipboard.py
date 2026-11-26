@@ -17,6 +17,8 @@ from gi.repository import GdkPixbuf
 
 IMAGE = re.compile(rb'^\[\[ binary data .*\b(?:png|jpe?g|gif|webp|bmp|tiff?|svg)\b', re.IGNORECASE)
 ICON = Path.home() / '.local/share/device-notifications/icons/clipboard.svg'
+RICH = Path.home() / '.local/share/device-notifications/icons/clipboard-rich.svg'
+EMPTY = Path.home() / '.local/share/device-notifications/icons/clipboard-empty.svg'
 TRASH = Path.home() / '.local/share/device-notifications/icons/clipboard-deleted.svg'
 # cliphist stores rich text as: plain text + MARKER + base64(text/html)
 MARKER = b'\x1e[[ rich:text/html ]]\x1e'
@@ -102,42 +104,45 @@ def main():
     cache = Path(os.environ['XDG_RUNTIME_DIR']) / 'violet-clipboard-thumbnails'
     cache.mkdir(mode=0o700, exist_ok=True)
     # split('\n') rather than splitlines(): \x1e in rich entries is a line separator to Python.
-    lines = [line for line in subprocess.check_output(['cliphist', 'list'], timeout=5).split(b'\n') if line]
+    lines = [line for line in subprocess.check_output(['cliphist', 'list'], timeout=5).split(b'\n') if line.strip()]
     if not lines:
-        notify('Clipboard is empty', 'Nothing copied yet.')
+        notify('Clipboard is empty', 'Nothing copied yet.', EMPTY)
         return
     rows = []
+    entries = []
+    labels = []
     used = set()
-    empty_icon = cache / 'empty.png'
-    if not empty_icon.exists():
-        empty_icon.write_bytes(base64.b64decode(
-            'iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAAO0lEQVR4nO3BMQEAAADCoPVPbQhfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgNcAkGAAAR9NKNUAAAAASUVORK5CYII='))
-    used.add(empty_icon.name)
+    seen = set()
     for line in lines:
         _, separator, preview = line.partition(b'\t')
         if not separator:
             preview = line
-        icon = None
-        if IMAGE.match(preview):
-            icon = thumbnail(line, cache)
-            if icon:
-                used.add(icon.name)
+        is_image = bool(IMAGE.match(preview))
         # Strip Rofi metadata delimiters and the rich-text payload from the label.
         label = preview.split(b'\x1e')[0].decode('utf-8', errors='replace').replace('\0', '').replace('\x1f', ' ')
         if not label.strip():
             label = rich_preview(preview, line) or '[Rich text]'
-        if icon:
+        if is_image:
             details = re.search(rb'\b(png|jpe?g|gif|webp|bmp|tiff?|svg)\b(?:\s+(\d+)x(\d+))?', preview, re.IGNORECASE)
             if details:
                 label = 'Image · ' + details[1].decode(errors='replace').upper()
                 if details[2] and details[3]:
                     label += f' · {details[2].decode()} × {details[3].decode()}'
-        label = " ".join(label.split())
-        if len(label) > 70:
-            label = label[:69] + "…"
-        row = label.encode()
-        row += b'\0icon\x1f' + (str(icon).encode() if icon else str(empty_icon).encode())
-        rows.append(row)
+        full_label = " ".join(label.split())
+        # Same text stays once; images are distinct even when their labels match.
+        key = ('image', line) if is_image else ('text', full_label)
+        if key in seen:
+            continue
+        seen.add(key)
+        label = full_label[:69] + '…' if len(full_label) > 70 else full_label
+        icon = thumbnail(line, cache) if is_image else (RICH if MARKER in preview else ICON)
+        if icon is None:
+            icon = ICON
+        if is_image:
+            used.add(icon.name)
+        entries.append(line)
+        labels.append(label)
+        rows.append(label.encode() + b'\0icon\x1f' + str(icon).encode())
     for path in cache.glob('*.png'):
         if path.name not in used:
             path.unlink(missing_ok=True)
@@ -162,9 +167,10 @@ def main():
         index = int(result.stdout.strip())
     except ValueError:
         return
-    if not 0 <= index < len(lines):
+    if not 0 <= index < len(entries):
         return
-    line = lines[index]
+    line = entries[index]
+    label = labels[index]
     if result.returncode == 10:
         subprocess.run(['cliphist', 'delete'], input=line, check=True, timeout=5)
         (cache / (hashlib.sha256(line).hexdigest() + '.png')).unlink(missing_ok=True)
