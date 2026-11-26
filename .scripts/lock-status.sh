@@ -40,10 +40,10 @@ wifi_dev=$(LC_ALL=C nmcli -t -f TYPE,DEVICE device 2>/dev/null | grep '^wifi:' |
 ssid=''
 [ -n "$wifi_dev" ] && ssid=$(LC_ALL=C nmcli -g GENERAL.CONNECTION device show "$wifi_dev" 2>/dev/null)
 [ "$ssid" = '--' ] && ssid=''
-if [ -n "$ssid" ]; then
-    add "󰖩 $ssid"
-elif LC_ALL=C nmcli -t -f TYPE,STATE device 2>/dev/null | grep -q '^ethernet:connected'; then
+if LC_ALL=C nmcli -t -f TYPE,STATE device 2>/dev/null | grep -q '^ethernet:connected'; then
     add '󰈀'
+elif [ -n "$ssid" ]; then
+    add '󰖩'
 else
     add '󰖪'
 fi
