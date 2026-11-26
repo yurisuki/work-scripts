@@ -35,15 +35,31 @@ for b in /sys/class/power_supply/BAT*; do
 done
 add "$battery"
 
-# Network: Wi-Fi SSID, ethernet glyph, or disconnected glyph
+# Network: adaptive Wi-Fi strength, ethernet glyph, or disconnected glyph
+connectivity=$(LC_ALL=C nmcli -g CONNECTIVITY general 2>/dev/null)
+net_warn=''
+[ "$connectivity" = full ] || net_warn=' 󰀦'
 wifi_dev=$(LC_ALL=C nmcli -t -f TYPE,DEVICE device 2>/dev/null | grep '^wifi:' | head -n 1 | cut -d: -f2-)
 ssid=''
 [ -n "$wifi_dev" ] && ssid=$(LC_ALL=C nmcli -g GENERAL.CONNECTION device show "$wifi_dev" 2>/dev/null)
 [ "$ssid" = '--' ] && ssid=''
+signal=''
+[ -n "$wifi_dev" ] && signal=$(LC_ALL=C nmcli -f all device show "$wifi_dev" 2>/dev/null | grep 'AP\[1\].SIGNAL' | awk '{print $2}')
+add_wifi() {
+    case $1 in
+        ''|*[!0-9]*) add '󰖩'; return ;;
+    esac
+    if [ "$1" -ge 75 ]; then icon='󰤨'
+    elif [ "$1" -ge 50 ]; then icon='󰤥'
+    elif [ "$1" -ge 25 ]; then icon='󰤢'
+    else icon='󰤟'
+    fi
+    add "$icon$net_warn $ssid"
+}
 if LC_ALL=C nmcli -t -f TYPE,STATE device 2>/dev/null | grep -q '^ethernet:connected'; then
-    add '󰈀'
+    add "󰈀$net_warn"
 elif [ -n "$ssid" ]; then
-    add '󰖩'
+    add_wifi "$signal"
 else
     add '󰖪'
 fi

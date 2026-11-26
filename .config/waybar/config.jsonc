@@ -69,12 +69,20 @@
     "spacing": 10
   },
   "network": {
-    "format-wifi": "󰖩",
+    "format-wifi": "{icon}",
+    "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
     "format-ethernet": "󰈀",
     "format-disconnected": "󰖪",
     "tooltip-format": "{ifname} · {ipaddr}",
     "on-click": "hyprctl eval 'open_network()'",
     "max-length": 22
+  },
+  "custom/internet": {
+    "exec": "~/.scripts/waybar-internet.sh",
+    "return-type": "json",
+    "format": "{text}",
+    "hide-empty-text": true,
+    "interval": 10
   },
   "pulseaudio": {
     "format": "{icon}  {volume}%",
@@ -299,6 +307,7 @@
     "modules": [
       "custom/capslock",
       "network",
+      "custom/internet",
       "pulseaudio",
       "custom/brightness",
       "custom/nightlight"
