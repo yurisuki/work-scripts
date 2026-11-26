@@ -7,9 +7,11 @@ rofi_menu() {
     done
     rofi -no-config -theme "$theme" "$@"
 }
+rofi_dialog() { rofi -no-config -theme "$HOME/.config/rofi/violet-night-dialog.rasi" "$@"; }
+rofi_select() { rofi -no-config -theme "$HOME/.config/rofi/violet-night-select.rasi" "$@"; }
 confirm() {
     local answer
-    answer=$(printf 'Cancel\nConfirm\n' | rofi_menu -dmenu -p "$1") || return 1
+    answer=$(printf 'Cancel\nConfirm\n' | rofi_dialog -dmenu -p "$1") || return 1
     [[ "$answer" == Confirm ]]
 }
 case ${1:-apps} in
@@ -27,9 +29,9 @@ case ${1:-apps} in
         if confirm 'Clear clipboard history?'; then cliphist wipe; wl-copy --clear; fi
         ;;
     brightness)
-        choice=$(printf '10%%\n25%%\n50%%\n75%%\n100%%\n' | rofi_menu -dmenu -p Brightness) || exit 0
-        [[ "$choice" =~ ^(10|25|50|75|100)%$ ]] || exit 0
-        "$HOME/.scripts/hypr-brightness.sh" set "${choice%%%}"
+        choice=$(printf '󰃚  10%%\n󰃚  25%%\n󰃝  50%%\n󰃝  75%%\n󰃠  100%%\n' | rofi_select -dmenu -p Brightness) || exit 0
+        [[ $choice =~ ([0-9]+)% ]] || exit 0
+        "$HOME/.scripts/hypr-brightness.sh" set "${BASH_REMATCH[1]}"
         ;;
     lock) pgrep -x hyprlock >/dev/null || exec "$HOME/.scripts/hypr-lock.sh" ;;
     session)

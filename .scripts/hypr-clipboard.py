@@ -54,7 +54,7 @@ def thumbnail(line, cache):
 
 def confirm_clear():
     result = subprocess.run([
-        'rofi', '-no-config', '-theme', str(Path.home() / '.config/rofi/clipboard.rasi'),
+        'rofi', '-no-config', '-theme', str(Path.home() / '.config/rofi/violet-night-dialog.rasi'),
         '-dmenu', '-no-custom', '-p', 'Clear all clipboard history?',
     ], input=b'Cancel\nClear all', stdout=subprocess.PIPE, check=False)
     return result.returncode == 0 and result.stdout.strip() == b'Clear all'
@@ -87,6 +87,9 @@ def main():
                 label = 'Image · ' + details[1].upper()
                 if details[2] and details[3]:
                     label += f' · {details[2]} × {details[3]}'
+        label = " ".join(label.split())
+        if len(label) > 70:
+            label = label[:69] + "…"
         row = label.encode()
         row += b'\0icon\x1f' + (str(icon).encode() if icon else b'text-x-generic')
         rows.append(row)
@@ -100,7 +103,7 @@ def main():
         '-kb-accept-alt', '', '-kb-accept-custom', '',
         '-kb-custom-1', 'Shift+Delete', '-kb-custom-2', 'Control+Delete',
         '-kb-custom-3', 'Shift+Return,Shift+KP_Enter',
-        '-mesg', 'Enter  Copy (formatted)    ·    Shift+Enter  Copy as plain text    ·    Shift+Delete  Remove    ·    Ctrl+Delete  Clear all    ·    Esc  Close',
+        '-mesg', 'Enter  Copy    ·    Shift+Enter  Plain text    ·    Shift+Del  Remove    ·    Ctrl+Del  Clear all    ·    Esc  Close',
     ], input=b'\n'.join(rows), stdout=subprocess.PIPE, check=False)
     if result.returncode not in (0, 10, 11, 12):
         return

@@ -1,0 +1,4 @@
+@import "violet-night-dmenu.rasi"
+window { width: 560px; }
+mainbox { padding: 16px; children: [inputbar]; }
+inputbar { padding: 12px; }

@@ -31,7 +31,7 @@ function url_encode {
 function manage_engines {
     local options=("➕ Add new engine" "➖ Remove engine" "↩️ Back")
     local choice
-    choice=$(printf "%s\n" "${options[@]}" | rofi -dmenu -i -p "⚙️ Engine Management:")
+    choice=$(printf "%s\n" "${options[@]}" | rofi -no-config -theme "$HOME/.config/rofi/violet-night-dmenu.rasi" -dmenu -i -p "Engine management:")
     
     case "$choice" in
         "➕ Add new engine")
@@ -50,11 +50,11 @@ function manage_engines {
 # Function to add a new search engine
 function add_engine {
     local engine_name
-    engine_name=$(rofi -dmenu -p "✨ Engine name:")
+    engine_name=$(rofi -no-config -theme "$HOME/.config/rofi/violet-night-prompt.rasi" -dmenu -p "Engine name:")
     [ -z "$engine_name" ] && return
     
     local engine_url
-    engine_url=$(rofi -dmenu -p "🔗 URL (use \$Q for query):")
+    engine_url=$(rofi -no-config -theme "$HOME/.config/rofi/violet-night-prompt.rasi" -dmenu -p "URL (use \$Q for query):")
     [ -z "$engine_url" ] && return
     
     echo "$engine_name || $engine_url" >> "$CONFIG_FILE"
@@ -78,7 +78,7 @@ function remove_engine {
     
     # Display just engine names in rofi for removal
     local choice
-    choice=$(printf "%s\n" "${engine_names[@]}" | rofi -dmenu -i -p "🗑️ Select engine to remove:")
+    choice=$(printf "%s\n" "${engine_names[@]}" | rofi -no-config -theme "$HOME/.config/rofi/violet-night-dmenu.rasi" -dmenu -i -p "Select engine to remove:")
     
     # If no selection, return
     [ -z "$choice" ] && return
@@ -188,7 +188,7 @@ function main {
     
     # Use rofi to get user selection
     local selection
-    selection=$(printf "%s\n" "${engines[@]}" | rofi -dmenu -i -p "🔎 Search:")
+    selection=$(printf "%s\n" "${engines[@]}" | rofi -no-config -theme "$HOME/.config/rofi/violet-night-dmenu.rasi" -dmenu -i -p "Search:")
     
     # Check if the user pressed ESC
     [ -z "$selection" ] && exit 0
@@ -234,7 +234,7 @@ function main {
     
     # Get the search query
     local query
-    query=$(rofi -dmenu -p "🔎 Search $selection:")
+    query=$(rofi -no-config -theme "$HOME/.config/rofi/violet-night-prompt.rasi" -dmenu -p "Search $selection:")
     
     # Check if the user pressed ESC or provided empty input
     [ -z "$query" ] && exit 0

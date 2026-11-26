@@ -1,0 +1,7 @@
+@import "violet-night.rasi"
+configuration { show-icons: false; }
+window { width: 660px; }
+mainbox { padding: 16px; spacing: 10px; children: [inputbar, listview, message]; }
+entry { placeholder: "Search emoji…"; }
+listview { lines: 10; spacing: 4px; }
+element { padding: 8px 12px; spacing: 12px; }

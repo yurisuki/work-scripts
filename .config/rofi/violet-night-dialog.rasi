@@ -1,0 +1,5 @@
+@import "violet-night-dmenu.rasi"
+window { width: 440px; }
+mainbox { padding: 16px; spacing: 10px; children: [inputbar, listview]; }
+listview { lines: 2; columns: 1; fixed-height: true; }
+element { padding: 10px 12px; }

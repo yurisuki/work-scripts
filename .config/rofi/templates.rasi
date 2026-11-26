@@ -1,11 +1,12 @@
 @import "violet-night.rasi"
-window { width: 740px; }
-mainbox { children: [inputbar, listview, message]; }
+configuration { show-icons: false; }
+window { width: 760px; }
+mainbox { padding: 16px; spacing: 10px; children: [inputbar, listview, message]; }
+inputbar { padding: 10px 12px; }
 entry { placeholder: "Search templates…"; }
 listview { lines: 7; spacing: 6px; fixed-height: false; }
-element { padding: 10px 12px; spacing: 12px; background-color: @surface; }
-element selected.normal { background-color: #392247; }
-element-icon { size: 28px; vertical-align: 0.5; }
+element { padding: 10px 12px; spacing: 10px; background-color: @surface; }
+element selected.normal { background-color: @selected; }
 element-text { vertical-align: 0.5; }
-message { padding: 4px 2px; }
-textbox { font: "Inter 9"; text-color: @muted; horizontal-align: 0.5; }
+message { padding: 6px 2px 0; }
+textbox { font: "Inter 9"; text-color: @muted; }

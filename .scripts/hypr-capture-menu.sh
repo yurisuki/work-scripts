@@ -9,7 +9,7 @@ if pgrep -x wf-recorder >/dev/null 2>&1; then
 fi
 
 rofi_menu() {
-    rofi -no-config -theme "$HOME/.config/rofi/violet-night.rasi" "$@"
+    rofi -no-config -theme "$HOME/.config/rofi/violet-night-dmenu.rasi" "$@"
 }
 
 status=0

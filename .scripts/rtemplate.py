@@ -58,11 +58,11 @@ def menu_rows(templates, directory):
         preview = " ".join(content.split())[:95] or "Empty template"
         label = (
             html.escape(name)
-            + '&#10;<span size="small" foreground="#b4a3c4">'
+            + '&#10;<span size="9000" foreground="#b4a3c4">'
             + html.escape(preview)
             + "</span>"
         )
-        rows.append(label.encode() + b"\0icon\x1ftext-x-generic")
+        rows.append(label.encode())
     return b"\n".join(rows)
 
 
@@ -87,7 +87,7 @@ def ask_clipboard_text():
             "rofi",
             "-no-config",
             "-theme",
-            str(Path.home() / ".config/rofi/templates.rasi"),
+            str(Path.home() / ".config/rofi/violet-night-prompt.rasi"),
             "-dmenu",
             "-i",
             "-p",
@@ -125,9 +125,9 @@ def main():
             if clipboard.returncode == 0
             else ""
         )
-        hints = "Enter  Copy (system clipboard)    ·    Alt+Enter  Type $CLIPBOARD manually    ·    Shift+Enter  Copy empty    ·    Alt+E  Edit    ·    Alt+O  Folder    ·    Esc  Close"
+        hints = "Enter  Copy    ·    Alt+Enter  $CLIPBOARD    ·    Shift+Enter  Empty    ·    Alt+E  Edit    ·    Alt+O  Folder    ·    Esc  Close"
         mesg = (
-            "No templates found — add a text file to the templates folder\n\n\n" + hints
+            "No templates found — add a file to the templates folder\n" + hints
             if not templates
             else hints
         )
@@ -139,7 +139,6 @@ def main():
                 str(Path.home() / ".config/rofi/templates.rasi"),
                 "-dmenu",
                 "-i",
-                "-show-icons",
                 "-markup-rows",
                 "-format",
                 "i",

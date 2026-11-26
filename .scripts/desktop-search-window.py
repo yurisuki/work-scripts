@@ -178,7 +178,7 @@ def main():
       #desktop-search row { padding: 10px; margin-bottom: 3px; }
       #desktop-search row:selected { background: #392247; }
       #desktop-search label { font: 13px Inter; }
-      #desktop-search #search-kind { color: #cf9bff; font: 11px "JetBrainsMono Nerd Font"; }
+      #desktop-search #search-kind { color: #cf5aff; font: 11px "Inter"; }
       #desktop-search #search-status { color: #b4a3c4; font: 11px Inter; }
     ''')
     Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)

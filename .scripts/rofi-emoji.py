@@ -24,16 +24,16 @@ def main():
                 continue
             emoji = ''.join(chr(int(code, 16)) for code in codepoints.split())
             name = description.strip().split(' ', 2)[2]
-            entries.append((emoji, f'{emoji}  {name}  · {group} / {subgroup}'))
+            entries.append((emoji, f'{emoji}  {name}  · {group}'))
 
     command = ['rofi', '-no-config']
     config = Path(os.environ.get('XDG_CONFIG_HOME', str(Path.home() / '.config')))
-    theme = config / 'rofi/violet-night.rasi'
+    theme = config / 'rofi/violet-night-emoji.rasi'
     if theme.is_file():
         command += ['-theme', str(theme)]
     command += ['-dmenu', '-i', '-no-custom', '-matching', 'normal',
                 '-normalize-match', '-format', 'i', '-p', 'Emoji',
-                '-mesg', 'Search English names • Enter: copy • Esc: cancel']
+                '-mesg', 'Enter  Copy    ·    Esc  Cancel']
     result = subprocess.run(command, input='\n'.join(row for _, row in entries) + '\n',
                             text=True, encoding='utf-8', stdout=subprocess.PIPE)
     if result.returncode == 1:

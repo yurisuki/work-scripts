@@ -2,7 +2,7 @@
 # Choose the default audio output device in rofi (SUPER+ú).
 set -euo pipefail
 
-rofi_menu() { rofi -no-config -theme "$HOME/.config/rofi/violet-night.rasi" "$@"; }
+rofi_menu() { rofi -no-config -theme "$HOME/.config/rofi/violet-night-dialog.rasi" "$@"; }
 
 sinks_json=$(pactl -f json list sinks 2>/dev/null) || exit 0
 mapfile -t labels < <(jq -r '.[] | ((.description | select(type=="string" and . != "" and . != "(null)")) // (.properties["device.description"] | select(type=="string" and . != "" and . != "(null)")) // .name // "Unknown output")' <<< "$sinks_json")
