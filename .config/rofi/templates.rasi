@@ -8,4 +8,4 @@ element selected.normal { background-color: #392247; }
 element-icon { size: 28px; vertical-align: 0.5; }
 element-text { vertical-align: 0.5; }
 message { padding: 4px 2px; }
-textbox { font: "Inter 9"; text-color: @muted; }
+textbox { font: "Inter 9"; text-color: @muted; horizontal-align: 0.5; }

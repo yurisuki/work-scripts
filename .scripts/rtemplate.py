@@ -125,6 +125,12 @@ def main():
             if clipboard.returncode == 0
             else ""
         )
+        hints = "Enter  Copy (system clipboard)    ·    Alt+Enter  Type $CLIPBOARD manually    ·    Shift+Enter  Copy empty    ·    Alt+E  Edit    ·    Alt+O  Folder    ·    Esc  Close"
+        mesg = (
+            "No templates found — add a text file to the templates folder\n\n\n" + hints
+            if not templates
+            else hints
+        )
         result = subprocess.run(
             [
                 "rofi",
@@ -158,7 +164,7 @@ def main():
                 "-kb-custom-4",
                 "Alt+Return,Alt+KP_Enter",
                 "-mesg",
-                "Enter  Copy (system clipboard)    ·    Alt+Enter  Type $CLIPBOARD manually    ·    Shift+Enter  Copy empty    ·    Alt+E  Edit    ·    Alt+O  Folder    ·    Esc  Close",
+                mesg,
             ],
             input=menu_rows(templates, directory),
             stdout=subprocess.PIPE,
