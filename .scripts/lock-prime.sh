@@ -25,7 +25,11 @@ printf '%s\n' '󰍃  Log out' > "$dir/button-logout"
 printf '%s\n' '󰜉  Restart' > "$dir/button-restart"
 printf '%s\n' '󰐥  Shut down' > "$dir/button-shutdown"
 
-printf '󰂚  %s\n' "$(swaync-client -c 2>/dev/null || printf 0)" > "$dir/notifications"
+notif=$(swaync-client -c 2>/dev/null || printf 0)
+case $notif in
+    ''|*[!0-9]*|0) : > "$dir/notifications" ;;
+    *) printf '󰂚  %s\n' "$notif" > "$dir/notifications" ;;
+esac
 python3 - <<'PY' > "$dir/ticktick"
 import json
 from pathlib import Path
@@ -33,7 +37,7 @@ try:
     data = json.loads((Path.home() / '.cache/ttui/snapshot.json').read_text())
     tasks = [t for t in data.get('Tasks', []) if t.get('status', 0) == 0
              and str(t.get('projectId', '')).startswith('inbox')]
-    print(f'  {len(tasks)}')
+    print(f'  {len(tasks)}' if tasks else '')
 except Exception:
     print('')
 PY
