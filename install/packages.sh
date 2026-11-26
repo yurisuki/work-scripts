@@ -20,4 +20,4 @@ REPO_PACKAGES=(
     vscode-json-languageserver yaml-language-server typescript-language-server prettier
     exiftool zoxide
 )
-AUR_PACKAGES=(sioyek-appimage onlyoffice-bin brave-bin zapzap gotop-bin snappy-switcher ttf-apple-emoji hyprmod ic-sync-bin)
+AUR_PACKAGES=(sioyek-appimage onlyoffice-bin brave-bin zapzap gotop-bin snappy-switcher ttf-apple-emoji hyprmod nextcloud-client-appimage-daily)
