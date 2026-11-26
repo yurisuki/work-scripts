@@ -25,6 +25,24 @@ printf '%s\n' '󰍃  Log out' > "$dir/button-logout"
 printf '%s\n' '󰜉  Restart' > "$dir/button-restart"
 printf '%s\n' '󰐥  Shut down' > "$dir/button-shutdown"
 
+printf '󰂚  %s\n' "$(swaync-client -c 2>/dev/null || printf 0)" > "$dir/notifications"
+python3 - <<'PY' > "$dir/ticktick"
+import json
+from pathlib import Path
+try:
+    data = json.loads((Path.home() / '.cache/ttui/snapshot.json').read_text())
+    tasks = [t for t in data.get('Tasks', []) if t.get('status', 0) == 0
+             and str(t.get('projectId', '')).startswith('inbox')]
+    print(f'  {len(tasks)}')
+except Exception:
+    print('')
+PY
+if grep -qw mem /sys/power/state 2>/dev/null; then
+    printf '%s\n' '󰤄  Suspend' > "$dir/button-suspend"
+else
+    : > "$dir/button-suspend"
+fi
+
 date +'%H:%M' > "$dir/time"
 touch -- "$dir/ready"
 cat -- "$dir/time"

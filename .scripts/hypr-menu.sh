@@ -27,10 +27,16 @@ case ${1:-apps} in
         ;;
     lock) pgrep -x hyprlock >/dev/null || exec "$HOME/.scripts/hypr-lock.sh" ;;
     session)
-        choice=$(printf 'Lock\nSuspend\nLog out\nRestart\nShut down\n' | rofi_menu -dmenu -p Session) || exit 0
+        options=''
+        if grep -qw mem /sys/power/state 2>/dev/null && command -v loginctl >/dev/null 2>&1; then
+            options='󰌾  Lock\n󰤄  Suspend\n󰍃  Log out\n󰜉  Restart\n󰐥  Shut down\n'
+        else
+            options='󰌾  Lock\n󰍃  Log out\n󰜉  Restart\n󰐥  Shut down\n'
+        fi
+        choice=$(printf '%b' "$options" | rofi_menu -dmenu -p Session) || exit 0
         case "$choice" in
-            Lock) exec "$0" lock ;;
-            Suspend)
+            *Lock) exec "$0" lock ;;
+            *Suspend)
                 loginctl lock-session
                 for _ in {1..50}; do
                     if [[ $(loginctl show-session "${XDG_SESSION_ID:-self}" -p LockedHint --value) == yes ]]; then
@@ -41,9 +47,9 @@ case ${1:-apps} in
                 notify-send 'Suspend cancelled' 'The session did not confirm that it was locked.'
                 exit 1
                 ;;
-            'Log out') confirm 'Log out?' && exec "$HOME/.scripts/hypr-shutdown.sh" logout ;;
-            Restart) confirm 'Restart?' && exec "$HOME/.scripts/hypr-shutdown.sh" reboot ;;
-            'Shut down') confirm 'Shut down?' && exec "$HOME/.scripts/hypr-shutdown.sh" poweroff ;;
+            *'Log out') confirm 'Log out?' && exec "$HOME/.scripts/hypr-shutdown.sh" logout ;;
+            *Restart) confirm 'Restart?' && exec "$HOME/.scripts/hypr-shutdown.sh" reboot ;;
+            *'Shut down') confirm 'Shut down?' && exec "$HOME/.scripts/hypr-shutdown.sh" poweroff ;;
         esac
         ;;
     *) printf 'Unknown menu: %s\n' "$1" >&2; exit 2 ;;
