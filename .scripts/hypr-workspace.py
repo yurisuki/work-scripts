@@ -57,8 +57,9 @@ def watch(parent, runtime):
 
     def refresh(notify=True):
         try:
-            active = query('activeworkspace')['id']
-            workspaces = {w['id']: w for w in query('workspaces') if w['id'] > 0}
+            # Special workspaces (e.g. scratchpads) have no "id" field.
+            active = query('activeworkspace').get('id', 0)
+            workspaces = {w['id']: w for w in query('workspaces') if w.get('id', 0) > 0}
             staged = runtime / 'violet-workspaces.tmp'
             staged.write_text(json.dumps({str(i): status(i, active, workspaces) for i in range(1, 11)}))
             staged.replace(runtime / 'violet-workspaces.json')
@@ -133,7 +134,7 @@ def main():
             target = int(sys.argv[2])
         elif action in ('next', 'prev'):
             current = query('activeworkspace')['id']
-            ids = sorted(set(range(1, 6)) | {w['id'] for w in query('workspaces') if w['id'] > 0} | {current})
+            ids = sorted(set(range(1, 6)) | {w['id'] for w in query('workspaces') if w.get('id', 0) > 0} | {current})
             target = ids[(ids.index(current) + (1 if action == 'next' else -1)) % len(ids)]
         else:
             raise ValueError(f'Unknown action: {action}')
