@@ -125,7 +125,7 @@ def main():
             if clipboard.returncode == 0
             else ""
         )
-        hints = "Enter  Copy    ·    Alt+Enter  $CLIPBOARD    ·    Shift+Enter  Empty    ·    Alt+E  Edit    ·    Alt+O  Folder    ·    Esc  Close"
+        hints = "Enter  Copy    ·    Alt+Enter  Edit $CLIPBOARD    ·    Shift+Enter  Empty    ·    Alt+E  Edit    ·    Alt+O  Folder    ·    Esc  Close"
         mesg = (
             "No templates found — add a file to the templates folder\n" + hints
             if not templates
