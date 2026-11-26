@@ -16,8 +16,19 @@ def query(command):
     return json.loads(subprocess.check_output(['hyprctl', '-j', command], text=True, timeout=3))
 
 
+def log(message):
+    state = Path(os.environ.get('XDG_STATE_HOME', str(Path.home() / '.local/state')))
+    try:
+        (state / 'waybar').mkdir(parents=True, exist_ok=True)
+        with (state / 'waybar' / 'workspace-watcher.log').open('a') as handle:
+            handle.write(f'{time.strftime("%Y-%m-%d %H:%M:%S")} {message}\n')
+    except OSError:
+        pass
+
+
 def status(target, active, workspaces):
-    occupied = workspaces.get(target, {}).get('windows', 0) > 0
+    windows = workspaces.get(target, {}).get('windows', 0) or 0
+    occupied = windows > 0
     classes = ['active' if active == target else 'inactive']
     if occupied:
         classes.append('occupied')
@@ -39,41 +50,70 @@ def watch(parent, runtime):
                 if not Path(f'/proc/{parent}').exists():
                     return
                 time.sleep(0.2)
-        path = runtime / 'hypr' / os.environ['HYPRLAND_INSTANCE_SIGNATURE'] / '.socket2.sock'
-        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
-            sock.connect(str(path))
 
-            def refresh(notify=True):
-                active = query('activeworkspace')['id']
-                workspaces = {w['id']: w for w in query('workspaces') if w['id'] > 0}
-                staged = runtime / 'violet-workspaces.tmp'
-                staged.write_text(json.dumps({str(i): status(i, active, workspaces) for i in range(1, 11)}))
-                staged.replace(runtime / 'violet-workspaces.json')
-                # Before exec(), this PID is still Python: never signal it then.
-                try:
-                    if notify and Path(f'/proc/{parent}/comm').read_text().strip() == 'waybar':
-                        os.kill(parent, signal.SIGRTMIN + 9)
-                except FileNotFoundError:
-                    pass
+    path = runtime / 'hypr' / os.environ['HYPRLAND_INSTANCE_SIGNATURE'] / '.socket2.sock'
+    events = ('workspace', 'focusedmon', 'createworkspace', 'destroyworkspace',
+              'openwindow', 'closewindow', 'movewindow', 'moveworkspace', 'activespecial')
 
-            refresh(notify=False)
-            # Ensure modules receive initial state after the launcher execs Waybar.
-            time.sleep(0.5)
-            refresh()
-            pending = b''
-            events = ('workspace', 'focusedmon', 'createworkspace', 'destroyworkspace',
-                      'openwindow', 'closewindow', 'movewindow', 'moveworkspace', 'activespecial')
-            while Path(f'/proc/{parent}').exists():
-                if not select.select([sock], [], [], 2)[0]:
-                    continue
-                data = sock.recv(65536)
-                if not data:
-                    return
-                pending += data
-                lines = pending.split(b'\n')
-                pending = lines.pop()
-                if any(line.decode(errors='replace').startswith(events) for line in lines):
-                    refresh()
+    def refresh(notify=True):
+        try:
+            active = query('activeworkspace')['id']
+            workspaces = {w['id']: w for w in query('workspaces') if w['id'] > 0}
+            staged = runtime / 'violet-workspaces.tmp'
+            staged.write_text(json.dumps({str(i): status(i, active, workspaces) for i in range(1, 11)}))
+            staged.replace(runtime / 'violet-workspaces.json')
+        except Exception as exc:
+            # A transient hyprctl failure must never kill the producer.
+            log(f'refresh failed: {exc!r}')
+            return False
+        if notify:
+            # Before exec(), this PID is still Python: never signal it then.
+            try:
+                if Path(f'/proc/{parent}/comm').read_text().strip() == 'waybar':
+                    os.kill(parent, signal.SIGRTMIN + 9)
+            except OSError:
+                pass
+        return True
+
+    refresh(notify=False)
+    # Let Waybar install its signal handlers before the first update.
+    time.sleep(1)
+    refresh()
+
+    while Path(f'/proc/{parent}').exists():
+        try:
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+                sock.settimeout(2)
+                sock.connect(str(path))
+                pending = b''
+                last_refresh = time.monotonic()
+                while Path(f'/proc/{parent}').exists():
+                    try:
+                        ready = select.select([sock], [], [], 2)[0]
+                    except (OSError, ValueError):
+                        break
+                    if not ready:
+                        # Self-heal if an event was missed or a refresh failed.
+                        if time.monotonic() - last_refresh >= 10:
+                            refresh()
+                            last_refresh = time.monotonic()
+                        continue
+                    try:
+                        data = sock.recv(65536)
+                    except OSError:
+                        break
+                    if not data:
+                        break
+                    pending += data
+                    lines = pending.split(b'\n')
+                    pending = lines.pop()
+                    if any(line.decode(errors='replace').startswith(events) for line in lines):
+                        refresh()
+                        last_refresh = time.monotonic()
+        except OSError as exc:
+            log(f'socket error: {exc!r}')
+        # Hyprland may close the event socket (reload/restart); reconnect instead of dying.
+        time.sleep(1)
 
 
 def main():
